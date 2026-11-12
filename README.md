@@ -2,7 +2,7 @@
 
 Standalone code and configuration for evaluating Karthos. Product code lives in the separate Karthos repository.
 
-[Thesis qualification v4](docs/thesis-qualification-v4.md) is the active k6-only protocol: read-only per-cell readiness, 21 independent planned windows on two cluster lifetimes, a bounded history observation, and one retry for recoverable execution failures. Each attempt stops capture and verifies cleanup before heavy export. Historical v2/v3 and 46-window definitions remain available for sealed-evidence analysis. No cloud execution starts without launch approval.
+[Thesis qualification v4](docs/thesis-qualification-v4.md) is the active k6-only protocol: read-only per-cell readiness, 21 independent planned windows across two thesis cluster lifetimes and a later diagnostic launch, a bounded history observation, and one retry for recoverable execution failures. Each attempt stops capture and verifies cleanup before heavy export. Historical v2/v3 and 46-window definitions remain available for sealed-evidence analysis. No cloud execution starts without launch approval.
 
 - [Execution plan and architecture](docs/gke-qualification-v1.md)
 - [Harness modules and verification](evaluation/README.md)

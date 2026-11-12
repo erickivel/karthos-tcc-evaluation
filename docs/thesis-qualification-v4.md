@@ -15,7 +15,9 @@ flowchart TD
   G -->|Yes| B
   G -->|No| H[History observation then cluster rebuild]
   H --> I[Cluster 2 baselines]
-  I --> J[Resources, arbitration and restarts]
+  I --> L[Checkpoint and cleanup]
+  L --> M[Later approved diagnostic launch]
+  M --> J[Resources, arbitration and restarts]
   J --> K[Partial or complete report and verified cleanup]
 ```
 
@@ -28,7 +30,7 @@ flowchart TD
 | Checkout/Gateway replacement under each source | 4 | 20 minutes |
 | Total | 21 | 81 minutes |
 
-The 720-second historical API observation is additional. Diagnostics run after both clusters' baselines. k6 is the only generator. Workload rates, durations, clock bounds, pre-roll/drain and numerical tolerances are unchanged.
+The 720-second historical API observation is additional. Diagnostics run in a later approved launch after both thesis clusters' baselines. k6 is the only generator. Workload rates, durations, clock bounds, pre-roll/drain and numerical tolerances are unchanged.
 
 Readiness generates no traffic and creates no helpers. It observes deployments/rollout generations, selected mounted configuration, API catalog/graph and available resource telemetry. Idle request-counter absence is not a failure. Independent checks are retained even if another fails. Existing deployment timeouts apply; extra observations have a 120-second budget. A verified small export follows. A healthy deployment's receipt is reused for its smoke/baseline pair; recovery creates a new receipt.
 
