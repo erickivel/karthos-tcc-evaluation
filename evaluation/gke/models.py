@@ -25,6 +25,8 @@ def identifier(value):
 
 def validate_config(c):
     if c.get('schema_version')!=1 or c.get('protocol')!=PROTOCOL:raise ValueError('unsupported configuration version/protocol')
+    if c.get('execution_scope','qualification') not in ('qualification','readiness-only'):
+        raise ValueError('unsupported execution scope')
     i=c['infrastructure'];l=c['limits'];g=c['gcp']
     if i['worker_count']!=3 or i['worker_machine_type']!='e2-standard-4' or i['controller_machine_type']!='e2-standard-4':raise ValueError('frozen infrastructure requires three fixed e2-standard-4 workers and controller')
     reader_cpu = i.get('gateway_reader_cpu_limit_m', 750)

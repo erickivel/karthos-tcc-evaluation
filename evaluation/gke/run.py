@@ -55,6 +55,7 @@ def execute_matrix(ctx,driver,*,gate=None):
     schedule=validate_schedule(ctx.manifest)
     rehearsal=schedule==REHEARSAL
     matrix=ctx.manifest['matrix']
+    readiness_only = ctx.config.get('execution_scope') == 'readiness-only'
     observation=ctx.manifest.get('verification_observation',{})
     verification=None
     if observation.get('mode')=='bounded execution verification':
@@ -73,7 +74,7 @@ def execute_matrix(ctx,driver,*,gate=None):
             if readiness_report.get('ready') is not True:
                 raise ValueError('readiness blocked measurement: '+str(readiness_report.get('error')))
             active_repeat = 1  # The gate already preflighted this exact cluster.
-        for spec in matrix:
+        for spec in ([] if readiness_only else matrix):
             if time.time()+ctx.config['limits']['cleanup_reserve_seconds']>=ctx.deadline:raise TimeoutError('reserved cleanup budget reached')
             if spec['repeat']!=active_repeat:
                 driver.start_repeat(spec['repeat']);active_repeat=spec['repeat'];active_cell=None
@@ -156,12 +157,19 @@ def execute_matrix(ctx,driver,*,gate=None):
             if cleanup.get('errors') or cleanup.get('residual') or nested.get('errors') or nested.get('residual'):failure=failure or 'cleanup residuals or errors retained'
         except Exception as exc:cleanup={'errors':[str(exc)]};failure=failure or ('cleanup: '+str(exc))
         unattempted_reason=failure or ('bounded execution verification reached its observation target' if verification and verification['state']=='complete' else None)
+        if readiness_only and not failure:
+            unattempted_reason='readiness-only execution requested; measured windows intentionally not run'
         exports.render_matrix(ctx.result,matrix,records,unattempted_reason=unattempted_reason)
-    complete=len(records)==len(matrix) and not failure
+    complete=(readiness_report is not None and readiness_report.get('ready') is True if readiness_only else len(records)==len(matrix)) and not failure
     report={'protocol':'gke-qualification-v1','schedule':schedule,'state':'complete' if complete else 'incomplete','planned_windows':len(matrix),
             'executed_windows':len(records),'windows':records,'error':failure,'cleanup':cleanup,
             'qualified':schedule==QUALIFICATION and complete and all(row['evidence_valid'] for row in records),
             'numerical_disagreement_is_result':True,'controller_present_until_external_cleanup':True,'temporary_removal_confirmed':False}
+    report['execution_scope']='readiness-only' if readiness_only else 'qualification'
+    if readiness_only:
+        report['planned_qualification_windows']=len(matrix)
+        report['planned_windows']=0
+        report['qualified']=False
     report['last_completed_phase']=last_completed(ctx.result/'phase-timings.ndjson')
     if schedule in THESIS_SCHEDULES:
         from .thesis import claim_matrix
@@ -170,7 +178,7 @@ def execute_matrix(ctx,driver,*,gate=None):
         claim_report=claim_matrix(ctx,records,history,readiness_report)
         ctx.write(ctx.result/'claim-matrix.json',claim_report)
         report['claim_matrix']='claim-matrix.json'
-        report['qualified']=complete and all(row['verdict']=='pass' for row in claim_report['claims'])
+        report['qualified']=not readiness_only and complete and all(row['verdict']=='pass' for row in claim_report['claims'])
     if readiness_report is not None:
         report['readiness']=readiness_report
     if verification is not None:
@@ -673,6 +681,14 @@ def run(ctx):
     from .readiness_live import ProbeDriver, run as readiness_gate
     driver=LiveDriver(ctx)
     try:
+        if ctx.config.get('execution_scope') == 'readiness-only':
+            import unittest
+            suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(name) for name in (
+                'evaluation.tests.test_gke_readiness_only.ReadinessOnlyTests',
+                'evaluation.tests.test_gke_readiness_capture_failure.ReadinessFailureEvidenceTests'))
+            checked=unittest.TextTestRunner(verbosity=2).run(suite)
+            ctx.write(ctx.result/'readiness-scope-contract.json',{'tests':checked.testsRun,'passed':checked.wasSuccessful(),'executed_on':'GCP controller'})
+            if not checked.wasSuccessful():raise RuntimeError('readiness-only controller contract checks failed')
         with timed(ctx,'controller-stage'):
             stage(ctx)
     except (Exception,KeyboardInterrupt) as exc:
@@ -700,7 +716,7 @@ def run(ctx):
         shutil.copy2(readiness_matrix,summary/'readiness-matrix.json')
     traces=ctx.result/'failure-traces'
     if traces.is_dir():shutil.copytree(traces,summary/'failure-traces')
-    for name in ('controller-headroom.json','node-inventory.json','kubernetes-version.json','progress.ndjson','phase-timings.ndjson'):
+    for name in ('readiness-scope-contract.json','controller-headroom.json','node-inventory.json','kubernetes-version.json','progress.ndjson','phase-timings.ndjson'):
         if (ctx.result/name).is_file():shutil.copy2(ctx.result/name,summary/name)
 
     receipt=exports.upload(ctx,summary,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/final-summary')

@@ -179,7 +179,9 @@ def execute(ctx, check, reset, publish, clock=time.time, finish=lambda: None, co
             raise ValueError('readiness reset did not verify')
         if clock()+RESERVE >= cutoff(ctx):
             raise TimeoutError('readiness exceeded its reset deadline')
-        summary['forecast_seconds'] = forecast(ctx, records)
+        readiness_only = ctx.config.get('execution_scope') == 'readiness-only'
+        summary['execution_scope'] = 'readiness-only' if readiness_only else 'qualification'
+        summary['forecast_seconds'] = ctx.config['limits']['cleanup_reserve_seconds'] if readiness_only else forecast(ctx, records)
         latest = min(cutoff(ctx)-RESERVE, ctx.deadline-summary['forecast_seconds'])
         if clock() >= latest:
             raise TimeoutError('frozen matrix and cleanup do not fit in remaining infrastructure time')

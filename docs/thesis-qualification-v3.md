@@ -95,3 +95,8 @@ After cluster deletion, both successful and recovery watchdog-refresh paths use 
 ### Readiness capture failures
 
 The sampler gate saves `capture-health.json` before returning success or raising a shared-capture failure. It records the case and observation time, all sampler errors, exact log identities and errors, sampler thread liveness, stream sample metadata, and the expected-restart exclusions. A failure while reading the diagnostic status is itself recorded and blocks readiness. The existing compact receipt includes this file for failed cases as well as passing ones. A generic failure message without these details cannot identify the original capture failure; do not attribute it to Karthos, CPU contention or GCP without boundary evidence.
+
+
+### Readiness-only capture validation
+
+Set `execution_scope` to `readiness-only` in the frozen environment configuration to run the unchanged 13 probes without authorizing measured traffic. Passing probes still require sealed receipts, verified reset and reset evidence export. The final report records zero planned/executed measured windows and cannot qualify thesis claims. No measured-study forecast or watchdog handoff is requested; normal final export and teardown still run. The default scope remains `qualification`.

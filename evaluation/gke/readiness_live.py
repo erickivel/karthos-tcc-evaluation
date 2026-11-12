@@ -812,7 +812,10 @@ class ProbeDriver:
         summary['handoff_export'] = self.publish(path,'handoff')
         if not summary['handoff_export'].get('verified'):
             raise UnsafeReadiness('readiness handoff readback missing')
-        summary['watchdog_handoff'] = commit_readiness_handoff(self.ctx, summary['commit_before'])
+        if self.ctx.config.get('execution_scope') == 'readiness-only':
+            summary['watchdog_handoff'] = {'requested':False,'reason':'readiness-only execution; measured traffic forbidden'}
+        else:
+            summary['watchdog_handoff'] = commit_readiness_handoff(self.ctx, summary['commit_before'])
 
 
 
