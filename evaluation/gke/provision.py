@@ -11,7 +11,7 @@ from .models import read,write,identifier,canonical_sha,sha
 
 OWNER='gke-qualification-v1'
 COMPUTE_CLI_PATHS={'instance':('instances',),'disk':('disks',),'router':('routers',),'network':('networks',),'subnetwork':('networks','subnets'),'firewall':('firewall-rules',)}
-APIS={'compute.googleapis.com','container.googleapis.com','storage.googleapis.com',
+APIS={'cloudbilling.googleapis.com','compute.googleapis.com','container.googleapis.com','storage.googleapis.com',
       'artifactregistry.googleapis.com','run.googleapis.com','cloudscheduler.googleapis.com','iam.googleapis.com','iamcredentials.googleapis.com'}
 OUTPUTS={
  'foundation':{'backup_bucket','evidence_bucket','state_bucket','artifact_repository','controller_service_account','node_service_account','watchdog_service_account','scheduler_service_account'},
@@ -125,7 +125,7 @@ def live_preflight(ctx):
     actual=doc(ctx,['gcloud','projects','describe',project,'--format=json'])
     if actual.get('projectId')!=project or actual.get('lifecycleState')!='ACTIVE':
         raise ValueError('supplied dedicated project is not active')
-    billing=doc(ctx,['gcloud','billing','projects','describe',project,'--format=json'])
+    billing=doc(ctx,['gcloud','billing','projects','describe',project,'--billing-project='+project,'--format=json'])
     if not billing.get('billingEnabled') or billing.get('billingAccountName')!='billingAccounts/'+g['billing_account_id'].removeprefix('billingAccounts/'):
         raise ValueError('actual billing account does not match reviewed input')
     enabled=doc(ctx,['gcloud','services','list','--enabled','--project='+project,'--format=json'])
