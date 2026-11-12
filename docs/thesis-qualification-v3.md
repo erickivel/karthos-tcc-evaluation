@@ -94,6 +94,8 @@ After cluster deletion, both successful and recovery watchdog-refresh paths use 
 
 A readiness capture reopened after a network or restart probe uses a fresh directory keyed by the initiating probe; adjacent probes in the same live capture group still reuse it. Prior evidence is retained.
 
+When unexpected application outcomes occur, the harness records a bounded application lifecycle snapshot and attempts to retrieve up to three restarted containers’ previous logs before teardown. It checks pod UID and restart count before attributing a log, retains termination metadata when log retrieval fails, and reports missing or truncated evidence explicitly. This does not retry requests or change readiness verdicts.
+
 ### Readiness capture failures
 
 Sampler-gap evidence includes the preceding sample, status-publication, and wait durations. These bounded timings help distinguish a slow sampling operation, status write, or scheduling delay; they do not by themselves identify a Kubernetes or Karthos root cause. Existing cadence and failure gates remain unchanged.

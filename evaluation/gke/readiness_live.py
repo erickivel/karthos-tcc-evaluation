@@ -179,6 +179,56 @@ def _cpu_memory_samples(capture, helpers):
     return observed
 
 
+def capture_application_failure(ctx, capture_path, namespace, case_path):
+    """Retain bounded previous-container evidence before a failed demo is removed."""
+    result={'namespace':namespace,'state':'incomplete','restarted':[],'unknown_prior':[],'missing_pods':[]}
+    try:
+        before=read(capture_path/('pods-before-'+namespace+'.json'))
+        after=json.loads(ctx.kube('get','pods','-n',namespace,'-o','json',timeout=10).stdout)
+        prior={pod['metadata']['uid']:pod for pod in before.get('items',[])}
+        observed_uids={pod.get('metadata',{}).get('uid') for pod in after.get('items',[])}
+        result['missing_pods']=[{'name':pod.get('metadata',{}).get('name'),'uid':uid} for uid,pod in prior.items() if uid not in observed_uids]
+        for pod in after.get('items',[]):
+            uid=pod.get('metadata',{}).get('uid');old=prior.get(uid)
+            if old is None:continue
+            counts={c['name']:c.get('restartCount') for c in old.get('status',{}).get('containerStatuses',[])}
+            for container in pod.get('status',{}).get('containerStatuses',[]):
+                name=container.get('name');count=container.get('restartCount')
+                if name not in counts or type(count) is not int or type(counts.get(name)) is not int:
+                    result['unknown_prior'].append({'pod':pod['metadata']['name'],'pod_uid':uid,'container':name});continue
+                previous=counts[name]
+                if count<=previous:continue
+                item={'pod':pod['metadata']['name'],'pod_uid':uid,'container':name,
+                      'restart_count_before':previous,'restart_count_after':count,
+                      'intermediate_instances_unavailable':max(0,count-previous-1),
+                      'last_state':container.get('lastState',{}),
+                      'previous_log_scope':'last terminated instance; bounded to 200 lines and 65536 bytes'}
+                result['restarted'].append(item)
+                if len(result['restarted'])<=3:
+                    try:
+                        logs=ctx.kube('logs',pod['metadata']['name'],'-n',namespace,'-c',name,
+                                      '--previous','--timestamps=true','--tail=200','--limit-bytes=65536',
+                                      check=False,timeout=15)
+                        latest=json.loads(ctx.kube('get','pods','-n',namespace,'-o','json',timeout=10).stdout)
+                        latest_pod=next((p for p in latest.get('items',[]) if p.get('metadata',{}).get('name')==pod['metadata']['name']),None)
+                        latest_counts={c.get('name'):c.get('restartCount') for c in (latest_pod or {}).get('status',{}).get('containerStatuses',[])}
+                        if not latest_pod or latest_pod.get('metadata',{}).get('uid')!=uid or latest_counts.get(name)!=count:
+                            item['previous_log_state']='pod identity or restart count changed; log discarded'
+                        elif logs.returncode:
+                            item['previous_log_state']='unavailable';item['previous_log_error']=export.redact_text(str(logs.stderr)[-2000:])
+                        else:
+                            item['previous_log_state']='captured';item['previous_log']=export.redact_text(str(logs.stdout)[:65536])
+                            item['previous_log_truncation']='possible: tail and byte limits apply'
+                    except Exception as exc:
+                        item['previous_log_state']='unavailable';item['previous_log_error']=export.redact_text(str(exc))
+                else:item['previous_log_state']='not captured: three-container bound'
+        result['state']='partial' if result['missing_pods'] or result['unknown_prior'] or any(row.get('previous_log_state')!='captured' or row.get('intermediate_instances_unavailable') for row in result['restarted']) else 'captured'
+    except Exception as exc:
+        result['error']=export.redact_text(str(exc))
+    ctx.write(case_path/'application-failure-context.json',result)
+    return result
+
+
 class ProbeDriver:
     def __init__(self, driver):
         self.driver = driver
@@ -700,7 +750,7 @@ class ProbeDriver:
                  'scenario-result.json','catalog-visibility.json','capture-health.json',
                  'generator-artifact-status.json','arbitration-transition.json','api-probe-baseline.json',
                  'api-probe-baseline-receipt.json','api-probe-diagnostics.json',
-                 'workload-observation.json','resource-observation.json']
+                 'workload-observation.json','resource-observation.json','application-failure-context.json']
         if spec['phase']=='arbitration':
             names.extend(str(item.relative_to(path)) for item in sorted((path/'selection').glob('*.json')))
         import shutil
@@ -840,6 +890,14 @@ def run(ctx, driver):
             verdict = {'state':'failed','reason':str(exc) or type(exc).__name__,'unsafe':True}
         except Exception as exc:
             verdict = {'state':'failed','reason':str(exc)}
+        if verdict['state']=='failed' and probes.capture is not None:
+            try:
+                case=probes.root/'cases'/spec['id'];observation=case/'workload-observation.json'
+                if observation.is_file() and read(observation).get('unexpected_outcomes',0)>0:
+                    with timed(ctx,'readiness-application-failure-context',spec['id']):
+                        capture_application_failure(ctx,probes.capture.capture.path,probes.driver.cell.namespace,case)
+            except Exception as exc:
+                verdict['application_diagnostic_error']=export.redact_text(str(exc))
         if spec['phase']=='restart' and verdict['state']=='failed':
             scenario = probes.root/'cases'/spec['id']/'scenario-result.json'
             if not scenario.is_file() or read(scenario).get('state')!='complete':
