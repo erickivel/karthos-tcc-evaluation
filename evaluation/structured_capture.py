@@ -284,8 +284,9 @@ class FastCapture(ContinuousCapture):
         from .kubelet_transport import log_proxy, log_request
         root = self.path / 'structured'
         root.mkdir(parents=True, exist_ok=True)
+        self.log_proxy_lifecycle = {}
         socket_path = self.stack.enter_context(log_proxy(
-            namespaces, r.http_timeout(10), root / 'log-proxy.stderr'))
+            namespaces, r.http_timeout(10), root / 'log-proxy.stderr', lifecycle=self.log_proxy_lifecycle))
         return partial(log_request, socket_path, max_bytes=self.log_capture_options['max_bytes'])
 
     def _mesh_targets(self):
@@ -337,8 +338,10 @@ class FastCapture(ContinuousCapture):
         self.kubelet_socket=None
         if self.sample_settings.get('kubelet_transport')=='private-kubernetes-proxy':
             from .kubelet_transport import kubelet_proxy
+            self.kubelet_proxy_lifecycle = {}
             self.kubelet_socket=self.stack.enter_context(kubelet_proxy(
-                self.nodes,r.http_timeout(10),self.path/'structured/kubelet-proxy.stderr'))
+                self.nodes,r.http_timeout(10),self.path/'structured/kubelet-proxy.stderr',
+                lifecycle=self.kubelet_proxy_lifecycle))
         self._sampling_preflight()
     def _read_kubelet_json(self,row,node=None):
         """Bounded read-only recovery; only a valid response becomes a sample.
@@ -352,7 +355,9 @@ class FastCapture(ContinuousCapture):
         for number in range(1,4):
             remaining=deadline-time.monotonic()
             if remaining<=0 or self.stop_event.is_set():
-                last_error=TimeoutError('kubelet acquisition cadence budget exhausted');break
+                reason='kubelet acquisition stopped' if self.stop_event.is_set() else 'kubelet acquisition cadence budget exhausted'
+                if last_error is not None:reason += '; last attempt: '+str(last_error)
+                last_error=TimeoutError(reason);break
             requested=time.time_ns();response=None
             try:
                 timeout=5. if number==1 else min(5.,remaining)
@@ -375,7 +380,8 @@ class FastCapture(ContinuousCapture):
                     raise ValueError('kubelet summary source node mismatch')
                 row['acquisition_attempts'].append(dict(attempt=number,requested_at_ns=requested,received_at_ns=received,
                     returncode=response.returncode,stdout_sha256=hashlib.sha256(response.stdout).hexdigest(),
-                    stderr_base64=base64.b64encode(response.stderr).decode('ascii'),error=None))
+                    stderr_base64=base64.b64encode(response.stderr).decode('ascii'),error=None,
+                    transport_diagnostic=getattr(response,'transport_diagnostic',None)))
                 row.update(summary=summary,raw_response_retention='recovery-only',
                     acquisition_received_at_ns=received,acquisition_recovered=number>1)
                 if number>1:
@@ -386,6 +392,7 @@ class FastCapture(ContinuousCapture):
                 received=time.time_ns();last_error=exc
                 row['acquisition_attempts'].append(dict(attempt=number,requested_at_ns=requested,received_at_ns=received,
                     returncode=response.returncode if response is not None else None,error=str(exc),
+                    transport_diagnostic=getattr(exc,'transport_diagnostic',getattr(response,'transport_diagnostic',None)),
                     stdout_base64=base64.b64encode(response.stdout if response is not None else getattr(exc,'output',b'') or b'').decode('ascii'),
                     stderr_base64=base64.b64encode(response.stderr if response is not None else getattr(exc,'stderr',b'') or b'').decode('ascii')))
         raise ValueError('no valid kubelet response within acquisition budget: '+str(last_error))
@@ -825,6 +832,24 @@ class RepairCapture:
                 if restored.get('restored'):self._cancel_watchdog()
                 else:self.state['errors'].append('guarded restoration refused; watchdog retained')
             except Exception as exc:self.state['errors'].append('cleanup:'+str(exc));self.state['cleanup']={'restored':False,'error':str(exc)}
+            # Completion is separate from evidence validity: failed samples may
+            # coexist with fully stopped workers, and errors alone prove neither.
+            capture = self.capture
+            threads = [] if capture is None else [thread for thread in
+                [getattr(capture, 'thread', None), *getattr(capture, 'sampler_threads', [])] if thread is not None]
+            workers = [{'name':thread.name, 'alive':thread.is_alive()} for thread in threads]
+            streams = [] if capture is None else [{'stream':stream.status().get('stream'),
+                'stopped':stream.status().get('stopped') is True,
+                'worker_alive':bool(getattr(stream, 'thread', None) and stream.thread.is_alive())}
+                for stream in getattr(capture, 'log_captures', [])]
+            proxies = {} if capture is None else {name:getattr(capture, name) for name in
+                ('kubelet_proxy_lifecycle', 'log_proxy_lifecycle') if hasattr(capture, name)}
+            self.state['completion'] = {'capture_present':capture is not None,
+                'observed_at':now(), 'sampler_workers':workers, 'log_workers':streams,
+                'proxy_processes':proxies}
+            self.state['workers_stopped'] = not any(row['alive'] for row in workers) and all(
+                row['stopped'] and not row['worker_alive'] for row in streams)
+            self.state['proxy_stopped'] = all(row.get('stopped') is True for row in proxies.values())
             self.stopped=True;self.state['finished_at']=now();self.state['instrumentation']['cleanup_finished_at']=now()
             self.state['valid']=bool(self.started_at and len(self.state['components'])==self.settings.get('expected_nodes',1)+1 and not self.state['errors'] and all(not c['errors'] for c in self.state['components'].values()) and self.state.get('cleanup',{}).get('restored'))
             r.write(self.root/'status.json',self.state)

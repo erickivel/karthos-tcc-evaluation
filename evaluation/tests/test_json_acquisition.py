@@ -26,6 +26,15 @@ class KubeletAcquisitionTests(unittest.TestCase):
             self.assertEqual(base64.b64decode(row['acquisition_attempts'][0]['stdout_base64']),b'{"node" broken}')
             self.assertEqual(row['requested_at_ns'],row['acquisition_attempts'][1]['requested_at_ns'])
             self.assertEqual(cap.sampling_errors,[])
+    def test_expired_retry_budget_preserves_original_timeout_reason(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cap=self.sampler(directory);row={}
+            with patch('evaluation.structured_capture.time.monotonic',side_effect=[0.,0.,2.]), \
+                 patch('evaluation.structured_capture.r.kube',side_effect=TimeoutError('socket timed out waiting for headers')):
+                with self.assertRaisesRegex(ValueError,'socket timed out waiting for headers'):
+                    cap._read_kubelet_json(row,'node-a')
+            self.assertEqual(row['acquisition_attempts'][0]['error'],'socket timed out waiting for headers')
+
     def test_normal_success_preserves_summary_and_hash_without_raw_duplication(self):
         with tempfile.TemporaryDirectory() as directory:
             cap=self.sampler(directory);path=Path(directory)/'samples.ndjson.gz';valid=self.summary();raw=json.dumps(valid).encode()
@@ -64,3 +73,15 @@ class KubeletAcquisitionTests(unittest.TestCase):
             with patch('evaluation.structured_capture.time.monotonic',side_effect=[0.,0.,2.]),patch('evaluation.structured_capture.r.kube',return_value=self.result(b'{"node" broken}')) as kube:
                 cap._sample_once('kubelet',path)
             self.assertEqual(kube.call_count,1);self.assertTrue(list(iter_records(path))[0]['error'])
+
+    def test_private_transport_failure_metadata_is_retained_in_attempt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cap=self.sampler(directory);cap.kubelet_socket='/private/api.sock';row={}
+            failure=TimeoutError('timed out')
+            failure.transport_diagnostic={'failed_stage':'headers','elapsed_seconds':5.}
+            with patch('evaluation.structured_capture.time.monotonic',side_effect=[0.,0.,2.]), \
+                 patch('evaluation.kubelet_transport.kubelet_request',side_effect=failure):
+                with self.assertRaisesRegex(ValueError,'timed out'):
+                    cap._read_kubelet_json(row,'node-a')
+            self.assertEqual(row['acquisition_attempts'][0]['transport_diagnostic'],
+                             failure.transport_diagnostic)
