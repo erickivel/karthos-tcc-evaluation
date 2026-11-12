@@ -13,20 +13,31 @@ class ThesisQualificationTests(unittest.TestCase):
         old = models.read(ROOT/'protocols/gke-qualification-v1/protocol.yaml')
         self.assertEqual(len(models.build_matrix(old)), 46)
         self.assertEqual(len(models.build_matrix(old, schedule=models.REHEARSAL)), 16)
-        legacy = models.read(ROOT/'protocols'/models.THESIS_V2/'protocol.yaml')
-        self.assertEqual(len(models.build_matrix(legacy, schedule=models.THESIS_V2)), 12)
+        for schedule in (models.THESIS_V2, models.THESIS_V3):
+            legacy = models.read(ROOT/'protocols'/schedule/'protocol.yaml')
+            legacy_rows=models.build_matrix(legacy, schedule=schedule)
+            self.assertEqual(len(legacy_rows), 12)
+            self.assertEqual(sum(row['duration_seconds'] for row in legacy_rows),2160)
         definition = models.read(ROOT/'protocols'/models.THESIS/'protocol.yaml')
         rows = models.build_matrix(definition, schedule=models.THESIS)
-        self.assertEqual(len(rows), 12)
-        self.assertEqual(sum(row['duration_seconds'] for row in rows), 2160)
-        self.assertEqual([(row['repeat'],row['cell']) for row in rows[::2]], [
+        self.assertEqual(len(rows), 21)
+        self.assertEqual(sum(row['duration_seconds'] for row in rows), 4860)
+        self.assertEqual(definition['readiness_cases'],0)
+        self.assertEqual(definition['readiness_load_seconds'],0)
+        self.assertEqual(definition['readiness_definition_version'],4)
+        self.assertEqual(definition['minimal_readiness_seconds'],120)
+        self.assertFalse(definition['attempt_policy']['baseline_requires_passing_smoke'])
+        self.assertFalse(definition['attempt_policy']['numerical_disagreement_retry'])
+        self.assertEqual([(row['repeat'],row['cell']) for row in rows[:12:2]], [
             (1,'boutique-trace'),(1,'astronomy-trace'),(1,'astronomy-mesh'),
             (1,'boutique-mesh'),(2,'boutique-mesh'),(2,'boutique-trace')])
-        for smoke, baseline in zip(rows[::2],rows[1::2]):
+        for smoke, baseline in zip(rows[:12:2],rows[1:12:2]):
             self.assertEqual((smoke['phase'],baseline['phase']),('smoke','baseline'))
             self.assertEqual(smoke['cell'],baseline['cell'])
             self.assertEqual(smoke['generator'],baseline['generator'])
             self.assertEqual(smoke['generator'],'k6')
+        self.assertEqual([row['phase'] for row in rows[12:]],['resource']*3+['arbitration']*2+['restart']*4)
+        self.assertTrue(all(row['repeat']==2 and row['generator']=='k6' for row in rows[12:]))
 
     def test_current_topology_traversal_is_namespace_scoped(self):
         def node(id, kind, name, namespace='app'):
@@ -99,12 +110,12 @@ class ThesisQualificationTests(unittest.TestCase):
         from evaluation.gke.run import execute_matrix
         from evaluation.gke.thesis import START_REVISION
         from test_gke_run import FakeDriver
-        protocol=models.read(ROOT/'protocols'/models.THESIS/'protocol.yaml')
-        matrix=models.build_matrix(protocol,schedule=models.THESIS)
+        protocol=models.read(ROOT/'protocols'/models.THESIS_V3/'protocol.yaml')
+        matrix=models.build_matrix(protocol,schedule=models.THESIS_V3)
         with TemporaryDirectory() as directory:
             ctx=SimpleNamespace(result=Path(directory),deadline=time.time()+3600,event=Mock(),
                  write=models.write,config={'limits':{'cleanup_reserve_seconds':1800}},
-                 manifest={'schedule':models.THESIS,'protocol_definition':protocol,'matrix':matrix,
+                 manifest={'schedule':models.THESIS_V3,'protocol_definition':protocol,'matrix':matrix,
                            'product_pins':{'karthos_revision':START_REVISION},'readiness_check':{'required':True}})
             driver=FakeDriver()
             def history(spec):

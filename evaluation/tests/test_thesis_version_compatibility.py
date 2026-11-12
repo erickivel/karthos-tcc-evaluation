@@ -46,7 +46,7 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
             for key,value in (('karthos_revision','b'*40),('karthos_source_hash','b'*64)):
                 with self.subTest(pin=key), self.assertRaisesRegex(ValueError,'incomplete'):
                     thesis.local_contract(original,dict(pins,**{key:value}),directory=root)
-            for protocol in ('gke-qualification-v1','thesis-qualification-v4'):
+            for protocol in ('gke-qualification-v1','thesis-qualification-v5'):
                 with self.subTest(protocol=protocol), self.assertRaisesRegex(ValueError,'incomplete'):
                     thesis.local_contract(dict(original,protocol=protocol),pins,directory=root)
             failed=deepcopy(original)
@@ -57,7 +57,7 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'checksum mismatch'):
                 thesis.local_contract(original,pins,directory=root)
 
-    def test_new_diagnostic_receipt_uses_v3_and_leaves_existing_v2_receipt_untouched(self):
+    def test_new_diagnostic_receipt_uses_active_v4_and_leaves_existing_v2_receipt_untouched(self):
         with TemporaryDirectory() as directory:
             root=Path(directory)
             original=self.receipt(root)
@@ -68,6 +68,15 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
             self.assertEqual(generated['protocol'],models.THESIS)
             self.assertTrue(all(row['state']=='insufficient' for row in generated['checks'].values()))
             self.assertEqual(models.sha(path),checksum)
+
+    def test_active_v4_accepts_known_local_contract_protocols_without_relabeling(self):
+        for protocol in models.THESIS_SCHEDULES:
+            with self.subTest(protocol=protocol), TemporaryDirectory() as directory:
+                root=Path(directory)
+                receipt=self.receipt(root,protocol)
+                validated=thesis.local_contract(receipt,{'karthos_revision':thesis.START_REVISION,
+                    'karthos_source_hash':'a'*64},directory=root)
+                self.assertEqual(validated['protocol'],protocol)
 
     def test_claim_matrix_retains_both_schedule_and_original_local_receipt_protocol(self):
         for schedule in models.THESIS_SCHEDULES:
@@ -80,7 +89,7 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
                 self.assertEqual(report['local_contract_protocol'],models.THESIS_V2)
                 self.assertTrue(all(row['verdict']=='insufficient' for row in report['claims']))
 
-    def test_product_metric_contract_selected_for_both_thesis_versions(self):
+    def test_product_metric_contract_selected_for_all_thesis_versions(self):
         from evaluation import runner
         for schedule in models.THESIS_SCHEDULES:
             with self.subTest(schedule=schedule), TemporaryDirectory() as directory:
@@ -93,10 +102,10 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
                 with patch.dict('os.environ',{'GKE_EVAL_PRODUCT_ROOT':str(root)}),setup.legacy_context(ctx):
                     self.assertTrue(runner.CONFIG['thesis_metric_contract'])
 
-    def test_both_schedules_keep_history_and_report_original_protocol(self):
+    def test_historical_schedules_keep_history_and_report_original_protocol(self):
         from evaluation.gke.run import execute_matrix
         from test_gke_run import FakeDriver
-        for schedule in models.THESIS_SCHEDULES:
+        for schedule in (models.THESIS_V2,models.THESIS_V3):
             with self.subTest(schedule=schedule), TemporaryDirectory() as directory:
                 root=Path(directory)
                 protocol=models.read(ROOT/'protocols'/schedule/'protocol.yaml')

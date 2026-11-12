@@ -2,6 +2,7 @@
 from datetime import datetime,timezone
 from types import SimpleNamespace
 import time
+import re
 
 from . import export
 from .consumer import capture_consumer
@@ -22,14 +23,20 @@ def capture(ctx,cell,spec):
     operation_end=deadline-EXPORT_RESERVE_SECONDS
     monotonic_start=time.monotonic()
     monotonic_end=monotonic_start+(operation_end-started)
+    relative='thesis-history'
+    if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+        attempt_id=spec.get('id')
+        if not isinstance(attempt_id,str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,180}',attempt_id):
+            raise ValueError('bounded history attempt identity required')
+        relative += '/' + attempt_id
+    path=ctx.result/relative
     previous={name:getattr(ctx,name,None) for name in ('phase_deadline','phase_reserve')}
     runner_deadline=r._DEADLINE
     ctx.phase_deadline=operation_end
     ctx.phase_reserve=0
     r._DEADLINE=min(runner_deadline,monotonic_end-8) if runner_deadline is not None else monotonic_end-8
-    path=ctx.result/'thesis-history'
     try:
-        path.mkdir(exist_ok=False)
+        path.mkdir(parents=True,exist_ok=False)
         report={'answer':{'state':'insufficient','reason':'replacement evidence unavailable'},
                 'continuation_safe':False,'duration_bound_seconds':THESIS_HISTORY_SECONDS,
                 'started_at':started,'deadline':deadline,'operation_deadline':operation_end}
@@ -44,7 +51,7 @@ def capture(ctx,cell,spec):
             if time.monotonic()-monotonic_start>=deadline-started:
                 raise TimeoutError('history export deadline reached before publication')
             report['export']=export.upload(ctx,path,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],
-                prefix='gke-qualification-v1/runs/'+ctx.run_id+'/thesis-history')
+                prefix='gke-qualification-v1/runs/'+ctx.run_id+'/'+relative)
         except Exception as exc:
             report['export']={'verified':False,'reason':str(exc) or type(exc).__name__}
         report['elapsed_seconds']=time.monotonic()-monotonic_start

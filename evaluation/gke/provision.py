@@ -375,7 +375,12 @@ def provision(ctx):
     # Arm VM/NAT ownership first; cluster creation must not leave a completely
     # dormant deadline mechanism if its API call fails.
     arm_watchdog(ctx)
-    create_cluster(ctx,1,credentials=False)
+    continuation=ctx.manifest.get('continuation') or {}
+    completed={r['id'] for r in continuation.get('records',[]) if r.get('retry_policy_complete')}
+    pending=[r for r in ctx.manifest['matrix'] if r['id'] not in completed]
+    first_repeat=pending[0]['repeat'] if pending else 1
+    if first_repeat==2 and not ctx.state.get('cluster_generation'):ctx.state['cluster_generation']=1
+    create_cluster(ctx,first_repeat,credentials=False)
     publish_bootstrap_context(ctx)
     ctx.event('provisioned')
     return {'phase':'provisioned','watchdog_armed':True,'runtime_started':False}
@@ -662,9 +667,10 @@ def create_cluster(ctx,repeat,*,credentials=True):
     require_context(ctx)
     assert_project_lease(ctx)
     if repeat not in (1,2):raise ValueError('protocol has exactly two cluster generations')
-    if repeat==2 and ctx.state.get('cluster_generation',0)>=2:raise ValueError('second generation was already created; refuse extra rebuild')
+    v4=ctx.manifest.get('schedule')=='thesis-qualification-v4'
+    if repeat==2 and ctx.state.get('cluster_generation',0)>=2 and not v4:raise ValueError('second generation was already created; refuse extra rebuild')
     existing=[r for r in ctx.state.get('resources',[]) if r['kind']=='cluster']
-    if repeat==1 and existing:
+    if existing and (repeat==1 or (v4 and ctx.state.get('cluster_generation')==repeat)):
         for resource in existing:
             if verify_resource(ctx,resource) is None:raise ValueError('precreated cluster unexpectedly absent')
     else:

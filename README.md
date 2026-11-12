@@ -2,13 +2,13 @@
 
 Standalone code and configuration for evaluating Karthos. Product code lives in the separate Karthos repository.
 
-[Thesis qualification v3](docs/thesis-qualification-v3.md) is the active k6-only protocol: 13 readiness probes (1,020 scheduled seconds, up to three hours including a 20-minute cleanup reserve), then a 12-window, two-cluster measured matrix and a bounded 720-second history observation. Earlier protocol definitions remain available for analysis of sealed evidence; new preparations and launches accept v3 only.
+[Thesis qualification v4](docs/thesis-qualification-v4.md) is the active k6-only protocol: read-only per-cell readiness, 21 independent planned windows on two cluster lifetimes, a bounded history observation, and one retry for recoverable execution failures. Each attempt stops capture and verifies cleanup before heavy export. Historical v2/v3 and 46-window definitions remain available for sealed-evidence analysis. No cloud execution starts without launch approval.
 
 - [Execution plan and architecture](docs/gke-qualification-v1.md)
 - [Harness modules and verification](evaluation/README.md)
-- [Frozen experiment rules](protocols/thesis-qualification-v3/protocol.yaml)
-- [Metric/reference definitions](protocols/thesis-qualification-v3/metrics.yaml)
-- [Catalog coverage](protocols/thesis-qualification-v3/coverage.yaml)
+- [Frozen experiment rules](protocols/thesis-qualification-v4/protocol.yaml)
+- [Metric/reference definitions](protocols/thesis-qualification-v4/metrics.yaml)
+- [Catalog coverage](protocols/thesis-qualification-v4/coverage.yaml)
 - [Environment configuration](config/gke.example.yaml)
 - [Infrastructure contract](infrastructure/terraform/CONTRACT.md)
 

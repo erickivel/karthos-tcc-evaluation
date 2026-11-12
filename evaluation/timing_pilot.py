@@ -169,7 +169,8 @@ def run_window(cell,parent,spec,study,*,measure=None):
  try:
   settings=dict(r.CONFIG,capture_expected_seconds=spec['duration_seconds']+2490,
                 gateway_restart_token=spec.get('gateway_restart_token'))
-  capture=RepairCapture(cell,path,time.time()+max(0,r._DEADLINE-time.monotonic()),config=settings).start()
+  capture=RepairCapture(cell,path,time.time()+max(0,r._DEADLINE-time.monotonic()),config=settings)
+  capture.start()
   if settings.get('expected_nodes',1)>1:
    from .gke.run import capture_clocks
    clock=capture_clocks(capture,r.CONFIG.get('generator_node_name'))
@@ -177,7 +178,8 @@ def run_window(cell,parent,spec,study,*,measure=None):
   r.write(path/'clock.json',clock)
   manifest['clock_uncertainty_seconds']=clock.get('clock_uncertainty_seconds');manifest['clock_evidence']=clock
   if not clock.get('valid'):raise RuntimeError('250ms timestamp uncertainty gate failed: '+str(clock))
-  availability=AvailabilityCapture(cell,path,capture).start()
+  availability=AvailabilityCapture(cell,path,capture)
+  availability.start()
   manifest['counter_priming']=prime_after_instrumentation(cell,path,window_id+':prime',parent.parent.parent)
   manifest['phase']='preroll';r.write(path/'manifest.json',manifest)
   pilot.sleep_bounded(r.CONFIG['capture_preroll_seconds'])

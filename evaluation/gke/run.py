@@ -53,6 +53,9 @@ def execute_matrix(ctx,driver,*,gate=None):
     work; completed disruption windows retain an explicitly incomplete verdict.
     """
     schedule=validate_schedule(ctx.manifest)
+    if schedule == 'thesis-qualification-v4':
+        from .recoverable_run import execute
+        return execute(ctx,driver)
     rehearsal=schedule==REHEARSAL
     matrix=ctx.manifest['matrix']
     readiness_only = ctx.config.get('execution_scope') == 'readiness-only'
@@ -417,34 +420,47 @@ class LiveDriver:
             state.update(generator_start_marker=marker,triggered_at=time.time())
             if spec['phase']=='resource':
                 from .diagnostics.resources import bind_network_target,build_resources_both,verify_network_result
-                objects.extend(build_resources_both(spec['scenario'],self.cell.namespace,self.nodes,self.ctx.config['readiness']['resource_helper_image'],token,duration_seconds=spec['duration_seconds']))
-                for obj in objects:
-                    if obj['kind']=='StorageClass':obj['parameters']['labels']='evaluation-owner=gke-qualification-v1,evaluation-run='+self.ctx.run_id
-                self.ctx.write(path/'stimulus-objects.json',objects)
-                if spec['scenario']=='network':
-                    server, client = objects
-                    server_name = server['metadata']['name']
-                    self._apply_objects([server])
-                    self.ctx.kube('wait','--for=condition=Ready','pod/'+server_name,'-n',self.cell.namespace,'--timeout=120s',timeout=130)
-                    admitted = self.ctx.json('get','pod',server_name,'-n',self.cell.namespace)
-                    target = bind_network_target(server, client, admitted)
-                    self.ctx.write(path/'stimulus-network-target.json',target)
-                    self.ctx.write(path/'stimulus-network-client.json',client)
-                    self._apply_objects([client])
-                else:self._apply_objects(objects)
-                for obj in objects:
-                    if obj['kind']=='PersistentVolumeClaim':self.ctx.kube('wait','--for=jsonpath={.status.phase}=Bound','pvc/'+obj['metadata']['name'],'-n',self.cell.namespace,'--timeout=120s',timeout=130)
-                state['objects_created_at']=time.time()
-                if spec['scenario']=='storage':
-                    # Storage creates provider disks. The pod-only stimuli are
-                    # already covered by the armed cluster deadline.
-                    from .provision import arm_watchdog
-                    arm_watchdog(self.ctx)
+                if self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+                    from .prepared_resources import release
+                    state['release']=release(self.ctx,self,objects,path)
+                    state['prepared_before_measurement']=True
+                else:
+                    objects.extend(build_resources_both(spec['scenario'],self.cell.namespace,self.nodes,self.ctx.config['readiness']['resource_helper_image'],token,duration_seconds=spec['duration_seconds']))
+                    for obj in objects:
+                        if obj['kind']=='StorageClass':obj['parameters']['labels']='evaluation-owner=gke-qualification-v1,evaluation-run='+self.ctx.run_id
+                    self.ctx.write(path/'stimulus-objects.json',objects)
+                    if spec['scenario']=='network':
+                        server, client = objects
+                        server_name = server['metadata']['name']
+                        self._apply_objects([server])
+                        self.ctx.kube('wait','--for=condition=Ready','pod/'+server_name,'-n',self.cell.namespace,'--timeout=120s',timeout=130)
+                        admitted = self.ctx.json('get','pod',server_name,'-n',self.cell.namespace)
+                        target = bind_network_target(server, client, admitted)
+                        self.ctx.write(path/'stimulus-network-target.json',target)
+                        self.ctx.write(path/'stimulus-network-client.json',client)
+                        self._apply_objects([client])
+                    else:self._apply_objects(objects)
+                    for obj in objects:
+                        if obj['kind']=='PersistentVolumeClaim':self.ctx.kube('wait','--for=jsonpath={.status.phase}=Bound','pvc/'+obj['metadata']['name'],'-n',self.cell.namespace,'--timeout=120s',timeout=130)
+                    state['objects_created_at']=time.time()
+                    if spec['scenario']=='storage':
+                        # Storage creates provider disks. The pod-only stimuli are
+                        # already covered by the armed cluster deadline.
+                        from .provision import arm_watchdog
+                        arm_watchdog(self.ctx)
                 deadline=min(self.ctx.deadline-self.ctx.config['limits']['cleanup_reserve_seconds'],time.time()+spec['duration_seconds']+90)
                 expected={obj['metadata']['name'] for obj in objects if obj['kind']=='Pod'}
                 while time.time()<deadline:
                     pods=self.ctx.json('get','pods','-n',self.cell.namespace,'-l','evaluation.karthos.dev/run-id='+token).get('items',[])
                     selected=[pod for pod in pods if pod['metadata']['name'] in expected]
+                    if self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+                        for pod in selected:
+                            statuses=pod.get('status',{}).get('containerStatuses',[])
+                            stimulus=next((c for c in statuses if c['name']=='stimulus'),{})
+                            reference=next((c for c in statuses if c['name']=='volume-reference'),{})
+                            if stimulus.get('state',{}).get('terminated') and reference.get('state',{}).get('running'):
+                                self.ctx.kube('exec','-n',self.cell.namespace,pod['metadata']['name'],'-c','volume-reference','--',
+                                    'python3','-c','import os,signal; os.kill(1,signal.SIGTERM)',timeout=10)
                     if len(selected)==len(expected) and all(pod.get('status',{}).get('phase') in ('Succeeded','Failed') for pod in selected):break
                     if stop.wait(1):raise RuntimeError('traffic window ended before stimulus completion observed')
                 else:raise TimeoutError('resource helpers did not complete within bounded duration')
@@ -519,6 +535,9 @@ class LiveDriver:
         self.ctx.write(scratch/'versions-before.json',verify_versions(self.ctx))
         try:
             reference_obj,reference_pods=self._reference_start(self.cell.namespace,token,scratch)
+            if spec['phase']=='resource' and self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+                from .prepared_resources import prepare
+                prepare(self.ctx,self,spec,token,scratch,objects)
             if spec['phase'] in ('resource','restart'):
                 thread=threading.Thread(target=self._stimulus,args=(spec,path,token,stop,state,objects),name='stimulus-'+token,daemon=True);thread.start()
             try:traffic=timing_pilot.run_window(self.cell,parent,timing_spec,self.ctx.run_id+':'+spec['id'],
@@ -587,7 +606,7 @@ class LiveDriver:
                         target=path/'reference-setup'/file.relative_to(scratch);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(file,target)
             reference_obj=reference_obj or getattr(self,'_pending_reference',None)
             for obj in reversed(objects+([reference_obj] if reference_obj else [])):
-                try:_owned_delete(self.ctx,obj['kind'],obj['metadata']['name'],obj['metadata'].get('namespace'), 'gke-qualification-v1',token,cluster=obj['kind']=='StorageClass')
+                try:_owned_delete(self.ctx,obj['kind'],obj['metadata']['name'],obj['metadata'].get('namespace'), 'gke-qualification-v1',token,cluster=obj['kind']=='StorageClass',expected_uid=obj['metadata'].get('uid'))
                 except Exception as exc:cleanup_errors.append(str(exc))
             if path.exists():self.ctx.write(path/'diagnostic-cleanup.json',{'valid':not cleanup_errors,'errors':cleanup_errors})
             self._pending_reference=None
@@ -699,13 +718,16 @@ def run(ctx):
         def failed_stage(context, active):
             probes=ProbeDriver(active)
             return execute(context,None,None,probes.publish,initial_failure=reason)
-        report=execute_matrix(ctx,driver,gate=failed_stage)
+        if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+            from .recoverable_run import failed_staging
+            report=failed_staging(ctx,driver,reason)
+        else:report=execute_matrix(ctx,driver,gate=failed_stage)
     else:
         with legacy_context(ctx):
-            report=execute_matrix(ctx,driver,gate=readiness_gate)
+            report=execute_matrix(ctx,driver,gate=None if ctx.manifest.get('schedule')=='thesis-qualification-v4' else readiness_gate)
 
     summary=ctx.result/'final-summary';summary.mkdir(exist_ok=False)
-    for name in ('matrix.json','matrix.csv','matrix.html','run-report.json','claim-matrix.json'):
+    for name in ('matrix.json','matrix.csv','matrix.html','attempts.json','attempts.csv','run-report.json','claim-matrix.json'):
         if (ctx.result/name).is_file():shutil.copy2(ctx.result/name,summary/name)
     # Deployment failures can precede the first window. Export their diagnostics
     # before independent cleanup removes the controller's local files.
@@ -714,6 +736,15 @@ def run(ctx):
     readiness_matrix=ctx.result/'readiness/matrix/matrix.json'
     if readiness_matrix.is_file():
         shutil.copy2(readiness_matrix,summary/'readiness-matrix.json')
+    if ctx.manifest.get('schedule')=='thesis-qualification-v4':
+        for folder in ('checkpoint-receipts','readiness'):
+            source=ctx.result/folder
+            if source.is_dir():shutil.copytree(source,summary/folder)
+    if ctx.manifest.get('schedule')=='thesis-qualification-v4':
+        for source in sorted((ctx.result/'attempt-diagnostics').glob('*')):
+            status=_read(source/'diagnostics-status.json')
+            if status.get('stopped') is True:shutil.copytree(source,summary/'attempt-diagnostics'/source.name)
+            else:ctx.write(summary/'attempt-diagnostics'/(source.name+'-unavailable.json'),{'reason':'diagnostic writer termination not verified; mutable files not sealed','attempt':source.name})
     traces=ctx.result/'failure-traces'
     if traces.is_dir():shutil.copytree(traces,summary/'failure-traces')
     for name in ('readiness-scope-contract.json','controller-headroom.json','node-inventory.json','kubernetes-version.json','progress.ndjson','phase-timings.ndjson'):

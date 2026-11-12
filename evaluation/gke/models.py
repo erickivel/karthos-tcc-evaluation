@@ -7,8 +7,9 @@ PROTOCOL='gke-qualification-v1'
 QUALIFICATION='qualification'
 REHEARSAL='diagnostic-rehearsal'
 THESIS_V2='thesis-qualification-v2'
-THESIS='thesis-qualification-v3'
-THESIS_SCHEDULES=(THESIS_V2,THESIS)
+THESIS_V3='thesis-qualification-v3'
+THESIS='thesis-qualification-v4'
+THESIS_SCHEDULES=(THESIS_V2,THESIS_V3,THESIS)
 THESIS_HISTORY_SECONDS=720
 PHASES=('smoke','baseline','resource','arbitration','restart')
 
@@ -46,11 +47,13 @@ def build_matrix(p, *, schedule=QUALIFICATION):
         cell=f'{demo}-{source}';key=f'r{rep}-{phase}-{cell}-{generator}-{scenario}'
         rows.append(dict(id=key,repeat=rep,phase=phase,cell=cell,demo=demo,source=source,generator=generator,scenario=scenario,duration_seconds=seconds,rate=p['baseline_rate'],execution='serial'))
     if schedule in THESIS_SCHEDULES:
-        if schedule == THESIS and (p.get('generators') != ['k6']
+        if schedule == THESIS_V3 and (p.get('generators') != ['k6']
                 or p.get('readiness_definition_version') != 3
                 or p.get('readiness_cases') != 13
                 or p.get('readiness_load_seconds') != 1020):
             raise ValueError('active thesis requires the versioned k6-only readiness contract')
+        if schedule == THESIS and (p.get('generators') != ['k6'] or p.get('readiness_definition_version') != 4 or p.get('readiness_cases') != 0 or p.get('readiness_load_seconds') != 0 or p.get('attempt_policy') != {'maximum_attempts':2,'numerical_disagreement_retry':False,'baseline_requires_passing_smoke':False}):
+            raise ValueError('active thesis requires minimal readiness and independent attempts')
         groups=p.get('cluster_cell_order')
         if groups!=[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh'],
                     ['boutique-mesh','boutique-trace']] or p.get('measured_generators')!=['k6']:
@@ -63,6 +66,12 @@ def build_matrix(p, *, schedule=QUALIFICATION):
                     add(rep,phase,demo,source,generator,'matched',p[phase+'_seconds'])
         if p.get('history_observation_seconds')!=THESIS_HISTORY_SECONDS:
             raise ValueError('thesis history observation duration changed')
+        if schedule == THESIS:
+            for scenario in p['resource_scenarios']:add(2,'resource','boutique','trace','k6',scenario,300)
+            for scenario in p['arbitration_scenarios']:add(2,'arbitration','boutique','mesh' if scenario=='both-sources' else 'trace','k6',scenario,300)
+            for source in ('trace','mesh'):
+                for scenario in p['restart_scenarios']:add(2,'restart','boutique',source,'k6',scenario,300)
+            if len(rows)!=21 or sum(r['duration_seconds'] for r in rows)!=4860:raise ValueError('v4 requires 21 windows / 81 minutes')
         return rows
     for rep in (1,2):
         for phase in ('smoke','baseline'):

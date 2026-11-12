@@ -6,6 +6,8 @@ from concurrent.futures import ThreadPoolExecutor
 from .models import sha,write,read
 from .timing import timed
 
+MAX_UPLOAD_WORKERS = 2
+
 FORBIDDEN={'credentials.json','application_default_credentials.json','terraform.tfstate','terraform.tfstate.backup','kubeconfig','approval-private-key.pem'}
 def _private_evidence_path(path):
     return (path.name in FORBIDDEN or path.suffix in {'.tfstate', '.tfplan', '.pem', '.key'}
@@ -73,9 +75,9 @@ def _upload(ctx,path,*,bucket,prefix):
     # generation-zero write and complete checksum readback.
     files=evidence_files(path)
     with timed(ctx,'publication-transfer') as info:
-        info.update(prefix=prefix, files=len(files), workers=min(4,len(files)),
+        info.update(prefix=prefix, files=len(files), workers=min(MAX_UPLOAD_WORKERS,len(files)),
                     bytes=sum(p.stat().st_size for p in files))
-        with ThreadPoolExecutor(max_workers=4) as pool:
+        with ThreadPoolExecutor(max_workers=MAX_UPLOAD_WORKERS) as pool:
             list(pool.map(transfer,files))
     return {'verified':True,'uri':uri,'files':status['checked']+1,'retention_days':90,'secondary_export_verified':False}
 
@@ -91,11 +93,19 @@ def render_matrix(root,matrix,records,*,unattempted_reason=None):
         for row in rows:
             if row['state']=='unattempted':row['reason']=unattempted_reason
     write(root/'matrix.json',rows)
-    fields=['id','repeat','phase','cell','generator','scenario','duration_seconds','state','execution_mode','execution','evidence_valid','application_outcomes','numerical_agreement','reason','path']
+    fields=['id','repeat','phase','cell','generator','scenario','duration_seconds','state','execution_mode','execution','evidence_valid','application_outcomes','numerical_agreement','first_attempt_state','attempt_count','representative_attempt','reason','path']
     with (root/'matrix.csv').open('w',newline='') as out:
         writer=csv.DictWriter(out,fieldnames=fields,extrasaction='ignore');writer.writeheader();writer.writerows(rows)
     table=''.join('<tr>'+''.join('<td>'+html.escape(str(r.get(k,'')))+'</td>' for k in fields)+'</tr>' for r in rows)
     write(root/'matrix.html','<!doctype html><meta charset="utf-8"><title>GKE qualification matrix</title><h1>GKE qualification matrix</h1><p>Execution, evidence validity and numerical agreement are separate.</p><table border="1"><thead><tr>'+''.join('<th>'+k+'</th>' for k in fields)+'</tr></thead><tbody>'+table+'</tbody></table>')
+    attempts=[dict(attempt,logical_id=row['id']) for row in records for attempt in row.get('attempts',[])]
+    if attempts:
+        write(root/'attempts.json',attempts)
+        attempt_fields=['logical_id','attempt_id','state','execution','evidence_valid','application_outcomes','numerical_agreement','reason','path']
+        with (root/'attempts.csv').open('w',newline='') as out:
+            writer=csv.DictWriter(out,fieldnames=attempt_fields,extrasaction='ignore');writer.writeheader();writer.writerows(attempts)
+        with (root/'matrix.html').open('a') as out:
+            out.write('<h2>All attempts (earlier failures retained)</h2><table border=1>'+''.join('<tr>'+''.join('<td>'+html.escape(str(a.get(k,'')))+'</td>' for k in attempt_fields)+'</tr>' for a in attempts)+'</table>')
     return rows
 
 

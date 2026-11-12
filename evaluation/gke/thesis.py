@@ -348,8 +348,14 @@ def claim_matrix(ctx,windows,history,readiness_report):
         add('local-'+key,check.get('state','insufficient'),check.get('reference'),
             [check['sha256']] if check.get('sha256') else [])
     ready=(readiness_report or {}).get('matrix_export',{})
+    readiness_reference='verified current-launch probes, ownership-safe reset and timing handoff'
+    readiness_artifacts=[ready['uri']] if ready.get('uri') else []
+    if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+        readiness_reference='read-only per-cell deployment, source configuration and public API observations; no readiness traffic or numerical scoring'
+        readiness_artifacts=[row['export']['uri'] for row in (readiness_report or {}).get('cells',[])
+                             if row.get('export',{}).get('verified') is True and row['export'].get('uri')]
     add('gke-readiness','pass' if (readiness_report or {}).get('ready') is True else 'insufficient',
-        'verified current-launch probes, ownership-safe reset and timing handoff',[ready['uri']] if ready.get('uri') else [])
+        readiness_reference,readiness_artifacts)
     for name in ('interval-callers','current-replicas-and-placement','container-resource-history','request-error-derivation','request-error-numerical-agreement'):
         entries=[(uri,data.get('thesis_answers',{}).get(name,{}).get('state')) for uri,data in by_window.values()
                  if data.get('spec',{}).get('phase')=='baseline']

@@ -70,7 +70,7 @@ def baseline_summary(root,baseline):
     return {'baseline':str(baseline.relative_to(root)),'recorded_evidence_footprint':footprint,'original_unchanged':True,'pins':pins,'windows':summaries,'claims':{'preservation':'supported on evaluated populations','event_window_equality':'not established by API/storage parity','cross_node':'not established by single-node baseline','causal_overhead':'not claimed','scale':'not claimed'}}
 
 
-def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THESIS,benchmark=None,product_lock=None,local_evidence=None):
+def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THESIS,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None):
     """Build experiment inputs offline. Human confirmation stays in the conversation."""
     if schedule != THESIS:
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
@@ -107,27 +107,29 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
     bundle=build_bundle(root,preparation_id,snapshot,pins,files,toolchain=config['readiness'].get('toolchain_path'),chart_snapshot=chart_snapshot)
     pending+=bundle['pending']
     checks.append({'name':'execution bundle','state':'verified' if not bundle['pending'] else 'pending','reason':'; '.join(bundle['pending'])})
-    from .benchmark import validated_receipt
-    from .readiness import definition
-    replay = None
-    try:
-        replay = validated_receipt(read(benchmark) if benchmark else None)
-    except (ValueError, OSError) as exc:
-        pending.append(str(exc))
+    replay = None  # No benchmark or synthetic readiness workload in v4.
+    minimal_definition={'version':4,'mode':'per-cell-read-only','observation_seconds':120,'traffic':False}
+    from .recoverable_run import planning_forecast
+    forecast = planning_forecast(config, matrix)
+    if not forecast['fits']:pending.append('full v4 time forecast including retries exceeds infrastructure budget')
     if cost['gross_estimate']>config['limits']['launch_ceiling_usd']:pending.append('cost estimate exceeds launch ceiling')
     dest.mkdir(parents=True)
     from .previews import previews
     preview=previews(root,dest/'rendered',baseline,config,lock,preparation_id,chart_snapshot=chart_snapshot,product_snapshot=Path(snapshot) if schedule==THESIS else None)
     if preview['state']!='complete':pending.append('rendered manifests contain unresolved images or render errors; inspect rendered/status.json')
     manifest={'schema_version':1,'id':preparation_id,'protocol':protocol['id'],'prepared_at':datetime.now(timezone.utc).isoformat(),
-        'schedule':schedule,'readiness_check':definition(),'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
+        'schedule':schedule,'readiness_check':None,'minimal_readiness':minimal_definition,'time_forecast':forecast,'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
         'product_pins':pins,'product_snapshot':str(Path(snapshot).resolve()) if snapshot else None,'image_lock':lock,
         'thresholds':read(baseline/'frozen-thresholds.json'),'baseline_config':read(baseline/'locked-config.json'),
         'artifact_checks':checks,'pending_prerequisites':pending,'execution_ready':not pending,'cost_preview':cost,'bundle':bundle,'rendered_previews':preview}
+    if continuation_dir or continuation_receipt:
+        if not continuation_dir or not continuation_receipt:raise ValueError('continuation needs checkpoint directory and export receipt')
+        from .recoverable_run import load_continuation
+        manifest['continuation']=load_continuation(continuation_dir,continuation_receipt,manifest)
     if schedule==THESIS:
         manifest['local_contract_evidence']=local
         manifest['historical_timing_inputs']={'baseline':summary['baseline'],'product_pins':summary['pins']}
-    write(dest/'readiness-matrix.json',manifest['readiness_check']['matrix']);write(dest/'manifest.json',manifest);write(dest/'matrix.json',matrix);write(dest/'prior-evidence-analysis.json',summary)
+    write(dest/'readiness-matrix.json',[]);write(dest/'manifest.json',manifest);write(dest/'matrix.json',matrix);write(dest/'prior-evidence-analysis.json',summary)
     pending_lines='\n'.join('- '+issue for issue in pending) or '- None.'
-    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes plus 13 mandatory k6 readiness probes (17 scheduled minutes). Both phases use the same 12-hour infrastructure allowance.\n\nRead the architecture and phase plan in docs/thesis-qualification-v3.md. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
+    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes. Per-cell readiness is read-only; recoverable execution failures have at most one labeled retry. The 12-hour infrastructure allowance includes cleanup.\n\nRead the architecture and phase plan in docs/thesis-qualification-v4.md. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
     return dest/'manifest.json'

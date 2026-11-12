@@ -39,7 +39,16 @@
     "resource_helper_image": null,
     "toolchain_verified": false,
     "capacity_verified": false,
-    "secondary_export_verified": false
+    "secondary_export_verified": false,
+    "phase_estimates_seconds": {
+      "provision": null,
+      "rebuild": null,
+      "setup": null,
+      "capture_setup_restore": null,
+      "export": null,
+      "history": null,
+      "retry_reserve": null
+    }
   },
   "baseline": "results/timing-20261025-g",
   "product_snapshot": null,
