@@ -95,3 +95,9 @@ The frozen 21-window study is split into `execution_segment: thesis` (12 smoke/b
 The first segment seals its completed phases and reports `segment-complete`, not a completed qualification. The other nine windows are explicitly deferred. The diagnostic segment requires a verified predecessor checkpoint accounting for every thesis window; its forecast considers only pending diagnostic work, without a second thesis history/rebuild charge. Existing study-wide raw evidence usage carries forward. A diagnostic continuation uses a new physical cluster identity and does not create a third reproducibility baseline. Each launch still requires explicit approval; diagnostics do not auto-launch after teardown.
 
 The Billing management API (`cloudbilling.googleapis.com`) must be enabled. The launch billing check explicitly uses `--billing-project=<evaluation-project>` to avoid the shared Cloud SDK request quota. This API prerequisite was enabled during the2026-11-12 prelaunch refresh; it creates no compute resources.
+
+### Completion and failure-report repairs (2026-11-12)
+
+GKE namespace ownership is verified against `gke-qualification-v1`, the exact launch ID and namespace UIDs retained at successful setup. The Karthos marker retains its separate legacy owner contract and exact run/UID. Partial setup verifies every existing evaluation namespace even when Karthos itself was never created.
+
+A failed transition does not overwrite a completed measurement or locally valid evidence. Reports distinguish physical execution, local validity, verified raw export and safe continuation. Finalized reports and transitions survive in checkpoints and final summaries; they do not imply that an unexported raw archive was accepted. The first valid, verified exported observation remains representative even when its numerical result disagrees.

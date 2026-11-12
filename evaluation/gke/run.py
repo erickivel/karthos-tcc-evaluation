@@ -319,6 +319,8 @@ class LiveDriver:
                 return plan
             transition=transition_to_trace(make_istio_unavailable=unavailable,rediscover=rediscover,redeploy=redeploy)
             self.ctx.write(path/'arbitration-transition.json',transition);self.setup_path=path
+            from .setup import record_namespace_ownership
+            record_namespace_ownership(self.ctx,cell,path)
         else:self.setup_path=setup.setup_cell(self.ctx,cell,parent)
         # Prepare exact query diagnostics before either readiness or measured
         # workload clocks. A cold Go cache must not consume a five-second poll.
@@ -741,10 +743,10 @@ def run(ctx):
             source=ctx.result/folder
             if source.is_dir():shutil.copytree(source,summary/folder)
     if ctx.manifest.get('schedule')=='thesis-qualification-v4':
-        for source in sorted((ctx.result/'attempt-diagnostics').glob('*')):
-            status=_read(source/'diagnostics-status.json')
-            if status.get('stopped') is True:shutil.copytree(source,summary/'attempt-diagnostics'/source.name)
-            else:ctx.write(summary/'attempt-diagnostics'/(source.name+'-unavailable.json'),{'reason':'diagnostic writer termination not verified; mutable files not sealed','attempt':source.name})
+        from .failure_evidence import retain_attempt_reports, copy_summary_diagnostics
+        records=report.get('records',report.get('windows',[]))
+        retain_attempt_reports(ctx,records,summary)
+        copy_summary_diagnostics(ctx,records,summary)
     traces=ctx.result/'failure-traces'
     if traces.is_dir():shutil.copytree(traces,summary/'failure-traces')
     for name in ('readiness-scope-contract.json','controller-headroom.json','node-inventory.json','kubernetes-version.json','progress.ndjson','phase-timings.ndjson'):

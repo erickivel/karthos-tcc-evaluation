@@ -13,9 +13,9 @@ from evaluation.gke.models import sha, write
 class RecoverableRunTests(unittest.TestCase):
     def test_first_valid_attempt_keeps_numerical_disagreement(self):
         attempts = [dict(attempt_id='w-a1', execution='complete', evidence_valid=True,
-                         state='complete', numerical_agreement='fail'),
+                         state='complete', export={'verified':True}, numerical_agreement='fail'),
                     dict(attempt_id='w-a2', execution='complete', evidence_valid=True,
-                         state='complete', numerical_agreement='pass')]
+                         state='complete', export={'verified':True}, numerical_agreement='pass')]
         row = recovery._row({'id':'w'}, attempts)
         self.assertEqual(row['representative_attempt'], 'w-a1')
         self.assertEqual(row['numerical_agreement'], 'fail')
@@ -57,7 +57,7 @@ class RecoverableRunTests(unittest.TestCase):
                   dict(id='baseline', repeat=1, cell='boutique-trace', phase='baseline', duration_seconds=300)]
         report = recovery.planning_forecast(config, matrix)
         # Same-cell smoke and baseline share one deployment/readiness receipt.
-        expected = 10+20+30+120+50+(60+300)+2*(60+90+180+40+50)+60+70+80
+        expected = 10+30+120+50+(60+300)+2*(60+90+180+40+50)+70+80
         self.assertEqual(report['seconds'], expected)
         self.assertEqual(report['setup_groups'], 1)
 

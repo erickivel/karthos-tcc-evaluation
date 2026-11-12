@@ -147,9 +147,22 @@ def transition(ctx,driver,spec,report):
         namespace=ctx.kube('get','namespace','karthos-system','--ignore-not-found','-o','json',check=False,cleanup=True,timeout=15)
         if namespace.returncode:raise SafetyFailure('cluster API unavailable for safe restoration check')
         if namespace.stdout.strip():
-            try:r.check_ownership(False)
+            try:
+                from .setup import verify_namespace_ownership
+                # GKE namespace ownership differs from the local marker/PVC
+                # contract. Validate both without weakening either guard.
+                r.check_ownership(False,check_namespaces=False)
+                snapshot_path=Path(driver.setup_path)/'namespace-ownership.json' if getattr(driver,'setup_path',None) else None
+                snapshot=read(snapshot_path) if spec.get('setup_completed') and snapshot_path and snapshot_path.exists() else None
+                if snapshot:
+                    ownership=verify_namespace_ownership(ctx,snapshot['namespace_uids'],expected_uids=snapshot['namespace_uids'],marker_required=True,expected_marker_uid=snapshot['marker']['uid'])
+                else:
+                    ownership=verify_namespace_ownership(ctx,[r.KARTHOS_NAMESPACE,*r.NAMESPACES.values(),'istio-system'],expected_uids={},allow_absent=True)
             except Exception as exc:raise SafetyFailure('deployment ownership verification failed: '+str(exc)) from exc
-        result['conditions']['ownership']={'safe':True}
+        else:
+            from .setup import verify_namespace_ownership
+            ownership=verify_namespace_ownership(ctx,[r.KARTHOS_NAMESPACE,*r.NAMESPACES.values(),'istio-system'],expected_uids={},allow_absent=True)
+        result['conditions']['ownership']=ownership
         result['conditions']['generator']=_generator_barrier(ctx,driver,spec,path,report)
         timing=read(path/'manifest.json') if (path/'manifest.json').exists() else {}
         capture=read(path/'structured/status.json') if (path/'structured/status.json').exists() else timing.get('structured_capture')
@@ -179,7 +192,8 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     reports={}
     for row in records:
         if row.get('path') and (Path(row['path'])/'gke-evaluation.json').exists():
-            reports[row['id']]=read(Path(row['path'])/'gke-evaluation.json')
+            try:reports[row['id']]=read(Path(row['path'])/'gke-evaluation.json')
+            except Exception as exc:reports[row['id']]={'state':'unavailable','error':{'type':type(exc).__name__,'message':str(exc)},'path':row['path']}
     document={'version':4,'run_id':ctx.run_id,'binding':binding(ctx.manifest),'records':records,'history':history,
               'readiness':readiness,'reports':reports,'cluster_instances':ctx.state.get('evaluation_cluster_instances',[]),
               'sequence':sequence,'created_at':time.time(),'study_usage':{key:ctx.state.get(key,0) for key in ('cumulative_raw_evidence_bytes','uploaded_evidence_bytes')},'study_budget':ctx.manifest.get('study_budget'),'execution_segment':ctx.config.get('execution_segment','all'),'predecessor':ctx.manifest.get('continuation',{}).get('export')}
@@ -191,6 +205,8 @@ def _checkpoint(ctx,records,history,readiness,sequence):
                 src=Path(row['path'])/name
                 if src.exists():
                     target=directory/'retained'/row['id']/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,target)
+    from .failure_evidence import retain_attempt_reports
+    document['attempt_report_retention']=retain_attempt_reports(ctx,records,directory)
     ctx.write(directory/'checkpoint.json',document)
     projection=ctx.result/'checkpoint-projections'/directory.name
     export.export_projection(directory,projection)
@@ -202,10 +218,28 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     return receipt
 
 
+def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_policy_complete=False):
+    """Physical measurements survive failures of later continuation/export steps."""
+    report=report or {}
+    generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
+    unexpected=generator.get('unexpected_outcomes')
+    execution=report.get('execution',{}).get('state','unattempted')
+    valid=report.get('evidence',{}).get('valid') is True
+    failed=bool(failure or execution!='complete' or not valid or type(unexpected) is int and unexpected>0)
+    return {'id':spec['logical_id'],'attempt_id':spec['id'],'state':'failed' if failed else 'complete',
+            'execution':execution,'evidence_valid':valid,'evidence_scope':'local measurement; export and continuation reported separately',
+            'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
+            'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
+            'reason':failure or report.get('reason'),'path':report.get('path'),
+            'export':receipt or {'verified':False},'evidence_export_verified':(receipt or {}).get('verified') is True,
+            'transition':barrier,'continuation_safe':barrier.get('safe') if isinstance(barrier,dict) else None,
+            'retry_policy_complete':retry_policy_complete}
+
+
 def _row(spec,attempts):
     # First valid observation wins, not the best numerical score. Every attempt
     # remains separately inspectable; retry cannot erase a valid disagreement.
-    chosen=next((a for a in attempts if a.get('execution')=='complete' and a.get('evidence_valid')),attempts[-1])
+    chosen=next((a for a in attempts if a.get('execution')=='complete' and a.get('evidence_valid') and a.get('export',{}).get('verified') is True),attempts[-1])
     return {**chosen,'id':spec['id'],'logical_id':spec['id'],'attempts':attempts,
             'first_attempt_state':attempts[0]['state'],'attempt_count':len(attempts),
             'retried':len(attempts)>1,'representative_attempt':chosen.get('attempt_id'),
@@ -278,7 +312,8 @@ def execute(ctx,driver):
                 _budget(ctx,spec['duration_seconds'])
                 attempt={**spec,'id':spec['id']+f'-a{number}','logical_id':spec['id'],'attempt_number':number}
                 current_attempt=attempt
-                report=None;error=None;setup_ok=False
+                report=None;error=None;setup_ok=False;barrier=None;receipt=None
+                attempt['setup_completed']=False
                 path=ctx.result/'attempt-diagnostics'/attempt['id']
                 diagnostic=ExecutionDiagnostics(ctx,path,namespaces=['karthos-system',__import__('evaluation.protocol',fromlist=['NAMESPACES']).NAMESPACES[spec['demo']]])
                 try:
@@ -291,6 +326,7 @@ def execute(ctx,driver):
                         # Replanned-trace recovery must preserve both-sources
                         # continuity; it is not a generic reset/redeployment.
                         driver.setup(attempt);active_cell=key
+                    attempt['setup_completed']=True
                     if must_setup or key not in cell_readiness:
                         ready=check_cell(ctx,driver,attempt,attempt['id']);ready['repeat']=spec['repeat'];readiness.append(ready);cell_readiness[key]=ready
                     else:ready=cell_readiness[key]
@@ -305,7 +341,9 @@ def execute(ctx,driver):
                 finally:
                     diagnostics_status=diagnostic.stop()
                 if not diagnostics_status.get('stopped') is True:raise SafetyFailure('supplementary diagnostic worker remains active')
-                report=report or {'execution':{'state':'incomplete'},'evidence':{'valid':False},'reason':error and error['message']}
+                retained=driver.paths.get(attempt['id'])
+                if report is None and retained and (Path(retained)/'gke-evaluation.json').exists():report=read(Path(retained)/'gke-evaluation.json')
+                report=report or {'execution':{'state':'incomplete' if setup_ok else 'unattempted'},'evidence':{'valid':False},'reason':error and error['message']}
                 window_path=driver.paths.get(attempt['id'])
                 if window_path is None:
                     window_path=ctx.result/'failed-windows'/attempt['id'];window_path.mkdir(parents=True,exist_ok=True);driver.paths[attempt['id']]=window_path
@@ -325,11 +363,8 @@ def execute(ctx,driver):
                 valid=report.get('evidence',{}).get('valid') is True
                 execution=report.get('execution',{}).get('state','incomplete')
                 failed=bool(error or execution!='complete' or not valid or type(unexpected) is int and unexpected>0)
-                item={'id':spec['id'],'attempt_id':attempt['id'],'state':'failed' if failed else 'complete','execution':execution,
-                      'evidence_valid':valid,'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
-                      'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
-                      'reason':(error or {}).get('message') or report.get('reason'),'path':str(window_path),'export':receipt,
-                      'transition':barrier,'retry_policy_complete':number==2 or not failed,'cluster':copy.deepcopy(ctx.state.get('evaluation_cluster_instances',[])[-1:])}
+                item=attempt_record(attempt,report,failure=error,barrier=barrier,receipt=receipt,retry_policy_complete=number==2 or not failed)
+                item['cluster']=copy.deepcopy(ctx.state.get('evaluation_cluster_instances',[])[-1:])
                 attempts.append(item)
                 row=_row(spec,copy.deepcopy(attempts))
                 present=next((i for i,r in enumerate(records) if r['id']==spec['id']),None)
@@ -364,9 +399,12 @@ def execute(ctx,driver):
     except (Exception,KeyboardInterrupt) as exc:
         failure={'kind':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
         if current_attempt and not any(a.get('attempt_id')==current_attempt['id'] for row in records for a in row.get('attempts',[])):
-            failed={'id':current_attempt['logical_id'],'attempt_id':current_attempt['id'],'state':'failed','execution':'incomplete',
-                    'evidence_valid':False,'reason':failure,'retry_policy_complete':False,'export':{'verified':False},
-                    'diagnostics':str(ctx.result/'attempt-diagnostics'/current_attempt['id'])}
+            observed=report
+            retained=driver.paths.get(current_attempt['id'])
+            if observed is None and retained and (Path(retained)/'gke-evaluation.json').exists():observed=read(Path(retained)/'gke-evaluation.json')
+            failed=attempt_record(current_attempt,observed,failure=failure,barrier=barrier,receipt=receipt)
+            failed['path']=failed.get('path') or (str(retained) if retained else None)
+            failed['diagnostics']=str(ctx.result/'attempt-diagnostics'/current_attempt['id'])
             at=next((i for i,row in enumerate(records) if row['id']==current_attempt['logical_id']),None)
             prior=records[at].get('attempts',[]) if at is not None else []
             row=_row({'id':current_attempt['logical_id']},prior+[failed])

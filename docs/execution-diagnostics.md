@@ -47,3 +47,7 @@ process return codes after the capture stack closes. `completion` lists the
 observed workers and applicable proxy PIDs. These fields do not imply valid
 telemetry: sample errors remain independent. No applicable proxy means there
 was no private proxy process to stop, not a proof about telemetry availability.
+
+### Final-summary retention
+
+Already verified window archives are referenced by receipt instead of copying their supplementary diagnostic logs again. Stopped, unexported fatal diagnostics can be retained once within the collector bounds. Missing/corrupt termination records produce explicit unavailable markers and exclude mutable streams. Small finalized reports and transitions are retained independently of raw-capture termination, with separate evidence scope.
