@@ -92,7 +92,12 @@ Evidence publication uses at most four independent object-transfer workers on th
 After cluster deletion, both successful and recovery watchdog-refresh paths use the cleanup allowance, including when the readiness traffic reserve has expired. This does not extend the readiness or infrastructure deadline, permit new traffic, disarm the previous watcher, or relax ownership/UID checks.
 
 
+A readiness capture reopened after a network or restart probe uses a fresh directory keyed by the initiating probe; adjacent probes in the same live capture group still reuse it. Prior evidence is retained.
+
 ### Readiness capture failures
+
+Sampler-gap evidence includes the preceding sample, status-publication, and wait durations. These bounded timings help distinguish a slow sampling operation, status write, or scheduling delay; they do not by themselves identify a Kubernetes or Karthos root cause. Existing cadence and failure gates remain unchanged.
+
 
 The sampler gate saves `capture-health.json` before returning success or raising a shared-capture failure. It records the case and observation time, all sampler errors, exact log identities and errors, sampler thread liveness, stream sample metadata, and the expected-restart exclusions. A failure while reading the diagnostic status is itself recorded and blocks readiness. The existing compact receipt includes this file for failed cases as well as passing ones. A generic failure message without these details cannot identify the original capture failure; do not attribute it to Karthos, CPU contention or GCP without boundary evidence.
 

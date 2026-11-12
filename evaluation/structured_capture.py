@@ -467,6 +467,7 @@ class FastCapture(ContinuousCapture):
             raise RuntimeError('independent sampling preflight failed: '+str(self.sampling_errors))
     def _loop(self,stream,target=None,filename=None):
         period=self.PERIODS[stream];due=time.monotonic();previous=None
+        previous_sample_seconds=previous_status_seconds=previous_wait_seconds=0.0
         node = target if stream == 'kubelet' else None
         mesh_pod = target[1] if stream == 'mesh' and target else None
         targets = [('node',node)] if node else ([target] if mesh_pod else None)
@@ -474,10 +475,16 @@ class FastCapture(ContinuousCapture):
             tick=time.monotonic()
             if previous is not None and tick-previous>period*2.5:
                 self.sampling_errors.append({'source':stream,'node_name':node,'pod':mesh_pod,
-                                             'at':now(),'error':'sampling gap','seconds':tick-previous})
+                                             'at':now(),'error':'sampling gap','seconds':tick-previous,
+                                             'previous_sample_seconds':previous_sample_seconds,
+                                             'previous_status_seconds':previous_status_seconds,
+                                             'previous_wait_seconds':previous_wait_seconds})
             try:
+                started=time.monotonic()
                 self._sample_once(stream,self.path/(filename or self.FILES[stream]),targets=targets)
+                sampled=time.monotonic();previous_sample_seconds=sampled-started
                 self._sampling_status()
+                previous_status_seconds=time.monotonic()-sampled
             except Exception as exc:
                 self.sampling_errors.append({'source':stream,'error':'sampler terminated:'+str(exc),'terminated_at':now()})
                 try:self._sampling_status()
@@ -485,7 +492,9 @@ class FastCapture(ContinuousCapture):
                 return
             previous=tick;due+=period
             if due<time.monotonic():due=time.monotonic()
-            self.stop_event.wait(max(0,due-time.monotonic()))
+            wait_started=time.monotonic()
+            self.stop_event.wait(max(0,due-wait_started))
+            previous_wait_seconds=time.monotonic()-wait_started
     def _sample(self):
         self.sampler_threads=[threading.Thread(target=self._loop,args=(stream,node,filename),daemon=True) for stream,node,filename in self._stream_specs()]
         for thread in self.sampler_threads:thread.start()

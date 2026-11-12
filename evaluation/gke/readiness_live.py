@@ -237,7 +237,9 @@ class ProbeDriver:
         settings = dict(r.CONFIG, capture_expected_seconds=1200)
         if spec['scenario']=='gateway':
             settings['gateway_restart_token'] = _window_token(self.ctx, spec)
-        capture_path = path if spec['scenario']=='network' else self.root/'captures'/target
+        # Each reopened capture gets a new attempt directory; adjacent probes
+        # in the same live group still reuse the existing capture above.
+        capture_path = path if spec['scenario']=='network' else self.root/'captures'/target/spec['id']
         self.capture = RepairCapture(self.driver.cell, capture_path, cutoff(self.ctx)-RESERVE, config=settings).start()
         self.group = target
         clocks = capture_clocks(self.capture, r.CONFIG.get('generator_node_name'))
