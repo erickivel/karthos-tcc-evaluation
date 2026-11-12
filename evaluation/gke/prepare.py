@@ -111,7 +111,8 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
     minimal_definition={'version':4,'mode':'per-cell-read-only','observation_seconds':120,'traffic':False}
     from .recoverable_run import planning_forecast
     forecast = planning_forecast(config, matrix)
-    if not forecast['fits']:pending.append('full v4 time forecast including retries exceeds infrastructure budget')
+    if forecast.get('missing'):pending.append('reviewed v4 phase timing estimates missing: '+', '.join(forecast['missing']))
+    elif not forecast['fits']:pending.append('full v4 time forecast including retries exceeds infrastructure budget')
     if cost['gross_estimate']>config['limits']['launch_ceiling_usd']:pending.append('cost estimate exceeds launch ceiling')
     dest.mkdir(parents=True)
     from .previews import previews
