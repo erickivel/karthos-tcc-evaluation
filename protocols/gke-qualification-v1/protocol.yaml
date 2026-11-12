@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "gke-qualification-v1",
+  "demos": [
+    "boutique",
+    "astronomy"
+  ],
+  "sources": [
+    "trace",
+    "mesh"
+  ],
+  "generators": [
+    "k6",
+    "locust"
+  ],
+  "repetitions": 2,
+  "rebuild_cluster": true,
+  "baseline_rate": 2,
+  "smoke_seconds": 60,
+  "baseline_seconds": 300,
+  "diagnostic_seconds": 300,
+  "preroll_seconds": 60,
+  "drain_seconds": 90,
+  "quiet_timeout_seconds": 90,
+  "clock_bound_seconds": 0.25,
+  "resource_scenarios": [
+    "cpu-memory",
+    "storage",
+    "network"
+  ],
+  "arbitration_scenarios": [
+    "both-sources",
+    "replanned-trace"
+  ],
+  "restart_scenarios": [
+    "checkout",
+    "gateway"
+  ],
+  "diagnostic_demo": "boutique",
+  "diagnostic_generator": "k6",
+  "exclusions": [
+    "shopping-agent-scenario",
+    "native-locust",
+    "gpu",
+    "causal-overhead",
+    "production-scale"
+  ],
+  "numerical_disagreement_is_result": true,
+  "reference_capture": {
+    "period_seconds": 1,
+    "maximum_gap_seconds": 2.5,
+    "boundary_slack_seconds": 1.25,
+    "semantics": "required evidence coverage only; does not relax numeric metric tolerances"
+  },
+  "restart_trigger": "after first observed generator WINDOW marker; actual restart request and completion recorded",
+  "random_seed": null,
+  "recipe_order": "deterministic global iteration-indexed matched journey schedule; no random generator is introduced",
+  "interleaving": "actual concurrent request timings may differ; compare recorded ledgers, not bit-identical order"
+}

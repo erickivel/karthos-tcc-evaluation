@@ -1,0 +1,1161 @@
+{
+  "classifications": [
+    "observed",
+    "missing-expected",
+    "unsupported-source",
+    "not-applicable",
+    "not-exercised",
+    "fixture-only"
+  ],
+  "contract": "thesis-qualification-v2",
+  "entries": [
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "cores"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.cpu.usage"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.memory.working_set"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "cores"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.node.cpu.usage"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.node.memory.working_set"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "cores"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "container.cpu.usage"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "container.memory.usage"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.volume.available"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.volume.capacity"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.volume.inode.free"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.volume.inode.used"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kubelet",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.volume.inode.count"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "ratio"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.cpu.utilization"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.memory.usage"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.disk.io.read"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.disk.io.write"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.disk.operations"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.filesystem.usage"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "ratio"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.filesystem.utilization"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.network.io.receive"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.network.io.transmit"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "host-os",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "system.network.errors"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "cores"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.cpu.request"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "cores"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.cpu.limit"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.memory.request"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.memory.limit"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.ready"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "latest",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.container.restart.count"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.status.phase"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.pod.status.reason"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.node.condition.ready"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.node.condition.memory_pressure"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": null,
+        "sources": [
+          {
+            "id": "kube-cluster",
+            "priority": 1
+          }
+        ],
+        "unit": "count"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "k8s.node.condition.disk_pressure"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "prometheus.app",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "http.server.request.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "seconds",
+          "default": "window_mean",
+          "default_window": "1m",
+          "rate_unit": "seconds",
+          "supported": null
+        },
+        "sources": [
+          {
+            "id": "prometheus.app",
+            "priority": 1
+          }
+        ],
+        "unit": "seconds"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "http.server.request.duration"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          },
+          {
+            "id": "traces.servicegraph",
+            "priority": 2
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.request.count"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "seconds",
+          "default": "window_mean",
+          "default_window": "1m",
+          "rate_unit": "seconds",
+          "supported": null
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          },
+          {
+            "id": "traces.servicegraph",
+            "priority": 2
+          }
+        ],
+        "unit": "seconds"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.request.duration"
+    },
+    {
+      "accuracy_selected": true,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          },
+          {
+            "id": "traces.servicegraph",
+            "priority": 2
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.request.error.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.grpc.request.message.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.grpc.response.message.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.tcp.connection.open.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "count",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.tcp.connection.close.count"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.tcp.bytes.sent"
+    },
+    {
+      "accuracy_selected": false,
+      "contract": {
+        "aggregation": {
+          "base_unit": "bytes",
+          "default": "window_rate",
+          "default_window": "1m",
+          "rate_unit": "bytes_per_second",
+          "supported": [
+            "latest",
+            "window_rate",
+            "active_rate",
+            "increase"
+          ]
+        },
+        "sources": [
+          {
+            "id": "mesh.istio",
+            "priority": 1
+          }
+        ],
+        "unit": "bytes_per_second"
+      },
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ],
+      "name": "servicegraph.tcp.bytes.received"
+    }
+  ],
+  "expected_count": 43,
+  "schema_version": 1
+}

@@ -1,0 +1,12 @@
+.git
+.work
+build
+cache
+results
+analyses
+.plan-docs
+**/__pycache__
+**/*.pyc
+**/.terraform
+**/*.tfstate*
+config/gke.local.yaml

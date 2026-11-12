@@ -1,0 +1,12 @@
+{
+  "app_version": "3.1.0",
+  "chart_version": "0.42.2",
+  "envoy_version": "1.39.1",
+  "source": "envoy-source.tmpl.yaml",
+  "sha256": "9bd67a05b9d68e64735363e845c24d1d9a3e095370622142334ca85d4ab52849",
+  "source_image": "ghcr.io/open-telemetry/demo@sha256:fd4da88bfeaadd9437a4ee00f708e129a9eedb9c48874cea8e94b034983280a1",
+  "upstream": "https://github.com/open-telemetry/opentelemetry-demo/blob/3.1.0/src/frontend-proxy/envoy.tmpl.yaml",
+  "license": "Apache-2.0",
+  "license_reference": "https://github.com/open-telemetry/opentelemetry-demo/blob/3.1.0/LICENSE",
+  "correction": "frontend upstream HTTP1 idle_timeout4s; all original template bytes preserved"
+}

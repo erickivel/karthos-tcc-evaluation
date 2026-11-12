@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "rules": [
+    "preserve full source and dimensions",
+    "missing is not zero",
+    "no comparison across unmatched populations",
+    "configured stimulus is not truth",
+    "no numerical tolerance fitting after measured outcomes",
+    "fixtures are not live proof"
+  ],
+  "metrics": [
+    {
+      "name": "k8s.container.cpu.usage",
+      "reference": "kubelet",
+      "comparison": "same-measurement",
+      "canonical_unit": "millicores"
+    },
+    {
+      "name": "k8s.container.memory.usage",
+      "reference": "kubelet",
+      "comparison": "same-measurement",
+      "canonical_unit": "bytes"
+    },
+    {
+      "name": "system.cpu.utilization",
+      "reference": "host",
+      "comparison": "paired-cpu-ticks",
+      "canonical_unit": "percent"
+    },
+    {
+      "name": "system.memory.usage",
+      "reference": "host",
+      "comparison": "state-partition",
+      "canonical_unit": "bytes"
+    },
+    {
+      "name": "system.disk.io.read",
+      "reference": "host",
+      "comparison": "monotonic-brackets",
+      "canonical_unit": "bytes/second"
+    },
+    {
+      "name": "system.disk.io.write",
+      "reference": "host",
+      "comparison": "monotonic-brackets",
+      "canonical_unit": "bytes/second"
+    },
+    {
+      "name": "system.network.io.receive",
+      "reference": "host",
+      "comparison": "monotonic-brackets",
+      "canonical_unit": "bytes/second"
+    },
+    {
+      "name": "system.network.io.transmit",
+      "reference": "host",
+      "comparison": "monotonic-brackets",
+      "canonical_unit": "bytes/second"
+    },
+    {
+      "name": "system.filesystem.usage",
+      "reference": "filesystem",
+      "comparison": "matching-mount",
+      "canonical_unit": "bytes"
+    },
+    {
+      "name": "system.filesystem.utilization",
+      "reference": "filesystem",
+      "comparison": "matching-mount",
+      "canonical_unit": "percent"
+    },
+    {
+      "name": "k8s.volume.available",
+      "reference": "kubelet",
+      "comparison": "matching-volume",
+      "canonical_unit": "bytes"
+    },
+    {
+      "name": "k8s.volume.capacity",
+      "reference": "kubelet",
+      "comparison": "matching-volume",
+      "canonical_unit": "bytes"
+    },
+    {
+      "name": "k8s.container.ready",
+      "reference": "kubernetes-api",
+      "comparison": "observed-state",
+      "canonical_unit": "count"
+    },
+    {
+      "name": "k8s.container.restarts",
+      "reference": "kubernetes-api",
+      "comparison": "same-object-version-gauge",
+      "canonical_unit": "count",
+      "source_semantics": "native gauge may reset after kubelet dead-container pruning; do not assume monotonicity"
+    },
+    {
+      "name": "k8s.pod.phase",
+      "reference": "kubernetes-api",
+      "comparison": "observed-state",
+      "canonical_unit": "count"
+    },
+    {
+      "name": "servicegraph.request.count",
+      "reference": "traffic-ledgers",
+      "comparison": "settled-and-fixed-separate",
+      "canonical_unit": "requests/second"
+    },
+    {
+      "name": "servicegraph.request.error.count",
+      "reference": "traffic-ledgers",
+      "comparison": "source-owned-policy",
+      "canonical_unit": "requests/second"
+    },
+    {
+      "name": "servicegraph.request.duration",
+      "reference": "raw-source",
+      "comparison": "matching-population-sum-count",
+      "canonical_unit": "nanoseconds"
+    }
+  ]
+}

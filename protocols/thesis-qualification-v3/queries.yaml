@@ -1,0 +1,22 @@
+{
+  "api_only": true,
+  "containers": {
+    "astronomy": "checkout",
+    "boutique": "server"
+  },
+  "missing_is_unknown": true,
+  "questions": [
+    "interval-callers",
+    "current-replicas-and-placement",
+    "retained-replicas-and-health",
+    "container-resource-history",
+    "request-error-derivation"
+  ],
+  "require_snapshot_consistent_pagination": true,
+  "schema_version": 2,
+  "services": {
+    "astronomy": "checkout",
+    "boutique": "checkoutservice"
+  },
+  "snapshot_selection": "newest retained at or before requested timestamp"
+}

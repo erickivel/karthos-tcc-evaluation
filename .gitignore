@@ -1,0 +1,18 @@
+/cache/
+/results/
+/analyses/
+__pycache__/
+*.pyc
+
+# Generated GKE packages and private operational state
+build/gke/
+.work/gke/
+**/.terraform/
+*.tfstate*
+*.tfplan
+
+# Local planning, research and historical notes
+/.plan-docs/
+
+# Private GCP evaluation inputs
+/config/gke.local.yaml

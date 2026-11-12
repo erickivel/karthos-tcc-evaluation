@@ -1,0 +1,133 @@
+"""Offline experiment preparation; no cloud mutation."""
+from __future__ import annotations
+import json,math
+from datetime import datetime,timezone
+from pathlib import Path
+from .models import read,write,sha,canonical_sha,identifier,validate_config,QUALIFICATION,THESIS,build_matrix,implementation_hashes,classify_readiness
+
+
+def cost_preview(config):
+    review=config.get('readiness',{}).get('pricing_review')
+    if review is not None:
+        if review.get('currency')!='USD' or review.get('credits_assumed')!=0 or not review.get('detail'):
+            raise ValueError('gross USD pricing review without credit subtraction required')
+        items={}
+        for row in review['detail']:
+            quantity,rate=float(row['quantity']),float(row['unit_rate_usd'])
+            if not all(math.isfinite(v) and v>=0 for v in (quantity,rate)) or row['id'] in items:
+                raise ValueError('invalid or duplicate pricing-review term')
+            items[row['id']]=quantity*rate
+        total=math.fsum(items.values())
+        if not math.isfinite(total):raise ValueError('pricing-review total is not finite')
+        return dict(review,items=items,gross_estimate=round(total,2),launch_ceiling=config['limits']['launch_ceiling_usd'],gross_limit=config['limits']['gross_limit_usd'],alerts_are_not_enforcement=True)
+    # Conservative allowances are assumptions, NOT a live quote or billing cap.
+    hours=config['limits']['infrastructure_seconds']/3600
+    items={'compute_four_e2_standard_4':4*hours*0.13402284,'gke_management_without_free_credit':hours*.10,'disks_allowance':3.,'network_nat_allowance':5.,'logging_allowance':10.,'registry_and_watchdog_allowance':5.,'gcs_100_GiB_90_days_allowance':10.,'secondary_export_and_transfer_allowance':15.}
+    return {'currency':'USD','gross_estimate':round(sum(items.values()),2),'items':items,'credits_assumed':0,'launch_ceiling':80,'gross_limit':100,'kind':'offline estimate with explicit allowances; current SKU verification required before launch','references':['https://cloud.google.com/products/compute/pricing/general-purpose','https://cloud.google.com/kubernetes-engine/pricing','https://cloud.google.com/storage/pricing'],'alerts_are_not_enforcement':True}
+
+
+def foundation_checkpoint_check(root, config):
+    """Catch a stale protected-foundation reference before cloud launch."""
+    reference=config.get('gcp',{}).get('foundation_reference')
+    if not reference:
+        return None
+    from types import SimpleNamespace
+    from .provision import foundation_source_hashes
+    expected=foundation_source_hashes(SimpleNamespace(root=Path(root)))
+    valid=reference.get('source_files')==expected
+    return {'name':'protected foundation checkpoint','state':'verified' if valid else 'pending',
+            'reason':'source matches reviewed foundation reference' if valid else
+            'foundation source changed; review the scoped IAM/configuration change, reconcile the existing foundation, and refresh its reference before provisioning',
+            'expected_source_files':expected,'referenced_source_files':reference.get('source_files')}
+
+
+def snapshot_check(path,expected):
+    if not path or not Path(path).exists():return {'name':'validated product snapshot','state':'pending','reason':'supply --product-snapshot; no unvalidated checkout is substituted'}
+    from ..runner import repository_fingerprint
+    if not (Path(path)/'.git').exists() and (Path(path).parent/'product-manifest.json').is_file():
+        from .bundle import _product
+        record=read(Path(path).parent/'product-manifest.json')
+        _product(path,{'karthos_source_hash':expected,'karthos_revision':record.get('original_revision')})
+        actual=expected
+    else:actual=repository_fingerprint(Path(path))
+    return {'name':'validated product snapshot','state':'verified' if actual==expected else 'mismatch','actual':actual,'expected':expected,'reason':'content differs from validated snapshot' if actual!=expected else ''}
+
+
+def baseline_summary(root,baseline):
+    d=read(baseline/'run-report.json');pins=d.get('pins',{})
+    if d.get('state')!='complete' or len(d.get('windows',[]))!=16 or not all(w.get('independent_valid') for w in d['windows']):raise ValueError('historical baseline is not a completed valid sixteen-window study')
+    summaries=[]
+    for row in d['windows']:
+        p=baseline/'measured'/row['cell']/'windows'/row['name']/'timing-verification.json'
+        with p.open() as source:report=json.load(source)
+        parity=report.get('api_storage_parity',{}).get('checks',{})
+        resource=report.get('retained_secondary_checks',{}).get('resources',{})
+        summaries.append({'cell':row['cell'],'window':row['name'],'independent_valid':report.get('independent_valid'),'api_storage_parity':{k:v.get('state') for k,v in parity.items()},'resource_state':resource.get('state'),'resource_checks':len(resource.get('checks',[])),'fixed_window_fidelity':report.get('fixed_window_fidelity'),'eventual_exact':report.get('eventual_completeness',{}).get('exact'),'duration_parity_populations':[{'labels':x.get('labels'),'timestamp':x.get('timestamp'),'state':x.get('state'),'api_value':x.get('observed'),'storage_value':x.get('reference')} for x in parity.get('duration',{}).get('checks',[])],'duration_scope':'API/storage population only; independent service timing equivalence is not implied','report_sha256':sha(p)})
+        del report
+    footprint={'files':0,'bytes':0}
+    for file in baseline.rglob('*'):
+        if file.is_file() and not file.is_symlink():footprint['files']+=1;footprint['bytes']+=file.stat().st_size
+    return {'baseline':str(baseline.relative_to(root)),'recorded_evidence_footprint':footprint,'original_unchanged':True,'pins':pins,'windows':summaries,'claims':{'preservation':'supported on evaluated populations','event_window_equality':'not established by API/storage parity','cross_node':'not established by single-node baseline','causal_overhead':'not claimed','scale':'not claimed'}}
+
+
+def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THESIS,benchmark=None,product_lock=None,local_evidence=None):
+    """Build experiment inputs offline. Human confirmation stays in the conversation."""
+    if schedule != THESIS:
+        raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
+    root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path))
+    protocol=read(root/'protocols'/(THESIS if schedule==THESIS else 'gke-qualification-v1')/'protocol.yaml');matrix=build_matrix(protocol,schedule=schedule)
+    dest=root/'build/gke/prepared'/preparation_id
+    if dest.exists():raise FileExistsError('prepared experiment already exists; choose a new ID')
+    baseline=root/config['baseline'];summary=baseline_summary(root,baseline)
+    snapshot=product_snapshot or config.get('product_snapshot')
+    pins=dict(summary['pins'])
+    lock=read(baseline/'runtime-image-lock.json')
+    chart_snapshot=None; local=None; thesis_pending=[]
+    if schedule==THESIS:
+        from .thesis import product_inputs,local_contract
+        if not product_lock or not product_snapshot:
+            raise ValueError('thesis preparation requires an explicit product snapshot and product lock')
+        pins,lock,chart_snapshot,thesis_pending=product_inputs(
+            Path(product_snapshot),read(product_lock),pins,lock)
+        # This lock already names the exact registry artifacts for this revision.
+        config['infrastructure']['product_image_mirrors']={
+            name:lock[name+':latest'] for name in ('karthos-backend','karthos-frontend') if name+':latest' in lock}
+        if local_evidence:
+            local=read(local_evidence)
+        try:
+            local_contract(local,pins,directory=Path(local_evidence).parent if local_evidence else None)
+        except ValueError as exc:
+            thesis_pending.append(str(exc))
+    checks=[snapshot_check(snapshot,pins['karthos_source_hash'])]
+    foundation_check=foundation_checkpoint_check(root,config)
+    if foundation_check is not None:checks.append(foundation_check)
+    if not all('@sha256:' in image for image in lock.values()):raise ValueError('baseline contains mutable image identities')
+    files=implementation_hashes(root);pending=classify_readiness(config,checks)+thesis_pending;cost=cost_preview(config)
+    from .bundle import build_bundle
+    bundle=build_bundle(root,preparation_id,snapshot,pins,files,toolchain=config['readiness'].get('toolchain_path'),chart_snapshot=chart_snapshot)
+    pending+=bundle['pending']
+    checks.append({'name':'execution bundle','state':'verified' if not bundle['pending'] else 'pending','reason':'; '.join(bundle['pending'])})
+    from .benchmark import validated_receipt
+    from .readiness import definition
+    replay = None
+    try:
+        replay = validated_receipt(read(benchmark) if benchmark else None)
+    except (ValueError, OSError) as exc:
+        pending.append(str(exc))
+    if cost['gross_estimate']>config['limits']['launch_ceiling_usd']:pending.append('cost estimate exceeds launch ceiling')
+    dest.mkdir(parents=True)
+    from .previews import previews
+    preview=previews(root,dest/'rendered',baseline,config,lock,preparation_id,chart_snapshot=chart_snapshot,product_snapshot=Path(snapshot) if schedule==THESIS else None)
+    if preview['state']!='complete':pending.append('rendered manifests contain unresolved images or render errors; inspect rendered/status.json')
+    manifest={'schema_version':1,'id':preparation_id,'protocol':protocol['id'],'prepared_at':datetime.now(timezone.utc).isoformat(),
+        'schedule':schedule,'readiness_check':definition(),'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
+        'product_pins':pins,'product_snapshot':str(Path(snapshot).resolve()) if snapshot else None,'image_lock':lock,
+        'thresholds':read(baseline/'frozen-thresholds.json'),'baseline_config':read(baseline/'locked-config.json'),
+        'artifact_checks':checks,'pending_prerequisites':pending,'execution_ready':not pending,'cost_preview':cost,'bundle':bundle,'rendered_previews':preview}
+    if schedule==THESIS:
+        manifest['local_contract_evidence']=local
+        manifest['historical_timing_inputs']={'baseline':summary['baseline'],'product_pins':summary['pins']}
+    write(dest/'readiness-matrix.json',manifest['readiness_check']['matrix']);write(dest/'manifest.json',manifest);write(dest/'matrix.json',matrix);write(dest/'prior-evidence-analysis.json',summary)
+    pending_lines='\n'.join('- '+issue for issue in pending) or '- None.'
+    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes plus 13 mandatory k6 readiness probes (17 scheduled minutes). Both phases use the same 12-hour infrastructure allowance.\n\nRead the architecture and phase plan in docs/thesis-qualification-v3.md. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
+    return dest/'manifest.json'

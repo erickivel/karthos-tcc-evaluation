@@ -1,0 +1,530 @@
+{
+  "schema_version": 1,
+  "expected_count": 43,
+  "classifications": [
+    "observed",
+    "missing-expected",
+    "unsupported-source",
+    "not-applicable",
+    "not-exercised",
+    "fixture-only"
+  ],
+  "entries": [
+    {
+      "name": "k8s.pod.cpu.usage",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.pod.memory.working_set",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.node.cpu.usage",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.node.memory.working_set",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.cpu.usage",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.memory.usage",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.volume.available",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.volume.capacity",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.volume.inodes.free",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.volume.inodes.used",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.volume.inodes",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.cpu.utilization",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.memory.usage",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.disk.io.read",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.disk.io.write",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.disk.operations",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.filesystem.usage",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.filesystem.utilization",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.network.io.receive",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.network.io.transmit",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "system.network.errors",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.cpu.request",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.cpu.limit",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.memory.request",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.memory.limit",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.ready",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.container.restarts",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.pod.phase",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.pod.status_reason",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.node.condition.ready",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.node.condition.memory_pressure",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "k8s.node.condition.disk_pressure",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "http.server.request.count",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "http.server.request.duration",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.request.count",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.request.duration",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.request.error.count",
+      "accuracy_selected": true,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.grpc.request.message.count",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.grpc.response.message.count",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.tcp.connection.open.count",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.tcp.connection.close.count",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.tcp.bytes.sent",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    },
+    {
+      "name": "servicegraph.tcp.bytes.received",
+      "accuracy_selected": false,
+      "coverage_requires": [
+        "catalog-metadata",
+        "source-plan",
+        "stored-series",
+        "api-samples",
+        "freshness",
+        "preserved-dimensions"
+      ]
+    }
+  ]
+}

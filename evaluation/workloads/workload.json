@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "product_id": "OLJCESPC7Z",
+  "workloads": {
+    "legacy": {
+      "duration_seconds": 180,
+      "schedule": [
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "checkout",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "checkout",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "checkout",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "checkout",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "error"
+      ]
+    },
+    "checkout-heavy": {
+      "duration_seconds": 300,
+      "schedule": [
+        "browse",
+        "browse",
+        "cart",
+        "cart",
+        "checkout",
+        "checkout",
+        "checkout",
+        "checkout",
+        "checkout",
+        "expired"
+      ]
+    }
+  },
+  "demos": {
+    "boutique": {
+      "encoding": "form",
+      "headers": {
+        "Cookie": "shop_session-id={user}"
+      },
+      "journeys": {
+        "browse": [
+          {
+            "method": "GET",
+            "path": "/",
+            "route": "home",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "GET",
+            "path": "/product/OLJCESPC7Z",
+            "route": "product",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          }
+        ],
+        "cart": [
+          {
+            "method": "GET",
+            "path": "/cart",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/cart",
+            "route": "cart_add",
+            "expected_status": 302,
+            "body": {
+              "product_id": "OLJCESPC7Z",
+              "quantity": "1"
+            },
+            "outcome": "status"
+          }
+        ],
+        "checkout": [
+          {
+            "method": "GET",
+            "path": "/cart",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/cart",
+            "route": "cart_add",
+            "expected_status": 302,
+            "body": {
+              "product_id": "OLJCESPC7Z",
+              "quantity": "1"
+            },
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/cart/checkout",
+            "route": "checkout",
+            "expected_status": 200,
+            "body": {
+              "email": "{user}@example.com",
+              "street_address": "1600 Amphitheatre Parkway",
+              "zip_code": "94043",
+              "city": "Mountain View",
+              "state": "CA",
+              "country": "United States",
+              "credit_card_number": "4432801561520454",
+              "credit_card_expiration_month": "1",
+              "credit_card_expiration_year": "2039",
+              "credit_card_cvv": "672"
+            },
+            "outcome": "boutique_order"
+          }
+        ],
+        "expired": [
+          {
+            "method": "GET",
+            "path": "/cart",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/cart",
+            "route": "cart_add",
+            "expected_status": 302,
+            "body": {
+              "product_id": "OLJCESPC7Z",
+              "quantity": "1"
+            },
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/cart/checkout",
+            "route": "checkout_expired",
+            "expected_status": 500,
+            "body": {
+              "email": "{user}@example.com",
+              "street_address": "1600 Amphitheatre Parkway",
+              "zip_code": "94043",
+              "city": "Mountain View",
+              "state": "CA",
+              "country": "United States",
+              "credit_card_number": "4432801561520454",
+              "credit_card_expiration_month": "1",
+              "credit_card_expiration_year": "2020",
+              "credit_card_cvv": "672"
+            },
+            "outcome": "expired"
+          }
+        ],
+        "error": [
+          {
+            "method": "GET",
+            "path": "/product/NO_SUCH_PRODUCT",
+            "route": "intentional_error",
+            "expected_status": 500,
+            "body": null,
+            "outcome": "status"
+          }
+        ]
+      }
+    },
+    "astronomy": {
+      "encoding": "json",
+      "headers": {},
+      "journeys": {
+        "browse": [
+          {
+            "method": "GET",
+            "path": "/",
+            "route": "home",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "GET",
+            "path": "/api/products/OLJCESPC7Z?currencyCode=USD",
+            "route": "product",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          }
+        ],
+        "cart": [
+          {
+            "method": "GET",
+            "path": "/api/cart?sessionId={user}&currencyCode=USD",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/api/cart",
+            "route": "cart_add",
+            "expected_status": 200,
+            "body": {
+              "userId": "{user}",
+              "item": {
+                "productId": "OLJCESPC7Z",
+                "quantity": 1
+              }
+            },
+            "outcome": "cart_item"
+          }
+        ],
+        "checkout": [
+          {
+            "method": "GET",
+            "path": "/api/cart?sessionId={user}&currencyCode=USD",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/api/cart",
+            "route": "cart_add",
+            "expected_status": 200,
+            "body": {
+              "userId": "{user}",
+              "item": {
+                "productId": "OLJCESPC7Z",
+                "quantity": 1
+              }
+            },
+            "outcome": "cart_item"
+          },
+          {
+            "method": "POST",
+            "path": "/api/checkout?currencyCode=USD",
+            "route": "checkout",
+            "expected_status": 200,
+            "body": {
+              "userId": "{user}",
+              "email": "{user}@example.com",
+              "address": {
+                "streetAddress": "1600 Amphitheatre Parkway",
+                "zipCode": "94043",
+                "city": "Mountain View",
+                "state": "CA",
+                "country": "United States"
+              },
+              "userCurrency": "USD",
+              "creditCard": {
+                "creditCardNumber": "4432801561520454",
+                "creditCardExpirationMonth": 1,
+                "creditCardExpirationYear": 2039,
+                "creditCardCvv": 672
+              }
+            },
+            "outcome": "astronomy_order"
+          }
+        ],
+        "expired": [
+          {
+            "method": "GET",
+            "path": "/api/cart?sessionId={user}&currencyCode=USD",
+            "route": "cart_view",
+            "expected_status": 200,
+            "body": null,
+            "outcome": "status"
+          },
+          {
+            "method": "POST",
+            "path": "/api/cart",
+            "route": "cart_add",
+            "expected_status": 200,
+            "body": {
+              "userId": "{user}",
+              "item": {
+                "productId": "OLJCESPC7Z",
+                "quantity": 1
+              }
+            },
+            "outcome": "cart_item"
+          },
+          {
+            "method": "POST",
+            "path": "/api/checkout?currencyCode=USD",
+            "route": "checkout_expired",
+            "expected_status": 422,
+            "body": {
+              "userId": "{user}",
+              "email": "{user}@example.com",
+              "address": {
+                "streetAddress": "1600 Amphitheatre Parkway",
+                "zipCode": "94043",
+                "city": "Mountain View",
+                "state": "CA",
+                "country": "United States"
+              },
+              "userCurrency": "USD",
+              "creditCard": {
+                "creditCardNumber": "4432801561520454",
+                "creditCardExpirationMonth": 1,
+                "creditCardExpirationYear": 2020,
+                "creditCardCvv": 672
+              }
+            },
+            "outcome": "payment_failed"
+          }
+        ],
+        "error": [
+          {
+            "method": "GET",
+            "path": "/api/products/NO_SUCH_PRODUCT?currencyCode=USD",
+            "route": "intentional_error",
+            "expected_status": 500,
+            "body": null,
+            "outcome": "status"
+          }
+        ]
+      }
+    }
+  }
+}
