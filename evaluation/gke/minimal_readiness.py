@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 import time
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 from . import export
@@ -12,18 +14,35 @@ from ..protocol import source_id
 
 OBSERVATION_SECONDS = 120
 RESPONSE_BYTES = 4 * 1024 * 1024
+HTTP_ERROR_BYTES = 8192
 
 
 class MinimalReadinessSafetyError(RuntimeError):
     """Required readiness evidence could not be preserved or exported."""
 
 
+
+class ReadinessHTTPError(RuntimeError):
+    """Bounded redacted server rejection, retained as diagnostic evidence."""
+    def __init__(self, status, body, truncated, route, query):
+        self.evidence = {'status': status, 'body': export.redact_text(body)[:HTTP_ERROR_BYTES],
+                         'body_truncated': truncated, 'route': route,
+                         'query': export.redact_document(query, strings=export.redact_text)}
+        super().__init__('HTTP ' + str(status) + ': ' + self.evidence['body'])
+
+
 def _json(base, route, params, deadline):
     remaining = deadline - time.monotonic()
     if remaining <= 0:
         raise TimeoutError('minimal readiness observation budget exhausted')
-    with urlopen(base + route + '?' + urlencode(params), timeout=min(10, remaining)) as response:
-        raw = response.read(RESPONSE_BYTES + 1)
+    try:
+        with urlopen(base + route + '?' + urlencode(params), timeout=min(10, remaining)) as response:
+            raw = response.read(RESPONSE_BYTES + 1)
+    except HTTPError as exc:
+        with exc:
+            body = exc.read(HTTP_ERROR_BYTES + 1)
+        raise ReadinessHTTPError(exc.code, body[:HTTP_ERROR_BYTES].decode('utf-8', errors='replace'),
+                                 len(body) > HTTP_ERROR_BYTES, route, params) from exc
     if len(raw) > RESPONSE_BYTES:
         raise ValueError('readiness API response exceeds byte bound')
     payload = json.loads(raw)
@@ -104,6 +123,8 @@ def check_cell(ctx, driver, spec, attempt_id):
             checks[name] = {'state': 'failed' if required else 'unavailable', 'required': required,
                             'started_at': began, 'finished_at': time.time(),
                             'error_type': type(exc).__name__, 'error': export.redact_text(str(exc))}
+            if isinstance(exc, ReadinessHTTPError):
+                checks[name]['http'] = exc.evidence
 
     def pods(namespace):
         timeout = min(10, max(.001, deadline-time.monotonic()))
@@ -157,12 +178,27 @@ def check_cell(ctx, driver, spec, attempt_id):
                 check('graph', lambda: endpoint('/api/v1/graph/nodes', 'nodes'))
 
                 def telemetry():
-                    at = r.utc()
-                    payload = _json(base, '/api/v1/metrics', {'metric_name': 'container.cpu.usage',
-                                    'aggregation': 'latest', 'from': at, 'to': at, 'page_size': 100}, deadline)
+                    from ..scoring import stamp
+                    end = datetime.now(timezone.utc)
+                    query = {'metric_name': 'container.cpu.usage',
+                             'from': (end-timedelta(minutes=5)).isoformat().replace('+00:00','Z'),
+                             'to': end.isoformat().replace('+00:00','Z'), 'page_size': 100}
+                    payload = _json(base, '/api/v1/metrics', query, deadline)
+                    observed_at = time.time()
                     samples = payload['data'].get('samples')
+                    ages = []
+                    for sample in samples if isinstance(samples,list) else []:
+                        timestamp = sample.get('timestamp') if isinstance(sample,dict) else None
+                        try:
+                            age = observed_at-stamp(timestamp)
+                            ages.append({'timestamp':timestamp, 'age_seconds':age})
+                        except (TypeError,ValueError,OverflowError):
+                            ages.append({'timestamp':timestamp, 'age_seconds':None,
+                                         'reason':'sample timestamp unavailable or invalid'})
                     return {'_valid': isinstance(samples, list) and bool(samples), 'response': payload,
-                            'interpretation': 'resource telemetry presence only; no accuracy or traffic claim'}
+                            'query':query, 'query_window_seconds':300, 'observed_at':observed_at,
+                            'sample_ages':ages,
+                            'interpretation': 'resource telemetry presence only; no accuracy or traffic claim; age uses returned sample timestamp without asserting producer freshness'}
                 check('available-telemetry', telemetry, required=False)
         except Exception as exc:
             for name, required in [('catalog', True), ('graph', True), ('available-telemetry', False)]:

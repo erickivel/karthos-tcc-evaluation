@@ -201,6 +201,74 @@ def prepare_source(ctx,source):
     for item in objects:apply(ctx,item)
     ctx.kube('rollout','status','deployment/istiod','-n','istio-system','--timeout=180s',timeout=210)
 
+def verify_namespace_ownership(ctx, names, *, expected_uids=None, allow_absent=False,
+                               marker_required=False, expected_marker_uid=None):
+    """Read-only GKE owner/run/UID check; local marker/PVC checks are separate.
+
+    Explicit expected_uids from the active setup snapshot takes precedence over
+    in-memory state. Partial setup may allow absent namespaces, but every found
+    namespace still requires exact GKE owner/run labels and a live UID.
+    """
+    from .provision import OWNER
+    expected = ctx.state.get('owned_namespace_uids', {}) if expected_uids is None else expected_uids
+    result = {'safe':True, 'namespaces':{}, 'absent':[], 'observed_at':time.time()}
+    for name in sorted(set(names)):
+        response = ctx.kube('get','namespace',name,'--ignore-not-found','-o','json',check=False,cleanup=True,timeout=15)
+        if response.returncode:
+            raise ValueError('cannot verify GKE namespace ownership: '+name)
+        if not response.stdout.strip():
+            if allow_absent and name not in expected:
+                result['absent'].append(name)
+                continue
+            raise ValueError('expected GKE namespace missing: '+name)
+        document=json.loads(response.stdout);meta=document.get('metadata',{})
+        labels=meta.get('labels',{})
+        if (document.get('kind')!='Namespace' or meta.get('name')!=name or not meta.get('uid')
+                or meta.get('deletionTimestamp')
+                or labels.get('evaluation.karthos.dev/owner')!=OWNER
+                or labels.get('evaluation.karthos.dev/run-id')!=ctx.run_id):
+            raise ValueError('GKE namespace ownership, run or live identity differs: '+name)
+        if name in expected and expected[name]!=meta['uid']:
+            raise ValueError('GKE namespace UID changed: '+name)
+        result['namespaces'][name]={'uid':meta['uid'], 'owner':OWNER, 'run_id':ctx.run_id,
+                                  'uid_basis':'setup-snapshot' if name in expected else 'observed-only'}
+    from .. import runner as r
+    if r.KARTHOS_NAMESPACE in result['namespaces']:
+        response=ctx.kube('get','configmap',r.MARKER,'-n',r.KARTHOS_NAMESPACE,
+                          '--ignore-not-found','-o','json',check=False,cleanup=True,timeout=15)
+        if response.returncode:raise ValueError('cannot verify Karthos ownership marker')
+        if not response.stdout.strip():
+            if marker_required or expected_marker_uid:raise ValueError('expected Karthos ownership marker missing')
+            result['marker']={'state':'absent','required':False}
+        else:
+            document=json.loads(response.stdout);meta=document.get('metadata',{})
+            if (document.get('kind')!='ConfigMap' or meta.get('name')!=r.MARKER
+                    or meta.get('namespace')!=r.KARTHOS_NAMESPACE or not meta.get('uid')
+                    or meta.get('deletionTimestamp')
+                    or meta.get('labels',{}).get(r.OWNER_LABEL)!=r.OWNER_VALUE
+                    or document.get('data',{}).get('run')!=ctx.run_id):
+                raise ValueError('Karthos ownership marker labels, run or identity differs')
+            if expected_marker_uid and meta['uid']!=expected_marker_uid:
+                raise ValueError('Karthos ownership marker UID changed')
+            result['marker']={'state':'verified','uid':meta['uid'],'run_id':ctx.run_id,
+                              'uid_basis':'setup-snapshot' if expected_marker_uid else 'observed-only'}
+    return result
+
+
+def record_namespace_ownership(ctx, cell, path):
+    """Retain active successful setup identities, excluding stale prior cells."""
+    from .. import runner as r
+    names=[r.KARTHOS_NAMESPACE,cell.namespace]
+    if cell.source=='mesh':names.append('istio-system')
+    result=verify_namespace_ownership(ctx,names,expected_uids={},marker_required=True)
+    uids={name:row['uid'] for name,row in result['namespaces'].items()}
+    result.update(namespace_uids=uids, basis='successful-cell-setup')
+    ctx.write(Path(path)/'namespace-ownership.json',result)
+    ctx.state['owned_namespace_uids']=uids
+    ctx.state['owned_marker_uid']=result['marker']['uid']
+    return result
+
+
 def ensure_owned_namespaces(ctx):
     from .. import runner as r
     for name in [r.KARTHOS_NAMESPACE,*r.NAMESPACES.values()]:
@@ -232,4 +300,5 @@ def setup_cell(ctx,cell,parent):
         found=[p for p in pods if term in p['metadata']['name']]
         if not found or any(nodes.get(p.get('spec',{}).get('nodeName'))!=slot for p in found):raise ValueError('cross-node application placement missing: '+term)
     write(path/'placement.json',{'nodes':nodes,'frontend_slot':'app-a','checkout_slot':'app-b'})
+    record_namespace_ownership(ctx,cell,path)
     return path

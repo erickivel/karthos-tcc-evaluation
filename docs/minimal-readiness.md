@@ -7,3 +7,7 @@ Observation is bounded to 120 seconds and the remaining infrastructure budget mi
 Required observations are ready active application and Karthos pods, current rollout generations with all desired replicas available, the expected request-metric source in the deployed `karthos-source-contract` ConfigMap exactly matching the resolved local plan, a nonempty catalog response and a nonempty graph response. Resource metric presence is informational: an empty query is `unavailable`, never a fabricated zero or an automatic traffic failure. Accuracy and source traffic delivery belong to the measured smoke/window.
 
 Each observation failure is retained independently; later checks still execute while time remains. Core check failures return `usable: false`; the matrix owns continuation and recovery. An unverified receipt export raises `MinimalReadinessSafetyError`. Every attempt uses a distinct ID and evidence prefix, preserving failed attempts. Credentials and unprojected operational state are excluded by the existing export mechanism.
+
+### Optional resource observation
+
+The CPU gauge query omits explicit aggregation and uses the previous five minutes. Record the query, acquisition time, returned timestamps and sample ages; this is availability evidence, not a freshness or accuracy pass. HTTP failures retain bounded redacted response details. Optional absence/failure does not block core deployment/API readiness.
