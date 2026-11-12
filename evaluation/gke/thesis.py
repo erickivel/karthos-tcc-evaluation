@@ -330,13 +330,13 @@ def score_window_answers(document, before, after, report):
 
 def claim_matrix(ctx,windows,history,readiness_report):
     """Link independently scored claims to the exact sealed sources."""
-    from .models import read
+    from .report_summary import load_summary
     by_window={}
     for row in windows:
         path=Path(row['path'])/'gke-evaluation.json' if row.get('path') else None
-        if (path and path.is_file() and row.get('export',{}).get('verified') is True
+        if (path and (path.is_file() or (path.parent/'orchestration-summary.json').is_file()) and row.get('export',{}).get('verified') is True
                 and row.get('evidence_valid') is True and row.get('execution')=='complete'):
-            evidence=read(path)
+            evidence=load_summary(path.parent)
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
                 by_window[row['id']]=(row['export'].get('uri'),evidence)
     rows=[]

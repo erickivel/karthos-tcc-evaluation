@@ -11,7 +11,7 @@ from .export import evidence_files, redact_text
 JSON_LIMIT = 8 * 1024**2
 REPORT_LIMIT = 64 * 1024**2
 DIAGNOSTIC_LIMIT = 256 * 1024**2 + 65536
-NAMES = ('gke-evaluation.json', 'transition.json', 'manifest.json',
+NAMES = ('gke-evaluation.json', 'orchestration-summary.json', 'transition.json', 'manifest.json',
          'generator-artifact-status.json', 'structured/status.json')
 IDENTIFIER = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,220}')
 

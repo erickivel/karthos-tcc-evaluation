@@ -191,9 +191,9 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     directory=ctx.result/'checkpoints'/f'phase-{sequence:04d}';directory.mkdir(parents=True,exist_ok=False)
     reports={}
     for row in records:
-        if row.get('path') and (Path(row['path'])/'gke-evaluation.json').exists():
-            try:reports[row['id']]=read(Path(row['path'])/'gke-evaluation.json')
-            except Exception as exc:reports[row['id']]={'state':'unavailable','error':{'type':type(exc).__name__,'message':str(exc)},'path':row['path']}
+        if row.get('path'):
+            from .report_summary import load_summary
+            reports[row['id']]=load_summary(row['path'])
     document={'version':4,'run_id':ctx.run_id,'binding':binding(ctx.manifest),'records':records,'history':history,
               'readiness':readiness,'reports':reports,'cluster_instances':ctx.state.get('evaluation_cluster_instances',[]),
               'sequence':sequence,'created_at':time.time(),'study_usage':{key:ctx.state.get(key,0) for key in ('cumulative_raw_evidence_bytes','uploaded_evidence_bytes')},'study_budget':ctx.manifest.get('study_budget'),'execution_segment':ctx.config.get('execution_segment','all'),'predecessor':ctx.manifest.get('continuation',{}).get('export')}
@@ -201,7 +201,7 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     # numerical reports, so a continuation never needs the previous VM.
     for row in records:
         if row.get('path'):
-            for name in ('api-nodes.json','api-edges.json','versions-after.json'):
+            for name in ('api-nodes.json','api-edges.json','versions-after.json','consumer/ledger.json'):
                 src=Path(row['path'])/name
                 if src.exists():
                     target=directory/'retained'/row['id']/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(src,target)
@@ -260,10 +260,10 @@ def execute(ctx,driver):
         records=copy.deepcopy(previous['records']);history=previous.get('history');readiness=copy.deepcopy(previous.get('readiness',[]))
         for row in records:
             target=ctx.result/'predecessor-reports'/row['id'];target.mkdir(parents=True,exist_ok=True)
-            if row['id'] in previous.get('reports',{}):ctx.write(target/'gke-evaluation.json',previous['reports'][row['id']])
+            if row['id'] in previous.get('reports',{}):ctx.write(target/'orchestration-summary.json',previous['reports'][row['id']])
             for name,value in previous.get('retained_graphs',{}).get(row['id'],{}).items():ctx.write(target/name,value)
             row['predecessor_path']=row.get('path');row['path']=str(target)
-            retained=target/'gke-evaluation.json'
+            retained=target/'orchestration-summary.json'
             if retained.exists():
                 document=read(retained);document['path']=str(target);ctx.write(retained,document)
     pending_attempts={row['id']:copy.deepcopy(row.get('attempts',[])) for row in records if not row.get('retry_policy_complete')}
@@ -350,6 +350,8 @@ def execute(ctx,driver):
                 shutil.copytree(path,window_path/'execution-diagnostics',dirs_exist_ok=True)
                 report['path']=str(window_path);report['spec']=attempt
                 ctx.write(window_path/'gke-evaluation.json',report)
+                from .report_summary import save_summary
+                save_summary(window_path,report)
                 barrier=transition(ctx,driver,attempt,report)
                 if not barrier['safe']:
                     # Only immutable, stopped supplementary diagnostics enter
@@ -470,6 +472,6 @@ def load_continuation(directory, receipt_path, manifest):
     document['retained_graphs']={}
     for record in records:
         base=directory/'retained'/record['id']
-        document['retained_graphs'][record['id']]={f.name:read(f) for f in base.glob('*.json')}
+        document['retained_graphs'][record['id']]={str(f.relative_to(base)):read(f) for f in base.rglob('*.json')}
     document['export']=receipt
     return document

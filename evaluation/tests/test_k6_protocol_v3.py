@@ -32,9 +32,9 @@ class K6ProtocolV3Tests(unittest.TestCase):
             self.assertEqual(row['duration_seconds'],300 if row['scenario']=='network' else 60)
         self.assertEqual((readiness.VERSION,readiness.SECONDS,readiness.RESERVE),(3,10800,1200))
 
-    def test_active_protocol_and_cli_are_versioned_k6_only(self):
-        protocol=models.read(ROOT/'protocols'/models.THESIS/'protocol.yaml')
-        self.assertEqual(models.THESIS,'thesis-qualification-v3')
+    def test_historical_v3_and_current_cli_remain_k6_only(self):
+        protocol=models.read(ROOT/'protocols'/models.THESIS_V3/'protocol.yaml')
+        self.assertEqual(models.THESIS_V3,'thesis-qualification-v3')
         self.assertEqual(protocol['generators'],['k6'])
         self.assertEqual(protocol['history_observation_seconds'],720)
         args=parser().parse_args(['prepare','--id','fixture'])
@@ -42,16 +42,16 @@ class K6ProtocolV3Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             readiness.validate_launch(SimpleNamespace(manifest={'schedule':models.THESIS_V2}))
 
-    def test_active_protocol_rejects_generator_and_readiness_drift(self):
+    def test_historical_v3_rejects_generator_and_readiness_drift(self):
         from copy import deepcopy
-        original=models.read(ROOT/'protocols'/models.THESIS/'protocol.yaml')
+        original=models.read(ROOT/'protocols'/models.THESIS_V3/'protocol.yaml')
         for key,value in (('generators',['k6','locust']),('readiness_definition_version',1),('readiness_definition_version',2),
                           ('readiness_cases',17),('readiness_load_seconds',1260)):
             with self.subTest(key=key):
                 changed=deepcopy(original)
                 changed[key]=value
                 with self.assertRaisesRegex(ValueError,'k6-only readiness'):
-                    models.build_matrix(changed,schedule=models.THESIS)
+                    models.build_matrix(changed,schedule=models.THESIS_V3)
 
     def test_definition_path_keeps_legacy_contracts(self):
         for schedule in models.THESIS_SCHEDULES:

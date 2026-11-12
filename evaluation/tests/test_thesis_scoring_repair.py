@@ -180,7 +180,7 @@ class ThesisHistoryTests(unittest.TestCase):
     def test_incomplete_history_can_export_but_does_not_authorize_continuation(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)
-            ctx=SimpleNamespace(result=root,deadline=time.time()+1000,
+            ctx=SimpleNamespace(result=root,deadline=time.time()+1000,manifest={},
                     config={'limits':{'cleanup_reserve_seconds':120}},
                     json=lambda *args: {},write=write,
                     state={'terraform':{'foundation':{'evidence_bucket':'bucket'}}},run_id='test')
@@ -208,7 +208,7 @@ class ThesisHistoryTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)
-            ctx=SimpleNamespace(result=root,deadline=time.time()+1000,
+            ctx=SimpleNamespace(result=root,deadline=time.time()+1000,manifest={},
                     config={'limits':{'cleanup_reserve_seconds':120}},
                     json=lambda verb,kind,*args: deployment if kind=='deployment' else pods(old),
                     kube=lambda *args,**kwargs: None,write=write,

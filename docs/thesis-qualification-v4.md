@@ -101,3 +101,11 @@ The Billing management API (`cloudbilling.googleapis.com`) must be enabled. The 
 GKE namespace ownership is verified against `gke-qualification-v1`, the exact launch ID and namespace UIDs retained at successful setup. The Karthos marker retains its separate legacy owner contract and exact run/UID. Partial setup verifies every existing evaluation namespace even when Karthos itself was never created.
 
 A failed transition does not overwrite a completed measurement or locally valid evidence. Reports distinguish physical execution, local validity, verified raw export and safe continuation. Finalized reports and transitions survive in checkpoints and final summaries; they do not imply that an unexported raw archive was accepted. The first valid, verified exported observation remains representative even when its numerical result disagrees.
+
+### Bounded checkpoint and claim records
+
+Detailed window reports remain sealed in the immutable per-window archive. Before export, the harness writes `orchestration-summary.json` with the exact raw-report SHA256/size, execution/evidence states, claim answer states and the traffic population fields used by cross-source/rebuild comparisons. It carries no per-sample reference arrays. No numerical result or tolerance changes.
+
+Cumulative checkpoints and final claim aggregation read bounded summaries (8 MiB maximum per record), never every detailed report at once. Missing/oversized summaries are explicit unavailable evidence. A small historical report may be read within the same bound. Continuation retains these summaries plus graph/version/consumer-ledger evidence; it does not manufacture detailed reports from summaries. The original detailed raw archive remains the authority for independent reanalysis.
+
+This repairs the observed four-window checkpoint growth to 2.35 GB and global OOM on the fixed 16 GiB controller; increasing the VM or weakening capture/scoring is unnecessary.
