@@ -84,3 +84,10 @@ Preparation now requires `readiness.phase_estimates_seconds`: positive finite `p
 Limits remain 12 infrastructure hours, US$80 projected launch threshold and US$100 gross planning ceiling. Cost estimates and a watchdog are not a hard billing cap. Raw evidence remains in private GCS, original execution evidence under `results/`, and versioned interpretation under `analyses/`.
 
 Implementation validation deliberately excludes workload simulations, archive benchmarks and a separate live rehearsal. Static syntax/configuration checks and code review do not prove cloud runtime correctness. The first approved GCP launch provides that evidence.
+
+
+## Approved split launch (2026-11-12)
+
+The frozen 21-window study is split into `execution_segment: thesis` (12 smoke/baseline windows plus history on two clusters) and `execution_segment: diagnostics` (nine windows on a later fresh cluster). Each infrastructure launch retains its 12-hour limit; the combined gross planning ceiling remains US$100. Reviewed allocations must be at most US$80 per launch and sum to at most US$100. Shared evidence retention and transfer allowances are charged once in the study estimate. This is a planning allocation, not an automated hard billing cap.
+
+The first segment seals its completed phases and reports `segment-complete`, not a completed qualification. The other nine windows are explicitly deferred. The diagnostic segment requires a verified predecessor checkpoint accounting for every thesis window; its forecast considers only pending diagnostic work, without a second thesis history/rebuild charge. Existing study-wide raw evidence usage carries forward. A diagnostic continuation uses a new physical cluster identity and does not create a third reproducibility baseline. Each launch still requires explicit approval; diagnostics do not auto-launch after teardown.

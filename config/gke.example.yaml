@@ -48,9 +48,17 @@
       "export": null,
       "history": null,
       "retry_reserve": null
+    },
+    "study_budget": {
+      "gross_limit_usd": 100,
+      "launch_allocations_usd": {
+        "thesis": null,
+        "diagnostics": null
+      }
     }
   },
   "baseline": "results/timing-20261025-g",
   "product_snapshot": null,
-  "source_policy": "validated-snapshot-only"
+  "source_policy": "validated-snapshot-only",
+  "execution_segment": "thesis"
 }

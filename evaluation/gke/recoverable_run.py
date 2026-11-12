@@ -18,19 +18,34 @@ class ProductDefect(SafetyFailure):
     """A demonstrated product-contract defect requires human direction."""
 
 
-def planning_forecast(config, matrix):
+def scheduled_matrix(config, matrix, continuation=None):
+    """One frozen study; launch segments select work, never rewrite workloads."""
+    segment=config.get('execution_segment','all')
+    if segment not in ('all','thesis','diagnostics'):raise ValueError('unknown execution segment')
+    complete={row['id'] for row in (continuation or {}).get('records',[]) if row.get('retry_policy_complete')}
+    return [row for row in matrix if row['id'] not in complete and
+            (segment=='all' or (row['phase'] in ('smoke','baseline'))==(segment=='thesis'))]
+
+
+def planning_forecast(config, matrix, continuation=None):
     """Explicit conservative estimates, never invented from a successful readiness receipt."""
+    matrix=scheduled_matrix(config,matrix,continuation)
     estimates=config.get('readiness',{}).get('phase_estimates_seconds',{})
     required=('provision','rebuild','setup','capture_setup_restore','export','history','retry_reserve')
     missing=[key for key in required if type(estimates.get(key)) not in (int,float)
              or not math.isfinite(estimates[key]) or estimates[key]<=0]
     if missing:return {'fits':False,'seconds':None,'missing':missing,'reason':'reviewed phase timing estimates required; no local benchmark required'}
     groups=sum(1 for i,row in enumerate(matrix) if i==0 or (row['repeat'],row['cell'])!=(matrix[i-1]['repeat'],matrix[i-1]['cell']) or row['phase'] in ('arbitration','restart'))
-    seconds=(estimates['provision']+estimates['rebuild']+groups*(estimates['setup']+120+estimates['export'])
+    rebuild=estimates['rebuild'] if len({row['repeat'] for row in matrix})>1 else 0
+    history=estimates['history'] if any(row['repeat']==1 and row['cell']=='boutique-mesh' and row['phase']=='baseline' for row in matrix) and not (continuation or {}).get('history') else 0
+    resource_preparation=estimates.get('resource_prepare',0)
+    if type(resource_preparation) not in (int,float) or not math.isfinite(resource_preparation) or resource_preparation<0:raise ValueError('invalid resource preparation allowance')
+    resource_preparation*=sum(row['phase']=='resource' for row in matrix)
+    seconds=(estimates['provision']+rebuild+resource_preparation+groups*(estimates['setup']+120+estimates['export'])
              +sum(row['duration_seconds']+60+90+180+estimates['capture_setup_restore']+estimates['export'] for row in matrix)
-             +estimates['history']+estimates['retry_reserve']+config['limits']['cleanup_reserve_seconds'])
+             +history+estimates['retry_reserve']+config['limits']['cleanup_reserve_seconds'])
     return {'fits':seconds<=config['limits']['infrastructure_seconds'],'seconds':seconds,
-            'estimates':estimates,'setup_groups':groups,'retry_reserve_policy':'bounded; deadline may leave retries or windows unattempted',
+            'estimates':estimates,'setup_groups':groups,'launch_segment':config.get('execution_segment','all'),'launch_windows':len(matrix),'rebuild_seconds':rebuild,'history_seconds':history,'resource_preparation_seconds':resource_preparation,'retry_reserve_policy':'bounded; deadline may leave retries or windows unattempted',
             'basis':'reviewed archived phase estimates plus frozen pre-roll/drain and quiet-counter allowance'}
 
 
@@ -41,10 +56,22 @@ def validate_launch(ctx):
     if ctx.manifest.get('readiness_check') is not None:raise ValueError('legacy readiness gate must not be active in v4')
     if ctx.manifest.get('minimal_readiness')!={'version':4,'mode':'per-cell-read-only','observation_seconds':120,'traffic':False}:
         raise ValueError('minimal readiness contract missing or changed')
-    forecast=planning_forecast(ctx.config,ctx.manifest['matrix'])
+    forecast=planning_forecast(ctx.config,ctx.manifest['matrix'],ctx.manifest.get('continuation'))
     if not forecast['fits'] or forecast!=ctx.manifest.get('time_forecast'):raise ValueError('reviewed complete time forecast missing, changed or exceeds budget')
     if ctx.config.get('execution_scope','qualification')!='qualification':raise ValueError('v4 is per-cell readiness followed by measurement; readiness-only scope retired')
     validate_cost(ctx)
+    study=ctx.manifest.get('study_budget',{})
+    if ctx.config.get('execution_segment','all')!='all':
+        allocations=study.get('launch_allocations_usd',{})
+        if study.get('gross_limit_usd')!=100 or set(allocations)!= {'thesis','diagnostics'} or any(type(x) not in (int,float) or not math.isfinite(x) or x<0 or x>80 for x in allocations.values()) or sum(allocations.values())>100:
+            raise ValueError('split launches require reviewed allocations within USD80 each / USD100 combined')
+        if study != ctx.config.get('readiness',{}).get('study_budget'):raise ValueError('study budget binding differs from config')
+        if ctx.manifest['cost_preview']['gross_estimate']>allocations[ctx.config['execution_segment']]:raise ValueError('launch estimate exceeds its combined-study allocation')
+    if ctx.config.get('execution_segment')=='diagnostics':
+        prior=ctx.manifest.get('continuation')
+        accounted={row['id'] for row in (prior or {}).get('records',[]) if row.get('retry_policy_complete')}
+        required={row['id'] for row in ctx.manifest['matrix'] if row['phase'] in ('smoke','baseline')}
+        if not prior or not required<=accounted or prior.get('history') is None:raise ValueError('diagnostic continuation requires thesis windows and history accounted for')
     from .thesis import local_contract
     local_contract(ctx.manifest.get('local_contract_evidence'),ctx.manifest['product_pins'])
     continuation=ctx.manifest.get('continuation')
@@ -54,7 +81,7 @@ def validate_launch(ctx):
 
 
 def binding(manifest):
-    return canonical_sha({key:manifest.get(key) for key in ('protocol_definition','product_pins','image_lock','thresholds','implementation_sha256')})
+    return canonical_sha({key:manifest.get(key) for key in ('protocol_definition','product_pins','image_lock','thresholds','implementation_sha256','study_budget')})
 
 
 def _budget(ctx, seconds=0):
@@ -155,7 +182,7 @@ def _checkpoint(ctx,records,history,readiness,sequence):
             reports[row['id']]=read(Path(row['path'])/'gke-evaluation.json')
     document={'version':4,'run_id':ctx.run_id,'binding':binding(ctx.manifest),'records':records,'history':history,
               'readiness':readiness,'reports':reports,'cluster_instances':ctx.state.get('evaluation_cluster_instances',[]),
-              'sequence':sequence,'created_at':time.time(),'predecessor':ctx.manifest.get('continuation',{}).get('export')}
+              'sequence':sequence,'created_at':time.time(),'study_usage':{key:ctx.state.get(key,0) for key in ('cumulative_raw_evidence_bytes','uploaded_evidence_bytes')},'study_budget':ctx.manifest.get('study_budget'),'execution_segment':ctx.config.get('execution_segment','all'),'predecessor':ctx.manifest.get('continuation',{}).get('export')}
     # Retain graph evidence needed for cross-deployment comparisons as well as
     # numerical reports, so a continuation never needs the previous VM.
     for row in records:
@@ -189,11 +216,13 @@ def execute(ctx,driver):
     from . import export
     from .minimal_readiness import check_cell, MinimalReadinessSafetyError
     from .execution_diagnostics import ExecutionDiagnostics
-    matrix=ctx.manifest['matrix'];records=[];history=None;readiness=[];failure=None;cleanup=None;sequence=0
+    matrix=ctx.manifest['matrix'];launch_matrix=scheduled_matrix(ctx.config,matrix,ctx.manifest.get('continuation'));records=[];history=None;readiness=[];failure=None;cleanup=None;sequence=0
     current_attempt=None
     previous=ctx.manifest.get('continuation') or {}
     if previous:
         ctx.state['evaluation_cluster_instances']=copy.deepcopy(previous.get('cluster_instances',[]))
+        for key,value in previous.get('study_usage',{}).items():
+            if key in ('cumulative_raw_evidence_bytes','uploaded_evidence_bytes'):ctx.state[key]=value
         records=copy.deepcopy(previous['records']);history=previous.get('history');readiness=copy.deepcopy(previous.get('readiness',[]))
         for row in records:
             target=ctx.result/'predecessor-reports'/row['id'];target.mkdir(parents=True,exist_ok=True)
@@ -206,7 +235,7 @@ def execute(ctx,driver):
     pending_attempts={row['id']:copy.deepcopy(row.get('attempts',[])) for row in records if not row.get('retry_policy_complete')}
     done={row['id'] for row in records if row.get('retry_policy_complete')};records=[row for row in records if row['id'] in done];active_repeat=None;active_cell=None;blocked_repeat=None;arbitration_ready=False;cell_readiness={}
     try:
-        for spec in matrix:
+        for spec in launch_matrix:
             if spec['id'] in done:continue
             _budget(ctx)
             if spec['repeat']==blocked_repeat:
@@ -317,6 +346,9 @@ def execute(ctx,driver):
                 if number==1 and spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
                     prerequisite=next(r for r in matrix if r['phase']=='arbitration' and r['scenario']=='both-sources')
                     driver.setup({**prerequisite,'id':attempt['id']+'-prerequisite'});active_cell=None
+            if spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
+                history={'state':'blocked','reason':'Boutique deployment unavailable after baseline attempts','action_taken':False}
+                sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
             if spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
                 history_errors=[]
                 for number in (1,2):
@@ -353,14 +385,18 @@ def execute(ctx,driver):
             cleanup={'error':str(exc),'verified':False};failure={'kind':'cleanup-failed','message':str(exc),'prior':failure}
     accounted={r['id'] for r in records}
     for spec in matrix:
-        if spec['id'] not in accounted:records.append({'id':spec['id'],'state':'unattempted','execution':'unattempted','evidence_valid':False,'reason':failure or 'dependent work unavailable','attempts':[]})
+        if spec['id'] not in accounted:records.append({'id':spec['id'],'state':'unattempted','execution':'unattempted','evidence_valid':False,'reason':failure or ('deferred to explicit diagnostic continuation' if ctx.config.get('execution_segment')=='thesis' and spec['phase'] not in ('smoke','baseline') else 'dependent work unavailable'),'attempts':[]})
     export.render_matrix(ctx.result,matrix,records)
     from .thesis import claim_matrix
     latest_readiness={}
     for item in readiness:latest_readiness[(item.get('repeat'),item.get('cell'))]=item
     readiness_report={'ready':bool(latest_readiness) and all(r.get('usable') for r in latest_readiness.values()),'cells':readiness,'mode':'per-cell-read-only'}
     claims=claim_matrix(ctx,records,history,readiness_report);ctx.write(ctx.result/'claim-matrix.json',claims)
-    report={'protocol':'thesis-qualification-v4','state':'complete' if not failure and all(r['state'] not in ('unattempted','blocked') for r in records) else 'incomplete',
+    launch_ids={row['id'] for row in launch_matrix}
+    segment_complete=not failure and all(row.get('retry_policy_complete') for row in records if row['id'] in launch_ids) and launch_ids<={row['id'] for row in records}
+    if ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
+    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and history is not None
+    report={'protocol':'thesis-qualification-v4','state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
             'planned_windows':len(matrix),'attempted_windows':sum(bool(r.get('attempts')) for r in records),'attempts':sum(len(r.get('attempts',[])) for r in records),
             'records':records,'windows':records,'history':history,'readiness':readiness_report,'failure':failure,'cleanup':cleanup,
             'qualified':not failure and all(r['state'] not in ('unattempted','blocked') for r in records) and all(r['verdict']=='pass' for r in claims['claims']),

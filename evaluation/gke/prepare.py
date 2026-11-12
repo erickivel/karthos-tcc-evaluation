@@ -119,7 +119,7 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
     preview=previews(root,dest/'rendered',baseline,config,lock,preparation_id,chart_snapshot=chart_snapshot,product_snapshot=Path(snapshot) if schedule==THESIS else None)
     if preview['state']!='complete':pending.append('rendered manifests contain unresolved images or render errors; inspect rendered/status.json')
     manifest={'schema_version':1,'id':preparation_id,'protocol':protocol['id'],'prepared_at':datetime.now(timezone.utc).isoformat(),
-        'schedule':schedule,'readiness_check':None,'minimal_readiness':minimal_definition,'time_forecast':forecast,'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
+        'study_budget':config.get('readiness',{}).get('study_budget'),'schedule':schedule,'readiness_check':None,'minimal_readiness':minimal_definition,'time_forecast':forecast,'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
         'product_pins':pins,'product_snapshot':str(Path(snapshot).resolve()) if snapshot else None,'image_lock':lock,
         'thresholds':read(baseline/'frozen-thresholds.json'),'baseline_config':read(baseline/'locked-config.json'),
         'artifact_checks':checks,'pending_prerequisites':pending,'execution_ready':not pending,'cost_preview':cost,'bundle':bundle,'rendered_previews':preview}
@@ -127,6 +127,12 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
         if not continuation_dir or not continuation_receipt:raise ValueError('continuation needs checkpoint directory and export receipt')
         from .recoverable_run import load_continuation
         manifest['continuation']=load_continuation(continuation_dir,continuation_receipt,manifest)
+        manifest['time_forecast']=planning_forecast(config,matrix,manifest['continuation'])
+        pending[:]=[item for item in pending if not item.startswith(('reviewed v4 phase timing estimates missing:', 'full v4 time forecast including retries exceeds'))]
+        final_forecast=manifest['time_forecast']
+        if final_forecast.get('missing'):pending.append('reviewed v4 phase timing estimates missing: '+', '.join(final_forecast['missing']))
+        elif not final_forecast['fits']:pending.append('full v4 time forecast including retries exceeds infrastructure budget')
+        manifest['execution_ready']=not pending
     if schedule==THESIS:
         manifest['local_contract_evidence']=local
         manifest['historical_timing_inputs']={'baseline':summary['baseline'],'product_pins':summary['pins']}
