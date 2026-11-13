@@ -8,13 +8,15 @@ import time
 
 
 def reader_script(filename, chunk_limit):
-    if filename not in ('metrics.json', 'traces.json'):
+    if filename not in ('metrics.json', 'traces.json', 'receiver-input.ndjson', 'receiver-errors.ndjson'):
         raise ValueError('unsafe diagnostic filename')
+    rotation = f'for p in /diag/{filename[:-5]}*.json; do [ \"$p\" = \"$f\" ] || exit 40; done' if filename.endswith('.json') else ':'
     return f'''set -eu
 f=/diag/{filename}
 read_chunk() (
+    [ ! -L "$f" ] || exit 40
     if [ ! -f "$f" ]; then printf 'missing\\n'; exit 0; fi
-    for p in /diag/{filename[:-5]}*.json; do [ "$p" = "$f" ] || exit 40; done
+    {rotation}
     exec 3< "$f"
     meta=$(stat -Lc '%i:%s' /proc/self/fd/3) || exit 42
     size=${{meta#*:}}

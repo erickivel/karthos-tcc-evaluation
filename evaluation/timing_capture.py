@@ -538,10 +538,58 @@ printf '%s:%s\\n' "$meta" "$digest"
             self._stop.wait(max(0, PERIOD-elapsed))
         # If bounded stop returned while a request was in flight, close only
         # after the worker ceases using the forwarded endpoints.
-        if not self._multinode():self._stack.close()
+        if not self._multinode() and getattr(self.repair,'settings',{}).get('capture_finalization_version')!=2:self._stack.close()
         self._finished_workers.add(threading.current_thread().name)
         self._worker_finished_normally = True
         if not self._multinode():self.status['worker_stopped'] = True
+
+    def _finish_frozen_tails(self):
+        """Consume the sealed boundary prefix with actual late observation times."""
+        import hashlib
+        frozen=self.repair.freeze_snapshots()
+        self.status['finalization']={'version':2,'allowance_seconds':30,'streams':{}}
+        for key,(kind,pod,filename) in self._collector_streams.items():
+            try:
+                component=frozen['components'][kind]
+                receipt=component['files'][filename]
+                if component.get('errors'):
+                    raise ValueError('frozen source invalid: '+'; '.join(component['errors']))
+                if component['collector_uid']!=pod['metadata']['uid']:
+                    raise ValueError('final snapshot collector UID changed')
+                path=Path(component['raw_directory'])/filename
+                if not receipt.get('complete'):
+                    raise ValueError('incomplete frozen snapshot: '+str(receipt.get('reason','source unavailable')))
+                if path.stat().st_size!=receipt['sealed_bytes']:
+                    raise ValueError('frozen snapshot size changed')
+                with path.open('rb') as handle:
+                    if hashlib.file_digest(handle,'sha256').hexdigest()!=receipt['sha256']:
+                        raise ValueError('frozen snapshot checksum mismatch')
+                state=self._files.setdefault(key,dict(inode=None,offset=0,carry=b''))
+                if state['inode'] is not None and state['inode']!=receipt['inode']:
+                    raise ValueError('final snapshot inode changed')
+                if state['offset']>receipt['sealed_bytes']:
+                    raise ValueError('final snapshot source truncated')
+                with path.open('rb') as handle:
+                    handle.seek(state['offset'])
+                    while raw:=handle.read(CHUNK_LIMIT):
+                        requested=time.time_ns()
+                        offset=state['offset']
+                        complete,separator,carry=(state['carry']+raw).rpartition(b'\n')
+                        body=complete+b'\n' if separator else b''
+                        if not separator:carry=state['carry']+raw
+                        for line in body.splitlines():
+                            if line.strip():json.loads(line)
+                        state.update(inode=receipt['inode'],offset=offset+len(raw),carry=carry,backlog=receipt['sealed_bytes']-offset-len(raw))
+                        self._record('collector-tail',key,requested,body=body.decode('utf-8'),
+                            phase='finalization',collector_uid=pod['metadata']['uid'],
+                            collector_kind=kind.split(':',1)[0],node_name=pod.get('spec',{}).get('nodeName'),
+                            inode=receipt['inode'],offset=offset,end_offset=state['offset'],
+                            backlog_bytes=state['backlog'],partial_line_bytes=len(carry),file=filename,
+                            raw_chunk_base64=base64.b64encode(raw).decode('ascii'),chunk_sha256=hashlib.sha256(raw).hexdigest(),
+                            frozen_cutoff_bytes=receipt['cutoff_bytes'],snapshot_completed_at_ns=receipt['completed_at_ns'])
+                self.status['finalization']['streams'][key]=receipt
+            except Exception as exc:
+                self.status['errors'].append('finalization '+key+': '+str(exc))
 
     def stop(self):
         if self._stopped:
@@ -558,6 +606,8 @@ printf '%s:%s\\n' "$meta" "$digest"
             if not self._worker_finished_normally or (self._multinode() and any(worker.name not in self._finished_workers for worker in self._threads)):
                 self.status['errors'].append('availability worker exited unexpectedly')
         self.status['worker_stopped'] = True
+        if getattr(self.repair,'settings',{}).get('capture_finalization_version')==2:
+            self._finish_frozen_tails()
         self._stack.close()
         for name in self._expected:
             if not self.status['streams'].get(name, {}).get('nonempty'):

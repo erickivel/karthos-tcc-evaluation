@@ -73,6 +73,14 @@ def instrumentation_plan(kind, cm, workload, owner, settings):
         reader_resources['requests']['cpu'] = '100m'
         reader_resources['limits']['cpu'] = f"{settings['gateway_reader_cpu_limit_m']}m"
     spec['containers'].append({'name':'diag-reader','image':image,'command':['sh','-c','sleep 86400'],'resources':reader_resources,'volumeMounts':[copy.deepcopy(mount)]})
+    config_volume=None
+    if settings.get('capture_finalization_version')==2:
+        volumes=[v['name'] for v in spec.get('volumes',[]) if v.get('configMap',{}).get('name')==cm['metadata']['name']]
+        if len(volumes)!=1 or not any(v.get('name')==volumes[0] for v in collector.get('volumeMounts',[])):
+            raise ValueError('collector ConfigMap mount unavailable or ambiguous')
+        config_volume=volumes[0]
+        spec['containers'][-1]['volumeMounts'].append({'name':config_volume,'mountPath':'/evaluation-config','readOnly':True})
+
     spec.setdefault('volumes',[]).append({'name':'evaluation-capture','emptyDir':{'sizeLimit':'512Mi'}})
     spec.setdefault('initContainers',[]).append({'name':'diag-permissions','image':image,'command':['sh','-c','chmod 0777 /diag'],'resources':{'requests':{'cpu':'5m','memory':'8Mi'},'limits':{'cpu':'50m','memory':'32Mi'}},'volumeMounts':[copy.deepcopy(mount)]})
     endpoint=None
@@ -91,7 +99,7 @@ def instrumentation_plan(kind, cm, workload, owner, settings):
         spec['volumes'].append({'name':'evaluation-capture-scripts','configMap':{'name':'eval-capture-'+owner}})
     cm['data'][key]=json.dumps(config)
     cm['metadata'].setdefault('annotations',{})[OWNER]=owner
-    return {'kind':kind,'owner':owner,'key':key,'before_configmap':before_cm,'before_workload':before_work,'after_configmap':cm,'after_workload':workload,'original_receiver_endpoint':endpoint,'original_receiver':original_receiver,'config_sha256':fingerprint(cm['data']),'template_sha256':fingerprint(template)}
+    return {'kind':kind,'owner':owner,'key':key,'before_configmap':before_cm,'before_workload':before_work,'after_configmap':cm,'after_workload':workload,'original_receiver_endpoint':endpoint,'original_receiver':original_receiver,'mounted_config_path':('/evaluation-config/'+key) if config_volume else None,'mounted_config_volume':config_volume,'config_sha256':fingerprint(cm['data']),'template_sha256':fingerprint(template)}
 
 def extract_archive(archive, destination, max_bytes=MAX_BYTES):
     destination=Path(destination)
@@ -107,6 +115,10 @@ def extract_archive(archive, destination, max_bytes=MAX_BYTES):
         if total>max_bytes:raise ValueError('archive exceeds capture disk bound')
         destination.mkdir(parents=True)
         tar.extractall(destination,filter='data')
+    return inspect_directory(destination)
+
+def inspect_directory(destination):
+    destination=Path(destination)
     files=[];errors=[]
     for file in sorted(destination.rglob('*')):
         if not file.is_file():continue
@@ -613,8 +625,36 @@ class RepairCapture:
             self.pods.update(selected)
             for key,pod in selected.items():r.write(self._destination(key)/'pod.json',pod)
             r.write(self.root/plan['kind']/'inventory-before.json',self._get('get','pods','-n',NS))
+        if self.settings.get('capture_finalization_version')==2:self._verify_mounted_configs()
         self.state['instrumentation']['setup_finished_at']=now()
         self.state['instrumentation']['resources']={p['kind']:[{'name':c['name'],'resources':c.get('resources',{})} for c in p['after_workload']['spec']['template']['spec']['containers'] if c['name'].startswith('diag-')] for p in self.plans}
+    def _verify_mounted_configs(self):
+        """Read the actual same-pod projected volume before any traffic starts."""
+        from .gke.setup import validate_connector_settings
+        receipts=[]
+        for key,pod in self.pods.items():
+            kind=key.split(':',1)[0]
+            plan=next(p for p in self.plans if p['kind']==kind)
+            mounted=plan.get('mounted_config_path')
+            if not mounted:raise ValueError('same-pod mounted config path missing')
+            response=r.kube('exec','-n',NS,pod['metadata']['name'],'-c','diag-reader','--','cat',mounted,
+                            timeout=min(10.,max(.01,self.deadline-time.time())),quiet=True)
+            expected=plan['after_configmap']['data'][plan['key']]
+            if response.stdout!=expected:raise ValueError('actual mounted collector config differs from generated config')
+            current=self._pod(kind,cleanup=True) if ':' not in key else self._pods(kind,cleanup=True)[key]
+            if pod_errors(pod,current):raise ValueError('collector changed during mounted config proof')
+            receipt={'component':key,'collector_uid':pod['metadata']['uid'],'node_name':pod['spec'].get('nodeName'),
+                     'path':mounted,'volume':plan['mounted_config_volume'],
+                     'mounted_sha256':hashlib.sha256(response.stdout.encode()).hexdigest(),
+                     'same_pod_volume':True,'observed_at':now()}
+            if kind=='gateway' and self.cell.source=='trace':
+                expected_capacity=self.settings.get('servicegraph_store_max_items')
+                if expected_capacity is None:raise ValueError('active servicegraph capacity setting missing')
+                receipt['servicegraph']=validate_connector_settings(load_config(response.stdout),expected=expected_capacity)
+            receipts.append(receipt)
+        self.state['instrumentation']['mounted_config_proof']={'valid':True,'receipts':receipts}
+        r.write(self.root/'mounted-config-proof.json',self.state['instrumentation']['mounted_config_proof'])
+
     def _destination(self,key):
         return self.root.joinpath(*key.split(':',1))
     def _wait_capture_pods(self, kind, deadline):
@@ -691,6 +731,65 @@ class RepairCapture:
         # follows actual ledger request activity instead.
         activity=(min(starts),max(ends)) if starts and ends else bounds
         return activity,{row['trace_id'].lower() for row in rows if row.get('trace_id')}
+    def freeze_snapshots(self):
+        """Freeze all owned collector streams once before restoration.
+
+        Pollers must have stopped first. The shared deadline is never renewed by
+        a retry, and the source emptyDir never receives a second full copy.
+        """
+        if hasattr(self,'frozen_snapshots'):
+            return self.frozen_snapshots
+        from concurrent.futures import ThreadPoolExecutor
+        from .capture_finalization import freeze_prefix, SnapshotReader, SnapshotIncomplete, inventory_script
+        deadline=time.monotonic()+min(30.,max(0.,self.deadline-time.time()))
+        def freeze_one(item):
+            key,before=item;kind=key.split(':',1)[0]
+            destination=self._destination(key)/'raw-attempt-1';destination.mkdir(parents=True,exist_ok=False)
+            result={'collector_uid':before['metadata']['uid'],'node_name':before['spec'].get('nodeName'),
+                    'raw_directory':str(destination),'files':{},'errors':[]}
+            required={'metrics.json',*({'traces.json'} if kind=='gateway' else {'receiver-input.ndjson'})}
+            allowed={'metrics.json','traces.json','receiver-input.ndjson','receiver-errors.ndjson'}
+            try:
+                observed=self._pod(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic()))) if ':' not in key else self._pods(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic())))[key]
+                errors=pod_errors(before,observed)
+                if errors:raise ValueError('; '.join(errors))
+                response=r.kube('exec','-n',NS,before['metadata']['name'],'-c','diag-reader','--',
+                    'sh','-c',inventory_script(),timeout=min(5.,max(.01,deadline-time.monotonic())),quiet=True)
+                listed=set()
+                for line in response.stdout.splitlines():
+                    entry_type,separator,name=line.partition('\t')
+                    path=Path(name)
+                    if separator!='\t' or entry_type!='file' or path.parent!=Path('/diag') or path.name not in allowed:
+                        result['errors'].append('unexpected capture file:'+str(path));continue
+                    listed.add(path.name)
+                for name in sorted(required-listed):result['errors'].append('source unavailable:'+name)
+                for name in sorted(listed):
+                    try:
+                        used=sum(row.get('sealed_bytes',0) for row in result['files'].values())
+                        with SnapshotReader(before,name,deadline) as reader:
+                            receipt=freeze_prefix(reader,destination/name,deadline=deadline,maximum_bytes=MAX_BYTES-used)
+                            receipt['transport_recoveries']=reader.recoveries if hasattr(reader,'recoveries') else []
+                        result['files'][name]=receipt
+                    except SnapshotIncomplete as exc:
+                        result['files'][name]=exc.receipt;result['errors'].append(name+': '+str(exc))
+                    except Exception as exc:
+                        result['errors'].append(name+': '+str(exc))
+                observed=self._pod(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic()))) if ':' not in key else self._pods(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic())))[key]
+                result['errors']+=pod_errors(before,observed)
+            except Exception as exc:
+                result['errors'].append(str(exc))
+            result['complete']=not result['errors'] and all(row.get('complete') for row in result['files'].values())
+            return key,result
+        with ThreadPoolExecutor(max_workers=min(4,max(1,len(self.pods)))) as pool:
+            components=dict(pool.map(freeze_one,self.pods.items()))
+        self.frozen_snapshots={'version':2,'components':components,'errors':[
+            key+': '+error for key,result in components.items() for error in result['errors']],
+            'finished_at':now(),'allowance_seconds':30}
+        self.frozen_snapshots['complete']=all(row['complete'] for row in components.values())
+        self.state['finalization']=self.frozen_snapshots
+        r.write(self.root/'snapshot-finalization.json',self.frozen_snapshots)
+        return self.frozen_snapshots
+
     def _archive_attempt(self,kind,attempt):
         key=kind;kind=key.split(':',1)[0]
         before=self.pods[key];after=self._pods(kind,cleanup=True)[key] if ':' in key else self._pod(kind,cleanup=True);dest=self._destination(key)
@@ -698,9 +797,19 @@ class RepairCapture:
         errors=pod_errors(before,after)
         archive=dest/('raw-files-attempt-'+str(attempt)+'.tar')
         raw=dest/('raw-attempt-'+str(attempt))
-        with archive.open('xb') as handle:
-            subprocess.run(['kubectl','exec','-n',NS,before['metadata']['name'],'-c','diag-reader','--','tar','cf','-','-C','/diag','.'],stdout=handle,stderr=subprocess.PIPE,check=True,timeout=90)
-        result=extract_archive(archive,raw);errors+=result['errors']
+        if self.settings.get('capture_finalization_version')==2:
+            frozen=self.freeze_snapshots()['components'][key]
+            raw=Path(frozen['raw_directory'])
+            with tarfile.open(archive,'x') as tar:
+                for file in sorted(raw.iterdir()):
+                    if not file.is_file() or file.is_symlink():raise ValueError('unsafe frozen capture file')
+                    tar.add(file,arcname=file.name,recursive=False)
+            result=inspect_directory(raw);errors+=result['errors']+frozen['errors']
+            result['finalization']=frozen
+        else:
+            with archive.open('xb') as handle:
+                subprocess.run(['kubectl','exec','-n',NS,before['metadata']['name'],'-c','diag-reader','--','tar','cf','-','-C','/diag','.'],stdout=handle,stderr=subprocess.PIPE,check=True,timeout=90)
+            result=extract_archive(archive,raw);errors+=result['errors']
         result['raw_directory']=str(raw)
         required=['metrics.json']+(['receiver-input.ndjson'] if kind=='agent' else ['traces.json'])
         for filename in required:
@@ -729,7 +838,8 @@ class RepairCapture:
         return result
     def _archive(self,kind):
         dest=self._destination(kind);attempts=[];result=None
-        for attempt in range(1,4):
+        maximum_attempts=1 if self.settings.get('capture_finalization_version')==2 else 3
+        for attempt in range(1,maximum_attempts+1):
             try:
                 result=self._archive_attempt(kind,attempt)
                 attempts.append({'attempt':attempt,**result})
@@ -740,13 +850,22 @@ class RepairCapture:
             except Exception as exc:
                 result=None;attempts.append({'attempt':attempt,'error':str(exc)})
                 r.write(dest/('archive-attempt-'+str(attempt)+'-status.json'),attempts[-1])
-            if attempt<3:time.sleep(1)
+            if attempt<maximum_attempts:time.sleep(1)
         if result is None:result={'errors':['all archive attempts failed'],'files':[]}
         raw_directory=result.pop('raw_directory',None)
         if raw_directory:
             raw=Path(raw_directory)
-            if raw.exists():raw.rename(dest/'raw')
-        result['attempts']=attempts;result['bounded_export_attempts']=3;result['max_local_export_bytes']=6*MAX_BYTES
+            if raw.exists():
+                retained=dest/'raw';raw.rename(retained)
+                if self.settings.get('capture_finalization_version')==2:
+                    frozen=self.frozen_snapshots['components'][kind]
+                    frozen['staging_raw_directory']=str(raw)
+                    frozen['raw_directory']=str(retained)
+                    for row in attempts:
+                        if row.get('raw_directory')==str(raw):row['raw_directory']=str(retained)
+                        r.write(dest/('archive-attempt-'+str(row['attempt'])+'-status.json'),row)
+                    r.write(self.root/'snapshot-finalization.json',self.frozen_snapshots)
+        result['attempts']=attempts;result['bounded_export_attempts']=maximum_attempts;result['max_local_export_bytes']=6*MAX_BYTES
         self.state['components'][kind]=result
         r.write(dest/'capture-status.json',result)
     def _check_source_collectors(self):
