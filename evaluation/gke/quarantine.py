@@ -7,6 +7,31 @@ from .models import sha
 PREFIX = 'gke-quarantine-v1/runs/'
 
 
+def _upload_original(ctx,path,bucket,name):
+    """Exact immutable JSON-API upload; SDK destination discovery needs bucket list.
+
+    Stream the existing file with curl; pass the bearer header on stdin, never
+    in process arguments or retained diagnostics. The controller gcloud context
+    supplies the same identity used for metadata and checksum readback.
+    """
+    from urllib.parse import urlencode,quote
+    token=ctx.command(['gcloud','auth','print-access-token'],timeout=60,cleanup=True).stdout.strip()
+    if not re.fullmatch(r'[A-Za-z0-9._~+/=-]+',token):raise ValueError('invalid quarantine access-token response')
+    url='https://storage.googleapis.com/upload/storage/v1/b/'+quote(bucket,safe='')+'/o?'+urlencode({'uploadType':'media','name':name,'ifGenerationMatch':'0'})
+    result=ctx.command(['curl','--disable','--silent','--show-error','--fail-with-body','--proto','=https',
+        '--connect-timeout','20','--max-time','290','--request','POST','--header','@-',
+        '--upload-file',str(path),'--write-out','\n%{http_code}',url],
+        input_text='Authorization: Bearer '+token+'\nContent-Type: application/octet-stream\n',
+        timeout=300,cleanup=True,check=False)
+    status=result.stdout.rsplit('\n',1)[-1].strip()
+    # A raced/uncertain previous create is accepted only by the unchanged,
+    # generation-pinned full checksum readback in transfer().
+    if not (result.returncode==0 and status in ('200','201')) and status!='412':
+        from .cloud_identity import command_failure
+        error=command_failure(ctx,['curl','quarantine-upload'],result)
+        raise RuntimeError('quarantine exact-object upload failed: HTTP '+status+'; '+str(error))
+
+
 def from_context(ctx):
     config = ctx.config.get('quarantine')
     if config is None:
@@ -34,7 +59,7 @@ def from_context(ctx):
         if exists.returncode:
             if not any(x in str(exists.stderr) for x in ('404','NotFound','not found','not exist')):
                 raise RuntimeError('quarantine object lookup denied or failed')
-            ctx.command(['gcloud','storage','cp','--if-generation-match=0',str(path),uri],timeout=300,cleanup=True)
+            _upload_original(ctx,path,bucket,prefix+key)
         result = ctx.command(['gcloud','storage','objects','describe',uri,'--format=json'],timeout=60,cleanup=True)
         generation = str(json.loads(result.stdout)['generation'])
         if not re.fullmatch(r'[1-9][0-9]*', generation):

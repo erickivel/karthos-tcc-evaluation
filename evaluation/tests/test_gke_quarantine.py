@@ -94,12 +94,22 @@ class QuarantineUploaderTests(unittest.TestCase):
     uri=args[4]
     if denied:return SimpleNamespace(returncode=1,stderr='403 Permission denied',stdout='')
     return SimpleNamespace(returncode=0 if uri in store else 1,stderr='' if uri in store else '404 NotFound',stdout=json.dumps({'generation':'7'}))
+   if args==['gcloud','auth','print-access-token']:
+    return SimpleNamespace(returncode=0,stderr='',stdout='fixture-access-token\n')
+   if args[0]=='curl':
+    from urllib.parse import urlparse,parse_qs,unquote
+    url=urlparse(args[-1]);query=parse_qs(url.query);self.assertEqual(query['ifGenerationMatch'],['0'])
+    self.assertEqual(query['uploadType'],['media']);self.assertIn('Authorization: Bearer fixture-access-token',kwargs['input_text'])
+    self.assertNotIn('fixture-access-token',' '.join(args))
+    bucket=unquote(url.path.split('/b/',1)[1].split('/o',1)[0]);uri='gs://'+bucket+'/'+query['name'][0]
+    store[uri]=Path(args[args.index('--upload-file')+1]).read_bytes()
+    return SimpleNamespace(returncode=0,stderr='',stdout='{}\n200')
    if '--if-generation-match=0' in args:
-    store[args[-1]]=Path(args[-2]).read_bytes()
+    raise RuntimeError('SDKrequiresbucketlistingoutsideprefixgrant')
    else:
     Path(args[-1]).write_bytes(b'corrupt' if corrupt else store[args[-2].split('#')[0]])
    return SimpleNamespace(returncode=0,stderr='',stdout='')
-  ctx=SimpleNamespace(run_id='run-1',config={'quarantine':{'bucket':'private-bucket','prefix':'gke-quarantine-v1/runs/run-1/'}},state={'terraform':{'foundation':{'quarantine_bucket':'private-bucket','evidence_bucket':'normal-bucket','controller_service_account':'controller@example.iam.gserviceaccount.com'}}},command=command)
+  ctx=SimpleNamespace(work=root/'private',run_id='run-1',config={'quarantine':{'bucket':'private-bucket','prefix':'gke-quarantine-v1/runs/run-1/'}},state={'terraform':{'foundation':{'quarantine_bucket':'private-bucket','evidence_bucket':'normal-bucket','controller_service_account':'controller@example.iam.gserviceaccount.com'}}},command=command)
   return ctx,path,{'original_relative_path':'structured/gateway/raw-attempt-1/traces.json','sha256':sha(path),'bytes':path.stat().st_size},commands,store
  def test_generation_zero_and_generation_pinned_checksum_readback(self):
   from evaluation.gke.quarantine import from_context
@@ -107,7 +117,8 @@ class QuarantineUploaderTests(unittest.TestCase):
    ctx,path,metadata,commands,store=self.context(Path(t))
    receipt=from_context(ctx)(path,metadata)
    self.assertTrue(receipt['verified']);self.assertEqual(receipt['generation'],'7')
-   self.assertTrue(any('--if-generation-match=0' in c for c in commands))
+   self.assertTrue(any(c[0]=='curl' and 'ifGenerationMatch=0' in c[-1] for c in commands))
+   self.assertFalse(any('--if-generation-match=0' in c for c in commands))
    self.assertTrue(any('#7' in arg for c in commands for arg in c))
    self.assertEqual(next(iter(store.values())),path.read_bytes());self.assertTrue(path.exists())
  def test_denied_and_failed_readback_leave_original_and_stop(self):
@@ -140,3 +151,29 @@ class QuarantineUploaderTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as t:
    root=Path(t);ctx,*_=self.context(root,denied=True)
    with self.assertRaises(RuntimeError):probe_access(ctx,root/'probe')
+
+class PrefixUploadFailureTests(unittest.TestCase):
+ context=QuarantineUploaderTests.context
+ def test_transport_failure_preserves_original_and_private_diagnostic_without_token(self):
+  from evaluation.gke.quarantine import from_context
+  from types import SimpleNamespace
+  with tempfile.TemporaryDirectory() as t:
+   ctx,path,metadata,commands,store=self.context(Path(t));actual=ctx.command
+   def failure(args,**kwargs):
+    if args[0]=='curl':return SimpleNamespace(returncode=22,stdout='{}\n403',stderr='permission denied create')
+    return actual(args,**kwargs)
+   ctx.command=failure
+   with self.assertRaisesRegex(RuntimeError,'HTTP 403') as raised:from_context(ctx)(path,metadata)
+   self.assertNotIn('fixture-access-token',str(raised.exception));self.assertTrue(path.exists())
+   self.assertTrue(list((ctx.work/'command-diagnostics').glob('*.stderr')))
+ def test_raced_create_requires_full_generation_readback(self):
+  from evaluation.gke.quarantine import from_context
+  from types import SimpleNamespace
+  with tempfile.TemporaryDirectory() as t:
+   ctx,path,metadata,commands,store=self.context(Path(t));actual=ctx.command
+   def raced(args,**kwargs):
+    result=actual(args,**kwargs)
+    if args[0]=='curl':return SimpleNamespace(returncode=22,stdout='{}\n412',stderr='preconditionfailed')
+    return result
+   ctx.command=raced
+   self.assertTrue(from_context(ctx)(path,metadata)['verified'])
