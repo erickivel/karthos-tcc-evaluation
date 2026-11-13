@@ -91,6 +91,17 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
                 if schedule==models.REPAIR:
                     self.assertTrue(all(row['verdict']=='not-applicable' for row in report['claims'] if row['claim']=='retained-replicas-and-health' or row['claim'].startswith('clean-rebuild')))
 
+    def test_repair_defers_only_unplanned_source_pair(self):
+        ctx=SimpleNamespace(manifest={'schedule':models.REPAIR,'matrix':[],
+            'product_pins':{'karthos_revision':thesis.START_REVISION},'local_contract_evidence':{}})
+        report=thesis.claim_matrix(ctx,[],None,None)
+        claims={row['claim']:row for row in report['claims']}
+        self.assertEqual(claims['source-independence-astronomy']['verdict'],'not-applicable')
+        self.assertEqual(claims['source-independence-boutique']['verdict'],'insufficient')
+        ctx.manifest['schedule']=models.THESIS
+        claims={row['claim']:row for row in thesis.claim_matrix(ctx,[],None,None)['claims']}
+        self.assertEqual(claims['source-independence-astronomy']['verdict'],'insufficient')
+
     def test_product_metric_contract_selected_for_all_thesis_versions(self):
         from evaluation import runner
         for schedule in models.THESIS_SCHEDULES:

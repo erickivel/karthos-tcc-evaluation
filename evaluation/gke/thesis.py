@@ -388,6 +388,8 @@ def claim_matrix(ctx,windows,history,readiness_report):
     comparisons=compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds'))
     if ctx.manifest.get('schedule')==REPAIR:
         for row in comparisons:
+            if row['claim']=='source-independence-astronomy':
+                row.update(verdict='not-applicable',reference='deferred: repair includes Astronomy Istio only; cross-source equivalence requires a fresh Astronomy trace baseline')
             if row['claim'].startswith('clean-rebuild') or row['claim'].startswith('reproducibility'):
                 row.update(verdict='not-applicable',reference='deferred: one fresh repaired cluster cannot establish two-cluster reproducibility',artifacts=[])
     rows.extend(comparisons)
