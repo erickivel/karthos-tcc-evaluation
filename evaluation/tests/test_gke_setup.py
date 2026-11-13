@@ -8,6 +8,12 @@ class SetupTests(unittest.TestCase):
   def deployment(n):return {'kind':'Deployment','metadata':{'name':n,'namespace':'karthos-eval-boutique'},'spec':{'template':{'spec':{'containers':[{'name':'app','image':image}]}}}}
   a,b=m.transform([deployment('frontend'),deployment('checkoutservice')],lock,run_id='fixture',mode='demo')
   self.assertEqual(a['spec']['template']['spec']['nodeSelector']['evaluation.karthos.dev/slot'],'app-a');self.assertEqual(b['spec']['template']['spec']['nodeSelector']['evaluation.karthos.dev/slot'],'app-b')
+ def test_astronomy_payment_uses_node_b_without_moving_frontend(self):
+  m=self.module('render');image='repo/app:v1';lock={image:'repo/app@sha256:'+'a'*64}
+  obj={'kind':'Deployment','metadata':{'name':'payment'},'spec':{'template':{'spec':{'containers':[{'name':'payment','image':image}]}}}}
+  rendered=m.transform([obj],lock,run_id='fixture',mode='demo')[0]
+  self.assertEqual(rendered['spec']['template']['spec']['nodeSelector']['evaluation.karthos.dev/slot'],'app-b')
+
  def test_unpinned_image_fails_instead_of_deploying_tag(self):
   m=self.module('render')
   with self.assertRaisesRegex(ValueError,'image'):m.transform([{'kind':'Pod','metadata':{'name':'bad'},'spec':{'containers':[{'image':'unreviewed:latest'}]}}],{},run_id='fixture',mode='demo')

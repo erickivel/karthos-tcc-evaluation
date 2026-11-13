@@ -112,7 +112,7 @@ class EffectiveConfigurationIntegrationTests(unittest.TestCase):
         image='registry/collector@sha256:'+'a'*64
         config=EffectiveSettingsTests().connector();text=yaml.safe_dump(config)
         pod={'metadata':{'name':'gateway','uid':'pod-uid','labels':{'app.kubernetes.io/component':'gateway'}},
-             'spec':{'containers':[{'name':'gateway','volumeMounts':[{'name':'config','mountPath':'/conf'}]}],
+             'spec':{'containers':[{'name':'gateway','image':image,'volumeMounts':[{'name':'config','mountPath':'/conf'}]}],
                      'volumes':[{'name':'config','configMap':{'name':'gateway-config'}}]},
              'status':{'containerStatuses':[{'name':'gateway','image':image,'imageID':'docker-pullable://'+image}]}}
         cm={'metadata':{'uid':'config-uid'},'data':{'config.yaml':text}}
@@ -135,3 +135,48 @@ class SourceBundleClosureTests(unittest.TestCase):
         from evaluation.gke.models import implementation_hashes
         for name in implementation_hashes(ROOT):
             with self.subTest(name=name):_safe_name(name)
+
+
+class GKEImageIdentityTests(unittest.TestCase):
+    def pod(self):
+        image='docker.io/otel/opentelemetry-collector-contrib@sha256:'+'a'*64
+        return image,{'metadata':{'name':'agent','uid':'uid'},'spec':{'nodeName':'worker','containers':[{'name':'agent','image':image}]},'status':{'containerStatuses':[{'name':'agent','image':'sha256:'+'b'*64,'imageID':image}]}}
+    def test_gke_local_status_image_is_not_the_declared_image(self):
+        image,pod=self.pod()
+        rows=setup.running_image_inventory({'items':[pod]})
+        self.assertEqual(rows[0]['image'],image)
+        self.assertEqual(rows[0]['reported_image'],'sha256:'+'b'*64)
+        self.assertEqual(rows[0]['pod_uid'],'uid')
+        setup.validate_running_images(rows,{'collector':image})
+    def test_missing_or_ambiguous_runtime_status_is_rejected(self):
+        for statuses in ([],[{'name':'agent','imageID':'x'}]*2):
+            image,pod=self.pod();pod['status']['containerStatuses']=statuses
+            with self.subTest(statuses=statuses),self.assertRaises(ValueError):
+                setup.validate_running_images(setup.running_image_inventory({'items':[pod]}),{'collector':image})
+    def test_init_containers_require_their_own_matching_status(self):
+        image,pod=self.pod();pod['spec']['initContainers']=[{'name':'init','image':image,'restartPolicy':'Always'}]
+        pod['status']['initContainerStatuses']=[{'name':'init','image':'local','imageID':image}]
+        rows=setup.running_image_inventory({'items':[pod]})
+        self.assertEqual(len(rows),2);setup.validate_running_images(rows,{'collector':image})
+        rows[1]['image_id']='registry/wrong@sha256:'+'c'*64
+        with self.assertRaises(ValueError):setup.validate_running_images(rows,{'collector':image})
+    def test_image_failure_inputs_are_saved_before_exception(self):
+        import tempfile,yaml,json
+        from types import SimpleNamespace
+        image,pod=self.pod();pod['status']['containerStatuses'][0]['imageID']='wrong@sha256:'+'c'*64
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d);values=path/'values.yaml';values.write_text('{}')
+            ctx=SimpleNamespace(config={'capture_finalization_version':2,'servicegraph_store_max_items':10000,'infrastructure':{}},manifest={'capture_finalization_version':2,'servicegraph_store_max_items':10000,'image_lock':{'collector':image}},json=lambda *a:{'items':[pod]})
+            with self.assertRaises(ValueError):setup.verify_effective_settings(ctx,path,values,trace=False)
+            proof=json.loads((path/'running-image-verification.json').read_text())
+            self.assertEqual(proof['state'],'failed');self.assertEqual(proof['rows'][0]['image'],image)
+
+    def test_effective_check_accepts_matching_spec_and_runtime_with_local_status_id(self):
+        import tempfile
+        from types import SimpleNamespace
+        image,pod=self.pod()
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d);values=path/'values.yaml';values.write_text('{}')
+            ctx=SimpleNamespace(config={'capture_finalization_version':2,'servicegraph_store_max_items':10000,'infrastructure':{}},manifest={'capture_finalization_version':2,'servicegraph_store_max_items':10000,'image_lock':{'collector':image}},json=lambda *a:{'items':[pod]})
+            try:setup.verify_effective_settings(ctx,path,values,trace=False)
+            except ValueError as error:self.fail('correctly pinned GKE image rejected: '+str(error))

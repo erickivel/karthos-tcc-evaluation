@@ -181,10 +181,10 @@ def deploy_karthos(ctx,cell,path):
     # Post-renderer maps the generated default product repository/tag to the frozen product digest.
     ctx.command(['helm','upgrade','--install','karthos',str(r.CACHE/'karthos-chart'),'-n','karthos-system','--create-namespace','--kubeconfig',str(ctx.kubeconfig),'-f',str(values),'--post-renderer',str(post_renderer(ctx,'karthos')),'--wait','--timeout','12m'],timeout=900)
     for resource in ['deployment/karthos-backend','daemonset/karthos-agent','deployment/karthos-gateway']:ctx.kube('rollout','status',resource,'-n','karthos-system','--timeout=300s',timeout=330)
-    write(path/'locked-image-ids.json',{'demo':r.image_ids(ctx.json('get','pods','-n',cell.namespace)),'karthos':r.image_ids(ctx.json('get','pods','-n','karthos-system'))})
+    write(path/'locked-image-ids.json',{'demo':running_image_inventory(ctx.json('get','pods','-n',cell.namespace)),'karthos':running_image_inventory(ctx.json('get','pods','-n','karthos-system'))})
     if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
         verify_effective_settings(ctx,path,values,trace=cell.source=='trace')
-        validate_running_images(r.image_ids(ctx.json('get','pods','-n',cell.namespace)),deployment_lock(ctx))
+        verify_image_inventory(ctx,path,ctx.json('get','pods','-n',cell.namespace),name='demo-running-image-verification.json')
 
 def prepare_source(ctx,source):
     # Existing product remote-profile scripts are intentionally not invoked on GKE.
@@ -342,6 +342,27 @@ def validate_connector_settings(document,expected):
     return {'store_max_items':expected,'store_ttl_seconds':30,'flush_seconds':15,'histogram_bounds_seconds':bounds}
 
 
+def running_image_inventory(document):
+    """Join desired images to runtime status by container name and kind.
+
+    ContainerStatus.image is runtime-reported and can be a local config ID.
+    PodSpec.image is the declared pin; imageID independently proves execution.
+    Missing/duplicate statuses remain explicit invalid evidence.
+    """
+    rows=[]
+    for pod in document.get('items',[]):
+        meta=pod.get('metadata',{});spec=pod.get('spec',{});status=pod.get('status',{})
+        for kind,status_key in (('containers','containerStatuses'),('initContainers','initContainerStatuses')):
+            for container in spec.get(kind,[]):
+                matches=[x for x in status.get(status_key,[]) if x.get('name')==container.get('name')]
+                observed=matches[0] if len(matches)==1 else {}
+                rows.append({'pod':meta.get('name'),'pod_uid':meta.get('uid'),'node':spec.get('nodeName'),
+                    'container':container.get('name'),'container_kind':kind,'status_matches':len(matches),
+                    'image':container.get('image',''),'reported_image':observed.get('image'),
+                    'image_id':observed.get('imageID','')})
+    return rows
+
+
 def validate_running_images(rows,lock):
     import re
     allowed=set(lock.values())
@@ -349,9 +370,20 @@ def validate_running_images(rows,lock):
     for row in rows:
         image=row.get('image','');runtime=row.get('image_id','')
         digest=re.search(r'sha256:[a-f0-9]{64}$',runtime)
-        if image not in allowed or '@sha256:' not in image or not digest or image.rsplit('@',1)[1]!=digest[0]:
+        if row.get('status_matches',1)!=1 or image not in allowed or '@sha256:' not in image or not digest or image.rsplit('@',1)[1]!=digest[0]:
             raise ValueError('running image differs from immutable deployment lock: '+str(row.get('container')))
     return {'verified_images':len(rows)}
+
+
+def verify_image_inventory(ctx,path,pods,*,name='running-image-verification.json'):
+    proof={'rows':running_image_inventory(pods),'lock':deployment_lock(ctx),'state':'pending','checked_at':time.time()}
+    write(path/name,proof)
+    try:result=validate_running_images(proof['rows'],proof['lock'])
+    except ValueError as error:
+        proof.update(state='failed',reason=str(error));write(path/name,proof)
+        raise
+    proof.update(state='passed',result=result);write(path/name,proof)
+    return result
 
 
 def verify_effective_settings(ctx,path,values,*,trace):
@@ -388,7 +420,6 @@ def verify_effective_settings(ctx,path,values,*,trace):
             result['desired_configmaps'].append(dict(contract,pod_uid=pod['metadata']['uid'],
                 configmap_name=name,configmap_uid=cm['metadata']['uid'],config_key='config.yaml',
                 config_sha256=hashlib.sha256(desired.encode()).hexdigest()))
-    rows=r.image_ids(pods)
-    result['running_images']=validate_running_images(rows,deployment_lock(ctx))
+    result['running_images']=verify_image_inventory(ctx,path,pods)
     write(path/'effective-settings.json',result)
     return result

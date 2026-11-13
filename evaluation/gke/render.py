@@ -61,8 +61,9 @@ def transform(objects,image_lock,*,run_id,mode):
             if kind!='DaemonSet':
                 if mode == 'karthos' or kind == 'Job':
                     slot = 'observability'
-                elif 'checkout' in name or name == 'telemetry-docs':
-                    # Balance the pinned Astronomy cohort and leave room for Agent instrumentation.
+                elif 'checkout' in name or name in ('telemetry-docs','payment'):
+                    # Approved payment move: app-a exceeded allocatable CPU with GKE system reservations.
+                    # Keep frontend/checkout cross-node; requests and worker count are unchanged.
                     slot = 'app-b'
                 elif 'frontend' in name:
                     slot = 'app-a'
