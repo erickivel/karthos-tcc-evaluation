@@ -171,3 +171,38 @@ def copy_summary_diagnostics(ctx, records, summary):
                 'export':receipt if receipt.get('verified') is True else None}, result['errors'])
     _write(ctx, Path(summary)/'attempt-diagnostics/index.json', result, result['errors'])
     return result
+
+
+def retain_setup_evidence(ctx,driver,spec,destination):
+    """Snapshot only the current, exited setup inside stopped diagnostics.
+
+    Normal failures copy this into their window; interrupted/fatal failures use
+    the existing stopped-diagnostic archive path. Never borrow a prior setup.
+    """
+    destination=Path(destination)
+    receipt={'attempt_id':spec['id'],'state':'not-current','files':[]}
+    attempt=getattr(driver,'setup_attempt_id',None)
+    source=getattr(driver,'setup_path',None)
+    if attempt and attempt==spec['id'] and source is not None:
+        source=Path(source)
+        if source.is_symlink() or not source.resolve().is_relative_to(Path(ctx.result).resolve()):
+            raise ValueError('setup evidence outside owned run')
+        source=source.resolve()
+        receipt['source_path']=str(source)
+        if source.is_dir():
+            files=evidence_files(source)
+            existing=sum(p.stat().st_size for p in evidence_files(destination.parent)) if destination.parent.exists() else 0
+            if existing+sum(p.stat().st_size for p in files)>DIAGNOSTIC_LIMIT:
+                raise ValueError('setup and diagnostic evidence exceed existing attempt bound')
+            for path in files:
+                relative=path.relative_to(source);target=destination/relative;expected=sha(path)
+                target.parent.mkdir(parents=True,exist_ok=True)
+                if target.exists():
+                    if sha(target)!=expected:raise ValueError('setup snapshot replacement refused')
+                else:shutil.copy2(path,target)
+                if sha(path)!=expected or sha(target)!=expected:raise ValueError('setup evidence changed during snapshot')
+                receipt['files'].append({'name':str(relative),'sha256':expected,'bytes':target.stat().st_size})
+            receipt['state']='retained' if files else 'empty'
+        else:receipt['state']='unavailable'
+    ctx.write(destination/'setup-retention.json',receipt)
+    return receipt

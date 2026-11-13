@@ -280,7 +280,7 @@ def validate_reference_rows(rows,node,node_uid,pod_uid,run_id,start,end):
 
 class LiveDriver:
     def __init__(self,ctx):
-        self.ctx=ctx;self.nodes=[];self.setup_count=0;self.setup_path=None;self.cell=None;self.paths={};self.last_spec=None
+        self.ctx=ctx;self.nodes=[];self.setup_count=0;self.setup_path=None;self.setup_attempt_id=None;self.cell=None;self.paths={};self.last_spec=None
 
     def start_repeat(self,repeat):
         from . import provision
@@ -298,6 +298,8 @@ class LiveDriver:
         from .. import runner as r,pilot
         self.setup_count+=1;cell=Cell(spec['demo'],spec['source'],spec['repeat'])
         parent=(parent or self.ctx.result/('repetition-'+str(spec['repeat'])))/('setup-'+str(self.setup_count))
+        # Retain this attempt's setup even when setup_cell raises before returning.
+        self.setup_path=parent/cell.slug;self.setup_attempt_id=spec.get('id')
         if spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
             from .diagnostics.arbitration import transition_to_trace
             path=parent/cell.slug;path.mkdir(parents=True,exist_ok=False)

@@ -365,12 +365,16 @@ def running_image_inventory(document):
 
 def validate_running_images(rows,lock):
     import re
-    allowed=set(lock.values())
+    # Compare Docker reference identity, retaining original spellings in proof rows.
+    from .render import normalized
+    allowed={normalized(value) for value in lock.values()}
     if not rows:raise ValueError('running image inventory missing')
     for row in rows:
         image=row.get('image','');runtime=row.get('image_id','')
+        if not isinstance(image,str) or not isinstance(runtime,str):
+            raise ValueError('running image inventory fields missing: '+str(row.get('container')))
         digest=re.search(r'sha256:[a-f0-9]{64}$',runtime)
-        if row.get('status_matches',1)!=1 or image not in allowed or '@sha256:' not in image or not digest or image.rsplit('@',1)[1]!=digest[0]:
+        if row.get('status_matches',1)!=1 or normalized(image) not in allowed or '@sha256:' not in image or not digest or image.rsplit('@',1)[1]!=digest[0]:
             raise ValueError('running image differs from immutable deployment lock: '+str(row.get('container')))
     return {'verified_images':len(rows)}
 

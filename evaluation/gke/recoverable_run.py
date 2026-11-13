@@ -353,6 +353,9 @@ def execute(ctx,driver):
                     ctx.write(path/'failure.json',error);active_cell=None
                 finally:
                     diagnostics_status=diagnostic.stop()
+                    if not setup_ok:
+                        from .failure_evidence import retain_setup_evidence
+                        retain_setup_evidence(ctx,driver,attempt,path/'setup')
                 if not diagnostics_status.get('stopped') is True:raise SafetyFailure('supplementary diagnostic worker remains active')
                 retained=driver.paths.get(attempt['id'])
                 if report is None and retained and (Path(retained)/'gke-evaluation.json').exists():report=read(Path(retained)/'gke-evaluation.json')
