@@ -50,7 +50,8 @@ class FailureEvidenceTests(unittest.TestCase):
         write(self.diagnostics/'diagnostics-status.json',{'stopped':True})
         (self.diagnostics/'logs').mkdir();(self.diagnostics/'logs/c.log').write_text('fatal detail')
         copy_summary_diagnostics(self.ctx,self.records,self.root/'summary')
-        self.assertEqual((self.root/'summary/attempt-diagnostics/a1/logs/c.log').read_text(),'fatal detail')
+        self.assertTrue((self.root/'summary/attempt-diagnostics/a1/window.tar.gz').is_file())
+        self.assertFalse((self.root/'summary/attempt-diagnostics/a1/logs/c.log').exists())
     def test_corrupt_or_live_diagnostics_are_excluded(self):
         self.diagnostics.mkdir(parents=True);(self.diagnostics/'diagnostics-status.json').write_text('{')
         (self.diagnostics/'live.log').write_text('mutable')
@@ -62,4 +63,29 @@ class FailureEvidenceTests(unittest.TestCase):
         write(self.diagnostics/'diagnostics-status.json',{'stopped':True})
         (self.diagnostics/'failure.json').write_text('{"reason":"fatal before row"}')
         copy_summary_diagnostics(self.ctx,[],self.root/'summary')
-        self.assertTrue((self.root/'summary/attempt-diagnostics/a1/failure.json').exists())
+        self.assertTrue((self.root/'summary/attempt-diagnostics/a1/window.tar.gz').is_file())
+
+    def test_diagnostic_archive_hashes_and_gap_records(self):
+        import tarfile,hashlib
+        write(self.diagnostics/'diagnostics-status.json',{'stopped':True})
+        (self.diagnostics/'logs').mkdir();(self.diagnostics/'logs/c.log').write_text('password=credential-fixture\nfatal detail')
+        (self.diagnostics/'log-index.ndjson').write_text(json.dumps({'path':None,'coverage_gap':'instance byte budget exhausted'})+'\n')
+        copy_summary_diagnostics(self.ctx,self.records,self.root/'summary')
+        target=self.root/'summary/attempt-diagnostics/a1'
+        index=json.loads((target/'diagnostic-archive-index.json').read_text())
+        self.assertEqual(index['coverage_gaps'][0]['coverage_gap'],'instance byte budget exhausted')
+        with tarfile.open(target/'window.tar.gz') as archive:
+            for member in index['members']:
+                raw=archive.extractfile(member['name']).read()
+                self.assertEqual(hashlib.sha256(raw).hexdigest(),member['sha256'])
+                self.assertEqual(len(raw),member['bytes'])
+            self.assertNotIn(b'credential-fixture',archive.extractfile('logs/c.log').read())
+
+    def test_rejected_diagnostic_archive_leaves_no_normal_archive(self):
+        from unittest.mock import patch
+        write(self.diagnostics/'diagnostics-status.json',{'stopped':True})
+        (self.diagnostics/'logs').mkdir();(self.diagnostics/'logs/c.log').write_text('safe diagnostic')
+        with patch('evaluation.gke.failure_evidence.verify_archive_privacy',side_effect=ValueError('inspection rejected')):
+            result=copy_summary_diagnostics(self.ctx,self.records,self.root/'summary')
+        self.assertEqual(result['attempts'][0]['state'],'not_retained')
+        self.assertFalse(list((self.root/'summary').rglob('*.tar.gz')))

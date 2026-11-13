@@ -22,3 +22,7 @@ output "scheduler_service_account" {
 output "backup_bucket" {
   value = google_storage_bucket.backup.name
 }
+
+output "quarantine_bucket" {
+  value = google_storage_bucket.quarantine.name
+}

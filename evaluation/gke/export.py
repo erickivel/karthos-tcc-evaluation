@@ -93,7 +93,7 @@ def render_matrix(root,matrix,records,*,unattempted_reason=None):
         for row in rows:
             if row['state']=='unattempted':row['reason']=unattempted_reason
     write(root/'matrix.json',rows)
-    fields=['id','repeat','phase','cell','generator','scenario','duration_seconds','state','execution_mode','execution','evidence_valid','application_outcomes','numerical_agreement','first_attempt_state','attempt_count','representative_attempt','reason','path']
+    fields=['id','repeat','phase','cell','generator','scenario','duration_seconds','state','execution_mode','execution','evidence_valid','application_outcomes','families','numerical_agreement','first_attempt_state','attempt_count','representative_attempt','reason','path']
     with (root/'matrix.csv').open('w',newline='') as out:
         writer=csv.DictWriter(out,fieldnames=fields,extrasaction='ignore');writer.writeheader();writer.writerows(rows)
     table=''.join('<tr>'+''.join('<td>'+html.escape(str(r.get(k,'')))+'</td>' for k in fields)+'</tr>' for r in rows)
@@ -101,7 +101,7 @@ def render_matrix(root,matrix,records,*,unattempted_reason=None):
     attempts=[dict(attempt,logical_id=row['id']) for row in records for attempt in row.get('attempts',[])]
     if attempts:
         write(root/'attempts.json',attempts)
-        attempt_fields=['logical_id','attempt_id','state','execution','evidence_valid','application_outcomes','numerical_agreement','reason','path']
+        attempt_fields=['logical_id','attempt_id','state','execution','evidence_valid','application_outcomes','families','numerical_agreement','reason','path']
         with (root/'attempts.csv').open('w',newline='') as out:
             writer=csv.DictWriter(out,fieldnames=attempt_fields,extrasaction='ignore');writer.writeheader();writer.writerows(attempts)
         with (root/'matrix.html').open('a') as out:
@@ -475,12 +475,122 @@ def _verify_loose_record_bounds(raw):
                     raise ValueError('oversized evidence record')
 
 
-def export_projection(source,destination):
+COLLECTOR_FILES = {'gateway':{'metrics.json','traces.json'},
+                   'agent':{'metrics.json','receiver-input.ndjson','receiver-errors.ndjson'}}
+
+
+def _classification_json(path):
+    if not path.is_file() or path.is_symlink() or path.stat().st_size>MAX_ARCHIVE_LINE:
+        raise ValueError('missing or unsafe collector classification evidence')
+    value=json.loads(path.read_bytes())
+    if not isinstance(value,dict):raise ValueError('invalid collector classification evidence')
+    return value
+
+
+def _failed_snapshot_metadata(source, path):
+    """Only manifested files from an owned failed collector copy are eligible."""
+    relative=path.relative_to(source);parts=relative.parts
+    if len(parts)<3 or parts[0]!='structured':return None
+    kind=parts[1]
+    if kind not in COLLECTOR_FILES:return None
+    index=2 if kind=='gateway' or bool(re.fullmatch(r'raw(?:-attempt-[0-9]+|-files-attempt-[0-9]+\.tar)?',parts[2])) else 3
+    if len(parts)<=index:return None
+    part=parts[index]
+    match=re.fullmatch(r'raw-attempt-([1-9][0-9]*)',part)
+    archive=re.fullmatch(r'raw-files-attempt-([1-9][0-9]*)\.tar',part)
+    if not (match or archive or part=='raw'):return None
+    if len(parts)!=(index+1 if archive else index+2):
+        raise ValueError('unexpected nested collector snapshot member')
+    if not archive and parts[-1] not in COLLECTOR_FILES[kind]:
+        raise ValueError('unexpected collector snapshot member')
+    component=source.joinpath(*parts[:index])
+    status_path=component/('archive-attempt-'+(match or archive)[1]+'-status.json' if match or archive else 'capture-status.json')
+    if not status_path.is_file():return None
+    status=_classification_json(status_path)
+    if not (status.get('errors') or status.get('error')):return None
+    if (match or archive) and status.get('attempt')!=int((match or archive)[1]):
+        raise ValueError('collector snapshot attempt identity mismatch')
+    uid=status.get('collector_uid')
+    if not isinstance(uid,str) or not re.fullmatch(r'[A-Za-z0-9_.:-]{1,220}',uid):
+        raise ValueError('failed snapshot lacks safe source UID')
+    pod=_classification_json(component/'pod.json')
+    owner=_classification_json(source/'structured/status.json').get('owner')
+    metadata=pod.get('metadata',{})
+    if (not isinstance(owner,str) or not re.fullmatch(r'[0-9a-f]{16}',owner)
+            or metadata.get('uid')!=uid or metadata.get('namespace')!='karthos-system'
+            or metadata.get('annotations',{}).get('evaluation.karthos.dev/capture-owner')!=owner
+            or metadata.get('labels',{}).get('app.kubernetes.io/component')!=kind):
+        raise ValueError('collector snapshot ownership or UID mismatch')
+    if status.get('node_name') and status['node_name']!=pod.get('spec',{}).get('nodeName'):
+        raise ValueError('collector snapshot node identity mismatch')
+    files={}
+    for item in status.get('files',[]):
+        if (not isinstance(item,dict) or item.get('path') not in COLLECTOR_FILES[kind]
+                or item['path'] in files or type(item.get('bytes')) is not int or item['bytes']<0
+                or not re.fullmatch('[0-9a-f]{64}',str(item.get('sha256','')))):
+            raise ValueError('invalid collector file manifest')
+        files[item['path']]={'bytes':item['bytes'],'sha256':item['sha256']}
+    if not files:raise ValueError('collector file manifest missing')
+    if not archive:
+        declared=files.get(parts[-1])
+        if declared is None or declared['bytes']!=path.stat().st_size or declared['sha256']!=sha(path):
+            raise ValueError('collector file manifest checksum mismatch')
+    bounds=status.get('capture_interval',{}).get('measurement_bounds')
+    if bounds is not None and not (isinstance(bounds,(list,tuple)) and len(bounds)==2
+            and all(isinstance(x,(int,float)) or (isinstance(x,str) and re.fullmatch(r'[0-9TZ: .+\-]{1,64}',x)) for x in bounds)):
+        bounds=None
+    return {'original_relative_path':relative.as_posix(),'sha256':sha(path),'bytes':path.stat().st_size,
+            'source_uid':uid,'measurement_bounds':bounds,'capture_status':'failed',
+            'failure_category':'failed-collector-snapshot','scientific_evidence_valid':False,
+            'collector_file_manifest':files}
+
+
+def _check_quarantine_original(path, metadata):
+    if path.stat().st_size>MAX_ARCHIVE_BYTES:raise ValueError('oversized quarantine original')
+    if path.suffix=='.tar':
+        total=0;seen=set();population={}
+        with tarfile.open(path,'r:') as archive:
+            for member in archive:
+                name=str(Path(member.name))
+                if name in seen:raise ValueError('duplicate quarantine archive member')
+                seen.add(name)
+                if _unsafe_archive_path(Path(member.name),member.name) or not (member.isfile() or member.isdir()):
+                    raise ValueError('unsafe quarantine archive member')
+                if member.isdir():
+                    if name!='.':raise ValueError('unexpected quarantine archive directory')
+                    continue
+                if name not in metadata['collector_file_manifest']:
+                    raise ValueError('unexpected quarantine archive member')
+                total+=member.size
+                if member.size>MAX_ARCHIVE_BYTES or total>MAX_ARCHIVE_BYTES:raise ValueError('oversized quarantine archive')
+                digest=hashlib.sha256();count=0
+                with archive.extractfile(member) as stream:
+                    while block:=stream.read(1024*1024):count+=len(block);digest.update(block)
+                population[name]={'bytes':count,'sha256':digest.hexdigest()}
+                if count!=member.size:raise ValueError('truncated quarantine archive member')
+        if population!=metadata['collector_file_manifest']:
+            raise ValueError('quarantine archive manifest checksum mismatch')
+
+
+def export_projection(source,destination,*,quarantine=None):
     """Sealed redacted projection; originals and original hashes remain locally available."""
-    source=Path(source).resolve();destination=Path(destination).resolve();destination.mkdir(parents=True,exist_ok=False);changes=[];archives=[]
+    source=Path(source).resolve();destination=Path(destination).resolve();destination.mkdir(parents=True,exist_ok=False);changes=[];archives=[];receipts=[]
     for path in evidence_files(source):
         name=str(path.relative_to(source))
         if path.name in ('GKE-SHA256SUMS','EXPORT-PROJECTION.json'):continue
+        metadata = _failed_snapshot_metadata(source, path) if quarantine is not None else None
+        if metadata is not None:
+            if _project_text(name) != name:
+                raise ValueError('unsafe quarantine original name')
+            _check_quarantine_original(path, metadata)
+            receipt = quarantine(path, metadata)
+            if (not isinstance(receipt, dict) or receipt.get('verified') is not True
+                    or not isinstance(receipt.get('uri'), str)
+                    or not re.fullmatch(r'gs://[a-z0-9][a-z0-9._-]+/[A-Za-z0-9_./-]+', receipt['uri'])
+                    or not re.fullmatch(r'[1-9][0-9]*', str(receipt.get('generation', '')))):
+                raise ValueError('quarantine original not verified or unsafe receipt')
+            receipts.append(dict(metadata, **{key:receipt[key] for key in ('uri','generation','verified')}))
+            continue
         target=destination/name
         target.parent.mkdir(parents=True,exist_ok=True)
         if path.suffix in ARCHIVE_SUFFIXES:
@@ -510,7 +620,7 @@ def export_projection(source,destination):
             raise ValueError('unsafe or malformed evidence: ' + name) from None
         target.write_bytes(clean)
         if clean!=raw:changes.append({'path':name,'original_sha256':sha(path),'export_sha256':sha(target)})
-    write(destination/'EXPORT-PROJECTION.json',{'schema_version':1,'redacted_files':changes,'compressed_evidence_inspections':archives,'policy':'credential values excluded; source/status/measurement dimensions retained','local_original_seal':sha(source/'GKE-SHA256SUMS') if (source/'GKE-SHA256SUMS').exists() else None})
+    write(destination/'EXPORT-PROJECTION.json',{'schema_version':1,'redacted_files':changes,'quarantine_receipts':receipts,'compressed_evidence_inspections':archives,'policy':'credential values excluded; source/status/measurement dimensions retained','local_original_seal':sha(source/'GKE-SHA256SUMS') if (source/'GKE-SHA256SUMS').exists() else None})
     return seal(destination)
 
 def pack_window_archives(projection, destination):

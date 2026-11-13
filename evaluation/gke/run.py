@@ -640,7 +640,8 @@ class LiveDriver:
             projection=Path(temporary).resolve()/'evidence'
             with timed(self.ctx,'privacy-projection',spec['id']) as info:
                 info['input_bytes']=original_bytes
-                projected=exports.export_projection(path,projection)
+                from .quarantine import from_context
+                projected=exports.export_projection(path,projection,quarantine=from_context(self.ctx))
             if not projected['valid']:raise ValueError('window redacted projection invalid')
             shutil.copy2(path/'GKE-SHA256SUMS',projection/'LOCAL-ORIGINAL-GKE-SHA256SUMS')
             exports.seal(projection)

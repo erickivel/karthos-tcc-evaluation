@@ -169,3 +169,23 @@ resource "google_service_account_iam_member" "operator_test_oidc" {
   role               = "roles/iam.serviceAccountOpenIdTokenCreator"
   member             = var.operator_member
 }
+
+# Restricted originals are separate from normal, redacted research evidence.
+# Per-launch conditional IAM is reviewed separately; no permanent writer grant.
+resource "google_storage_bucket" "quarantine" {
+  name                        = "${var.project_id}-karthos-eval-quarantine"
+  location                    = var.region
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+  force_destroy               = false
+  retention_policy {
+    retention_period = 7776000
+    is_locked        = false
+  }
+  versioning {
+    enabled = true
+  }
+  lifecycle {
+    prevent_destroy = true
+  }
+}

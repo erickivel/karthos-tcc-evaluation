@@ -5,8 +5,10 @@ import json
 from pathlib import Path
 import re
 import shutil
+import tempfile
 
-from .export import evidence_files, redact_text
+from .export import evidence_files, redact_text, export_projection, pack_window_archives, verify_archive_privacy
+from .models import sha
 
 JSON_LIMIT = 8 * 1024**2
 REPORT_LIMIT = 64 * 1024**2
@@ -132,13 +134,35 @@ def copy_summary_diagnostics(ctx, records, summary):
                 size = sum(path.stat().st_size for path in files)
                 if size>DIAGNOSTIC_LIMIT:
                     raise ValueError('fatal diagnostic directory exceeds bounded collector allowance')
-                # Validate before copying any member. A stopped status, not an
-                # empty error list, is the precondition for a stable directory.
-                for path in files:
-                    destination = target/path.relative_to(source)
-                    destination.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(path, destination)
-                item.update(state='retained-stopped-fatal-diagnostics', files=len(files), bytes=size)
+                # Project once before archiving; no uninspected original or loose
+                # log copy reaches a normal summary. The same archive/privacy
+                # bounds as window publication apply to these supplemental logs.
+                with tempfile.TemporaryDirectory(prefix='gke-diagnostic-projection-') as temporary:
+                    projection = Path(temporary).resolve()/'evidence'
+                    export_projection(source, projection)
+                    members = [{'name':str(path.relative_to(projection)), 'sha256':sha(path),
+                                'bytes':path.stat().st_size} for path in evidence_files(projection)]
+                    gaps = []
+                    log_index = projection/'log-index.ndjson'
+                    if log_index.exists():
+                        for line in log_index.read_text().splitlines():
+                            row = json.loads(line)
+                            if row.get('coverage_gap'):
+                                gaps.append(row)
+                    staged = Path(temporary)/'archives'
+                    staged.mkdir()
+                    parts = pack_window_archives(projection, staged)
+                    for part in parts:
+                        verify_archive_privacy(staged/part['name'])
+                    if not _write(ctx, staged/'diagnostic-archive-index.json', {
+                            'schema_version':1, 'supplementary':True, 'parts':parts,
+                            'members':members, 'coverage_gaps':gaps,
+                            'scope':'stopped diagnostics only; no scientific validity claim'}, result['errors']):
+                        raise ValueError('diagnostic archive index write failed')
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copytree(staged, target)
+                item.update(state='retained-stopped-fatal-diagnostics', files=len(files), bytes=size,
+                            archive_index=str((target/'diagnostic-archive-index.json').relative_to(summary)))
         except Exception as exc:
             item.update(state='not_retained', error=_error(exc))
             _write(ctx, Path(summary)/'attempt-diagnostics'/(name+'-unavailable.json'), {
