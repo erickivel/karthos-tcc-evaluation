@@ -181,7 +181,7 @@ class EvaluationTests(unittest.TestCase):
         candidate = {'pod_uid': 'pod-1'}
         volume_references = [candidate, {'pod_uid': 'pod-2'}]
 
-        def compare(observation, inputs, references):
+        def compare(observation, inputs, references, *, snapshots=()):
             self.assertEqual(observation, observed)
             self.assertEqual(inputs, [])
             self.assertEqual(references, [candidate])
@@ -201,7 +201,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(result['api_storage_parity']['state'],'pass')
         self.assertEqual(result['source_accuracy']['state'],'insufficient')
         result=m.compare_traffic('servicegraph.request.count',traffic,{'source_population':{'matched':True},'counts_path':{'source_to_vm':{'state':'pass'}}})
-        self.assertEqual(result['state'],'pass');self.assertEqual(result['source_accuracy']['state'],'pass')
+        self.assertEqual(result['state'],'insufficient');self.assertEqual(result['independent_comparison']['state'],'pass')
 
     def test_source_acquisition_attestation_can_align_read_bracket_without_replacing_recorded_time(self):
         m=self.module()

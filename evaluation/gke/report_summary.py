@@ -80,6 +80,12 @@ def family_summaries(report):
     families['exact_api_storage_parity']=_family([parity.get(a,parity.get(b,{})) for a,b in aliases],
         'whole fixed interval full-series request/error/duration parity; independent source accuracy separate')
     families['resource_accuracy']=_family([report.get('numerical_agreement',{})],'existing selected resource-only numerical scope')
+    families['container_resource_accuracy']=_family([report.get('resources',{})],'application container CPU/memory conversion, preservation and independent agreement')
+    resource_checks=report.get('numerical_agreement',{}).get('checks',[])
+    for family,prefixes in (('host_resource_accuracy',('system.',)),('volume_accuracy',('k8s.pod.volume.','k8s.volume.')),('lifecycle_accuracy',('k8s.container.','k8s.pod.status.','k8s.pod.phase'))):
+        families[family]=_family([check for check in resource_checks if str(check.get('metric',check.get('observed',{}).get('metric',''))).startswith(prefixes)],'selected '+family+' comparisons; absence stays insufficient')
+    for family,metric in (('traffic_count_comparison','servicegraph.request.count'),('traffic_error_comparison','servicegraph.request.error.count'),('traffic_duration_comparison','servicegraph.request.duration')):
+        families[family]=_family([check.get('independent_comparison',{}) for check in selected.get(metric,{}).get('checks',[])],'source/store numerical comparison under retained boundaries; no exact call-population claim')
     timing=traffic.get('required_evidence',{})
     families['timing_validity']=_family([{'state':'pass' if timing.get('valid') is True else 'insufficient'}],
         'existing required recorder, identity, clock, availability, quiet partition and interval parity evidence')

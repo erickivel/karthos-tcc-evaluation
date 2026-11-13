@@ -412,10 +412,20 @@ def compare_reference(observed,references):
     return _counter_reference(result,observed,rows,factor)
 
 
+def _container_id(value):
+    # OTLP container.id omits the runtime scheme used by Kubernetes status.
+    return re.sub(r'^(containerd|docker|cri-o)://','',value or '')
+
+
+
 def compare_lifecycle(observed,snapshots):
     result=_comparison(observed,snapshots);name=observed.get('metric')
-    if observed.get('source')!='kube-cluster' or not observed.get('pod_uid') or not observed.get('node') or not observed.get('node_uid') or observed.get('dimensions') or observed.get('unit') not in ('','1','count'):
+    if observed.get('source')!='kube-cluster' or not observed.get('pod_uid') or not observed.get('node') or not observed.get('node_uid') or observed.get('dimensions') :
         return _blocked(result,'complete Kubernetes source/Pod UID/node identity required','native kube-cluster metric, Pod UID, Node UID and all source dimensions')
+    units=(None,'','1','count')
+    if name in ('k8s.container.restarts','k8s.container.restart.count'):units=(*units,'{restart}')
+    if observed.get('unit') not in units:
+        return _blocked(result,'unsupported native lifecycle unit','pinned v0.156 unit for ready/phase/restart; no value conversion')
     candidates=[]
     for snapshot in snapshots:
         if not _valid_bracket(snapshot):continue
@@ -428,7 +438,7 @@ def compare_lifecycle(observed,snapshots):
                 containers=[row for key in ('containerStatuses','initContainerStatuses') for row in pod.get('status',{}).get(key,[]) if row.get('name')==observed.get('container')]
                 if len(containers)!=1:continue
                 container=containers[0]
-                if observed.get('container_id') and observed['container_id']!=container.get('containerID'):continue
+                if observed.get('container_id') and _container_id(observed['container_id'])!=_container_id(container.get('containerID')):continue
                 if name=='k8s.container.ready':
                     if type(container.get('ready')) is not bool:continue
                     value=int(container['ready'])
@@ -445,10 +455,23 @@ def compare_lifecycle(observed,snapshots):
     return _blocked(result,'Kubernetes object version/source-time alignment unavailable','collector cached Pod resourceVersion or exact underlying source timestamp; restarts is an upstream gauge that can reset')
 
 
-def compare_volume(observed,inputs,references):
+def compare_volume(observed,inputs,references,*,snapshots=()):
     result=_comparison(observed,references);field={'k8s.volume.available':'availableBytes','k8s.volume.capacity':'capacityBytes','k8s.pod.volume.available':'availableBytes','k8s.pod.volume.capacity':'capacityBytes'}.get(observed.get('metric'));dims=observed.get('dimensions',{})
     if field is None or observed.get('source')!='kubelet' or not observed.get('collector_uid') or not observed.get('pod_uid') or not observed.get('node_uid') or observed.get('unit') not in ('bytes','By','B') or not dims.get('volume') or set(dims)-{'volume','pvc_name','pvc_namespace','volume_type'}:
         return _blocked(result,'volume source/UID/unit/dimensions unavailable','collector UID, Pod/Node UID, exact volume/PVC dimensions and native byte unit')
+    declared_type=dims.get('volume_type')
+    if declared_type and declared_type!='persistentVolumeClaim':
+        declarations=[]
+        for snapshot in snapshots:
+            if not _valid_bracket(snapshot) or snapshot.get('node_uids',{}).get(observed['node'])!=observed['node_uid']:continue
+            for pod in snapshot.get('items',[]):
+                meta=pod.get('metadata',{});spec=pod.get('spec',{})
+                if (meta.get('uid'),meta.get('name'),meta.get('namespace'),spec.get('nodeName'))!=(observed['pod_uid'],observed.get('pod'),observed.get('namespace'),observed['node']):continue
+                for volume in spec.get('volumes',[]):
+                    if volume.get('name')==dims['volume']:declarations.append(set(volume)-{'name'})
+        if not declarations or any(types!={declared_type} for types in declarations):
+            return _blocked(result,'volume type declaration unavailable or conflicting for exact Pod UID','UID/node-scoped Pod spec declaring the observed non-PVC volume type')
+        result['volume_type_proof']={'type':declared_type,'pod_uid':observed['pod_uid'],'declarations':len(declarations)}
     matches=[]
     for row in inputs:
         if row.get('collector_uid')!=observed['collector_uid'] or row.get('node_name')!=observed.get('node') or row.get('status')!=200 or row.get('path','').split('?')[0]!='/stats/summary':continue
@@ -464,11 +487,11 @@ def compare_volume(observed,inputs,references):
             for volume in pod.get('volume',[]):
                 identity={'volume':volume.get('name'),'pvc_name':volume.get('pvcRef',{}).get('name'),'pvc_namespace':volume.get('pvcRef',{}).get('namespace')}
                 if identity['pvc_name']:identity['volume_type']='persistentVolumeClaim'
-                if any(identity.get(key)!=value for key,value in dims.items()):continue
+                if any(identity.get(key)!=value for key,value in dims.items() if key!='volume_type' or declared_type=='persistentVolumeClaim'):continue
                 if volume.get(field) is not None and volume.get('time') is not None:matches.append((row,volume))
     if len(matches)!=1:return _blocked(result,'missing or ambiguous exact volume receiver input','one receiver response tied to collector UID/Pod UID/node/volume and original source datapoint interval')
     receiver,volume=matches[0]
-    selected=[row for row in references if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else None))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),volume['time']) and _valid_bracket(row)]
+    selected=[row for row in references if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else declared_type))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),volume['time']) and _valid_bracket(row)]
     values={row['value'] for row in selected}
     result.update(receiver_value=volume[field],measurement_timestamp=volume['time'],receiver_acquisition_bracket=[receiver['requested_at_ns']/1e9,receiver['received_at_ns']/1e9])
     if len(values)!=1:return _blocked(result,'missing or conflicting same-measurement independent volume reference','independent kubelet sample with exact fs.time, Pod UID/node/volume/PVC identity')
@@ -489,15 +512,21 @@ def compare_traffic(name,traffic,verification):
     checks=traffic.get('api_storage_parity',{}).get('checks',{}) or traffic.get('windows',{}).get('whole',{}).get('api_storage_parity',{}).get('checks',{})
     parity=checks.get(key,checks.get(alias,verification.get('counts_path',{}).get(key,{'state':'incomplete'})))
     result['api_storage_parity']=parity
-    population=verification.get('source_population',{})
     source=verification.get('counts_path',{}).get(source_key,{}) if source_key else verification.get('duration',{}).get('source_to_vm',{})
-    if population.get('matched') is True and source.get('state') in ('pass','fail'):
-        source_accuracy=dict(source,population_proof=population)
-    else:source_accuracy={'state':'insufficient','reason':'matched source/store population identity not established','required_acquisition':'explicit matching source/partition/window population proof; count equality is insufficient'}
-    result['source_accuracy']=source_accuracy
-    if parity.get('state')=='fail' or source_accuracy['state']=='fail':result['state']='fail'
-    elif traffic.get('independent_valid') is True and parity.get('state')=='pass' and source_accuracy['state']=='pass':result['state']='pass'
-    else:result.update(reason='parity and source-population accuracy reported separately; full source accuracy unavailable',required_acquisition=source_accuracy.get('required_acquisition','complete recorder identity and exact query parity'))
+    # A passing aggregate comparison is useful evidence, but never a proof that
+    # independently bracketed counters or duration histograms contain the same calls.
+    result['independent_comparison']=dict(source,scope='retained source/store bracketing comparison; original bounds and tolerances')
+    source_series=verification.get('source',{}).get('series',[])
+    stored_series=verification.get('vm',{}).get('series',[])
+    result['population_equivalence']={'state':'insufficient',
+        'source_brackets':sorted({(row.get('first'),row.get('last')) for row in source_series if row.get('first') is not None and row.get('last') is not None}),
+        'stored_brackets':sorted({(row.get('first'),row.get('last')) for row in stored_series if row.get('first') is not None and row.get('last') is not None}),
+        'reason':'exact source/store call membership and equivalent duration populations not established by bracketing counts',
+        'required_acquisition':'source and stored partition membership proof, with original measurement boundaries; aggregate equality is insufficient'}
+    result['source_accuracy']={'state':'insufficient','reason':result['population_equivalence']['reason']}
+    result['state']='fail' if parity.get('state')=='fail' or source.get('state')=='fail' else 'insufficient'
+    result['reason']='numerical comparisons retained separately from unproved source/store population equivalence'
+    result['required_acquisition']=result['population_equivalence']['required_acquisition']
     return result
 
 
@@ -583,7 +612,7 @@ def _extra_resource_checks(path,agents,references,traffic,verification,start,end
     for observation in _kubernetes_observations(path,agents,thesis=thesis):
         if start is None or end is None or not _time(start)<=observation['recorded_timestamp']<=_time(end):continue
         if observation['metric'].startswith(('k8s.volume.','k8s.pod.volume.')):
-            result = compare_volume(observation, inputs, volumes_by_pod.get(observation.get('pod_uid'), ()))
+            result = compare_volume(observation, inputs, volumes_by_pod.get(observation.get('pod_uid'), ()), snapshots=snapshots)
             result['reference_records_available'] = len(volumes)
             checks.append(result)
         else:checks.append(compare_lifecycle(observation,snapshots))
@@ -672,7 +701,7 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.0'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.1'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     accuracy=[]

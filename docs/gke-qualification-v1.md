@@ -491,3 +491,37 @@ The old runtime and failed attempts remain immutable. A corrected run uses a sep
 The next GKE attempt passed Karthos image verification but rejected the injected observer: `nginx:1.28.0-alpine@sha256:30f1...` and `docker.io/library/nginx@sha256:30f1...` identify the same approved repository and immutable digest. Compare normalized Docker references (default registry/library and redundant tag removed when a digest is present), preserving the original declared/reported/runtime fields. Different repositories, mutable references, absent status and mismatched runtime digests still fail. No image payload or scientific input changes.
 
 A setup exception also occurred before `LiveDriver.setup_path` was assigned. Consequently its new proof files were on the VM but absent from failed-window archives. Record the current setup path and attempt ID before setup starts. After setup exits and supplementary writers stop, copy only that current, owned setup into stopped diagnostics, with hashes and explicit unavailable/empty states. The existing window export handles ordinary failures; the existing fatal diagnostic archive handles interruption before a window is exported. Never attribute a prior setup to a new attempt. Regression coverage verifies the proof inside both actual archive paths, not merely that a JSON file exists on disk.
+
+
+### Offline accuracy repairs (2026-11-13)
+
+The active published controller is unaffected by worktree changes. Revised analyses
+use `accuracy-evidence-v1.0.1` and link their original archive SHA256, member seals
+and verifier source hashes. Original results and their verdicts stay unchanged.
+
+- Native Kubernetes lifecycle units follow the [pinned v0.156 receiver metadata](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.156.0/receiver/k8sclusterreceiver/metadata.yaml): empty units for ready/phase (omitted in OTLP JSON), `{restart}` for restarts. Container IDs join only after removing a known runtime scheme. UID and underlying object-version/time checks remain mandatory.
+- Kubelet Summary volume records do not identify non-PVC Kubernetes volume types.
+  Those types must be confirmed from a Pod spec with the same Pod/Node UID. A
+  missing declaration or ambiguous receiver association remains insufficient.
+- Traffic comparisons retain their original numeric result and acquisition bounds.
+  The earlier bare `source_population.matched` flag is no longer trusted. Matching
+  aggregate counts does not certify equivalent call or duration populations.
+- Reports separate application-container CPU/memory, host, volume and lifecycle
+  accuracy. The broad resource family remains for compatibility. No comparison
+  count is interpreted as a sample-loss percentage.
+- Host source-read timestamps and cached Kubernetes object versions cannot be
+  reconstructed from unrelated observation times. Reanalysis never fabricates
+  acquisition attestations, replaces missing values with zero, or widens bounds.
+
+Reanalyse one downloaded, immutable window archive into a **new** directory:
+
+```sh
+python -m evaluation.gke.accuracy_reanalysis /path/window.tar.gz /path/new-analysis \
+  --sha256 <archive-sha256-from-verified-checkpoint>
+```
+
+The command performs no cloud or Kubernetes operations. It verifies the original
+archive and every consumed member against `GKE-SHA256SUMS`, rejects unsafe archive
+paths/duplicates, and writes compact `summary.json`, `comparison-changes.json`,
+`analysis-manifest.json` and output checksums. Comparisons outside the repaired
+scope retain their original results. Missing historical inputs stay missing.
