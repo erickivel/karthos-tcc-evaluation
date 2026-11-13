@@ -87,7 +87,9 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
                 report=thesis.claim_matrix(ctx,[],None,None)
                 self.assertEqual(report['protocol'],schedule)
                 self.assertEqual(report['local_contract_protocol'],models.THESIS_V2)
-                self.assertTrue(all(row['verdict']=='insufficient' for row in report['claims']))
+                self.assertTrue(all(row['verdict'] in ('insufficient','not-applicable') for row in report['claims']))
+                if schedule==models.REPAIR:
+                    self.assertTrue(all(row['verdict']=='not-applicable' for row in report['claims'] if row['claim']=='retained-replicas-and-health' or row['claim'].startswith('clean-rebuild')))
 
     def test_product_metric_contract_selected_for_all_thesis_versions(self):
         from evaluation import runner

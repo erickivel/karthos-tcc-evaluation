@@ -323,7 +323,7 @@ class SourceStartupRestoreTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    child=MagicMock();child.start.side_effect=RuntimeError('source collector startup evidence unavailable')
    child.sampling_errors=[{'source':'source-config','error':'missing source config'}]
-   child.log_captures=[];child.sampler_threads=[];child.source_collectors=[]
+   child.log_captures=[];child.sampler_threads=[];child.source_collectors=[];child.thread=None;child.kubelet_proxy_lifecycle={'stopped':True};child.log_proxy_lifecycle={'stopped':True}
    capture=s.RepairCapture(SimpleNamespace(namespace='app'),Path(d),time.time()+600)
    with patch.object(capture,'_prepare'),patch('evaluation.structured_capture.FastCapture',return_value=child),patch.object(capture,'_restore',return_value={'restored':True}) as restore:
     with self.assertRaisesRegex(RuntimeError,'source collector'):capture.start()

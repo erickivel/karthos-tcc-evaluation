@@ -115,6 +115,9 @@ def teardown(ctx):
     if ctx.state.get('creation_intents'):
         _,unresolved=resolve_creation_intents(ctx,cleanup=True)
         resources=list(ctx.state.get('resources',[]))
+        if not unresolved and ctx.state.get('rejected_creation_receipts') and resources:
+            from .provision import arm_watchdog
+            arm_watchdog(ctx,refresh=False)
         if unresolved:
             names=[intent['name'] for intent in unresolved]
             ctx.event('teardown-partial-creation-unobserved',residual=names)

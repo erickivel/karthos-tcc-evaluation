@@ -61,6 +61,27 @@ def _samples(document):
     return document.get('data',{}).get('samples',[]) if isinstance(document,dict) else []
 
 
+def _instrument_contract(metric,kind):
+    body=metric.get(kind,{})
+    return {'kind':kind,'is_monotonic':body.get('isMonotonic',False) if kind=='sum' else None,
+            'aggregation_temporality':body.get('aggregationTemporality')}
+
+
+def _numerical_scope(checks,selected,resources,cpu_name,memory_name):
+    # Traffic has its own population-aware verifier; catalog presence is not accuracy.
+    names={row['name'] for row in selected if not row['name'].startswith('servicegraph.')}
+    names-={cpu_name,memory_name}
+    scoped=[check for check in checks if check.get('observed',{}).get('metric',check.get('metric')) in names]
+    represented={check.get('observed',{}).get('metric',check.get('metric')) for check in scoped}
+    for name in sorted(names-represented):
+        scoped.append({'metric':name,'state':'insufficient','reason':'selected independent reference or exact measurement identity unavailable'})
+    scoped.append({'metric':cpu_name+' + '+memory_name,'state':{'pass':'pass','fail':'fail'}.get(resources.get('state'),'insufficient'),'report':resources})
+    counts={key:sum(check.get('state')==key for check in scoped) for key in ('pass','fail','insufficient','not-applicable')}
+    counts['eligible']=len(scoped)-counts['not-applicable']
+    state='fail' if counts['fail'] else ('insufficient' if counts['insufficient'] or not counts['eligible'] else 'pass')
+    return {'state':state,'checks':scoped,'counts':counts,'scope':'declared numerical resource comparisons; traffic and catalog visibility reported separately'}
+
+
 def _safe_metric(name):
     if not re.fullmatch(r'[a-z][a-z0-9_.]*',name):raise ValueError('unsafe metric identifier')
     return name
@@ -516,7 +537,7 @@ def _kubernetes_observations(path,agents,*,thesis=False):
                       'k8s.container.restarts':'k8s.container.restart.count',
                       'k8s.pod.phase':'k8s.pod.status.phase'}.get(name,name)
             result.append({'metric':name,'source':source,'value':float(point.get('asDouble',point.get('asInt'))),'unit':metric.get('unit'),
-                           'kind':kind,'is_monotonic':metric.get(kind,{}).get('isMonotonic'),'aggregation_temporality':metric.get(kind,{}).get('aggregationTemporality'),
+                           **_instrument_contract(metric,kind),
                            'node':node,'node_uid':node_uids.get(node,origin.get('node_uid')),'collector_uid':origin.get('collector_uid'),
                            'namespace':resource.get('k8s.namespace.name'),'pod':resource.get('k8s.pod.name'),'pod_uid':resource.get('k8s.pod.uid'),
                            'container':resource.get('k8s.container.name'),'container_id':resource.get('container.id'),
@@ -588,7 +609,7 @@ def _host_observations(path,agents,*,thesis=False):
             result.append(dict(metric=canonical,value=float(point.get('asDouble',point.get('asInt')))*factor,
                 unit=('ratio' if thesis else 'percent') if utilization else metric.get('unit'),source=source,
                 node=resource.get('k8s.node.name'),node_uid=agent.get('node_uid'),collector_uid=agent.get('collector_uid'),
-                dimensions=dims,raw_dimensions=attributes,kind=kind,is_monotonic=metric.get(kind,{}).get('isMonotonic'),aggregation_temporality=metric.get(kind,{}).get('aggregationTemporality'),
+                dimensions=dims,raw_dimensions=attributes,**_instrument_contract(metric,kind),
                 measurement_timestamp=None,recorded_timestamp=int(point['timeUnixNano'])/1e9,
                 timestamp_semantics='OTLP collection timestamp; underlying host read is not independently bracketed',raw_point=point,raw_resource=resource))
     return _attach_alignment(path,result)
@@ -629,10 +650,6 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     extras,reference_inventory=_extra_resource_checks(path,agents,references,traffic,verification,start,end,thesis=thesis)
     checks.extend(extras)
     selected=_definitions(ctx,'metrics.yaml')['metrics']
-    represented={check.get('observed',{}).get('metric',check.get('metric')) for check in checks}
-    for row in selected:
-        if row['name'] not in represented and row['name'] not in (cpu_name,memory_name):
-            checks.append({'state':'insufficient','metric':row['name'],'reason':'source observation or independently aligned reference unavailable','reference_type':row['reference'],'required_acquisition':row['comparison']+' evidence with exact source/node/UID/dimensions and measurement identity'})
     resource_report=verification.get('resources')
     if resource_report is None and start is not None and end is not None:
         try:
@@ -641,8 +658,9 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 manifest.get('namespace',spec.get('namespace')),_time(start),_time(end),ctx.manifest.get('thresholds',{}),stored,_read(path/'k8s-pods.json').get('items',[]))
         except (ValueError,TypeError,KeyError,OSError) as exc:resource_report={'state':'incomplete','reason':str(exc)}
     resource_report=resource_report or {'state':'incomplete','reason':'container resource evidence unavailable'}
-    checks.append({'metric':cpu_name+' + '+memory_name,'state':{'pass':'pass','fail':'fail'}.get(resource_report.get('state'),'insufficient'),'report':resource_report})
-    numeric='fail' if any(check['state']=='fail' for check in checks) else ('pass' if checks and all(check['state']=='pass' for check in checks) else 'insufficient')
+    numerical=_numerical_scope(checks,selected,resource_report,cpu_name,memory_name)
+    all_checks=checks
+    checks=numerical['checks']
     capture=_read(extended/'capture-status.json');structured=_read(path/'structured/status.json')
     capture_valid=bool(capture.get('state')=='complete' and structured.get('valid') is True and agents.get('valid') and coverage['complete'] and not reference_errors)
     evidence_valid=capture_valid and (disruption or traffic.get('independent_valid') is True)
@@ -650,17 +668,17 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 execution={'state':'complete' if executed else 'incomplete','diagnostic_result':scenario if disruption else None},
                 evidence={'state':'pass' if evidence_valid else 'incomplete','valid':evidence_valid,'extended_capture':capture,'agent_identities':agents,'reference_errors':reference_errors},
                 traffic={'oracle_valid':traffic.get('independent_valid') is True,'expected_disruption':disruption,'report':traffic,'interpretation':'traffic remains diagnostic during resource/restart scenarios' if disruption else 'normal core traffic verifier'},
-                numerical_agreement={'state':numeric,'checks':checks,'scope':'host raw-source comparisons; traffic API/parity and container same-measurement checks remain separately reported'},
+                numerical_agreement=numerical,
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version=('thesis-qualification-v3.0' if ctx.manifest['schedule']==THESIS else 'thesis-qualification-v2.1'),
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     accuracy=[]
     for metric in selected:
         name=metric['name']
-        metric_checks=[check for check in checks if check.get('metric')==name or check.get('observed',{}).get('metric')==name]
+        metric_checks=[check for check in all_checks if check.get('metric')==name or check.get('observed',{}).get('metric')==name]
         if name in (cpu_name,memory_name):
             accuracy.append(dict(metric,state={'pass':'pass','fail':'fail'}.get(resource_report.get('state'),'insufficient'),verifier='exact receiver-input resource verifier'))
         elif metric_checks:
@@ -672,7 +690,7 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     report['storage_api_parity']={'metrics':storage_api,'independent_accuracy_claimed':False}
     report['selected_accuracy']=accuracy
     from .coverage_report import build as build_coverage
-    report['metric_window_coverage']=build_coverage(coverage,traffic,start=start,end=end,checks=checks,resources=resource_report)
+    report['metric_window_coverage']=build_coverage(coverage,traffic,start=start,end=end,checks=all_checks,resources=resource_report)
     report['state']='diagnostic' if executed else 'incomplete'
     ctx.write(path/'gke-evaluation.json',report)
     return report

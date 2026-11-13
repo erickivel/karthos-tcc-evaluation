@@ -1,5 +1,6 @@
 """Per-launch mechanism gate. Results are separate from accuracy scoring."""
 from __future__ import annotations
+from .models import RECOVERABLE_SCHEDULES
 
 import contextlib
 import math
@@ -51,9 +52,9 @@ def definition():
 
 def validate_launch(ctx):
     from .models import THESIS, build_matrix
-    if ctx.manifest.get('schedule') != THESIS:
+    if ctx.manifest.get('schedule') not in RECOVERABLE_SCHEDULES:
         raise ValueError('new launches require the active k6-only thesis protocol; legacy schedules are analysis-only')
-    if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
         from .recoverable_run import validate_launch as validate_v4
         return validate_v4(ctx)
     expected = build_matrix(ctx.manifest['protocol_definition'], schedule=THESIS)

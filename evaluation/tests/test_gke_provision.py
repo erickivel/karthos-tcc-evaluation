@@ -100,7 +100,7 @@ class FakeContext:
         self.objects={}
         self.config={'gcp':{'project_id':'research-project','billing_account_id':'approved-account','region':'us-central1','zone':'us-central1-a'},'infrastructure':{'kubernetes_version':'1.34.0-gke.1'},'limits':{'infrastructure_seconds':43200}}
         self.state={'owner_id':'gke-qualification-v1','run_id':self.run_id,'started_at':time.time(),'deadline':self.deadline,'resources':[],'terraform':{}}
-        self.manifest={'config':self.config};self.billing='approved-account';self.cpus=32;self.ssd_gb=1024;self.ssd_usage=0;self.global_cpus=32;self.global_cpu_usage=0;self.cloud_uid='123'
+        self.manifest={'config':self.config,'matrix':[{'id':'fixture-smoke','repeat':1}]};self.billing='approved-account';self.cpus=32;self.ssd_gb=1024;self.ssd_usage=0;self.global_cpus=32;self.global_cpu_usage=0;self.cloud_uid='123'
         self.instance={'kind':'instance','name':'projects/research-project/zones/us-central1-a/instances/controller','uid':'123'}
     def event(self,phase,**kw):self.state.update(phase=phase,**kw)
     def command(self,args,**kwargs):
@@ -113,7 +113,7 @@ class FakeContext:
         elif args[:3]==['gcloud','storage','cp']:self.objects[args[4]]=Path(args[3]).read_text()
         elif args[:4]==['gcloud','billing','projects','describe']:value={'billingEnabled':True,'billingAccountName':'billingAccounts/'+self.billing}
         elif args[:3]==['gcloud','projects','describe']:value={'projectId':'research-project','projectNumber':'12345','lifecycleState':'ACTIVE'}
-        elif args[:3]==['gcloud','services','list']:value=[{'config':{'name':x+'.googleapis.com'}} for x in ['compute','container','storage','artifactregistry','run','cloudscheduler','iam','iamcredentials']]
+        elif args[:3]==['gcloud','services','list']:value=[{'config':{'name':x+'.googleapis.com'}} for x in ['cloudbilling','compute','container','storage','artifactregistry','run','cloudscheduler','iam','iamcredentials']]
         elif args[:4]==['gcloud','compute','disks','list']:value=[]
         elif args[:4]==['gcloud','compute','regions','describe']:value={'quotas':[{'metric':'CPUS','limit':self.cpus,'usage':0},{'metric':'SSD_TOTAL_GB','limit':self.ssd_gb,'usage':self.ssd_usage}]}
         elif args[:4]==['gcloud','compute','project-info','describe']:value={'quotas':[] if self.global_cpus is None else [{'metric':'CPUS_ALL_REGIONS','limit':self.global_cpus,'usage':self.global_cpu_usage}]}

@@ -1,11 +1,12 @@
 """Revision-specific inputs and claim-level evidence for the thesis schedule."""
 from __future__ import annotations
+from .models import RECOVERABLE_SCHEDULES
 
 import math
 import re
 from pathlib import Path
 
-from .models import THESIS,THESIS_SCHEDULES,sha
+from .models import THESIS,THESIS_SCHEDULES,REPAIR,sha
 
 START_REVISION='f37f408dea46abfcfdfbdc6a32c06ac2a353d9ef'
 PRODUCT_NAMES=('karthos-backend','karthos-frontend')
@@ -340,6 +341,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
                 by_window[row['id']]=(row['export'].get('uri'),evidence)
     rows=[]
+    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule')==REPAIR else 6
     def add(claim,verdict,reference,artifacts):
         rows.append(dict(claim=claim,verdict=verdict,reference=reference,artifacts=artifacts))
     local=(ctx.manifest.get('local_contract_evidence') or {}).get('checks',{})
@@ -350,7 +352,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
     ready=(readiness_report or {}).get('matrix_export',{})
     readiness_reference='verified current-launch probes, ownership-safe reset and timing handoff'
     readiness_artifacts=[ready['uri']] if ready.get('uri') else []
-    if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
         readiness_reference='read-only per-cell deployment, source configuration and public API observations; no readiness traffic or numerical scoring'
         readiness_artifacts=[row['export']['uri'] for row in (readiness_report or {}).get('cells',[])
                              if row.get('export',{}).get('verified') is True and row['export'].get('uri')]
@@ -360,7 +362,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
         entries=[(uri,data.get('thesis_answers',{}).get(name,{}).get('state')) for uri,data in by_window.values()
                  if data.get('spec',{}).get('phase')=='baseline']
         states=[state for _,state in entries]
-        verdict='fail' if 'incorrect' in states else 'pass' if len(states)==6 and all(s=='correct' for s in states) else 'insufficient'
+        verdict='fail' if 'incorrect' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(s=='correct' for s in states) else 'insufficient'
         add(name,verdict,'API-only answers scored against independent evidence',[uri for uri,_ in entries if uri])
     history=history or {}
     history_state=history.get('answer',{}).get('state') if (
@@ -376,10 +378,19 @@ def claim_matrix(ctx,windows,history,readiness_report):
          lambda d: d.get('numerical_agreement',{}).get('state')),
     ):
         states=[extract(data) for _,data in baselines]
-        verdict='fail' if 'fail' in states else 'pass' if len(states)==6 and all(state=='pass' for state in states) else 'insufficient'
+        verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
         add(claim,verdict,reference,[uri for uri,_ in baselines if uri])
+    if ctx.manifest.get('schedule')==REPAIR:
+        for row in rows:
+            if row['claim']=='retained-replicas-and-health':
+                row.update(verdict='not-applicable',reference='deferred: no new cloud historical observation in repair validation',artifacts=[])
     from .thesis_comparison import compare_pairs
-    rows.extend(compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds')))
+    comparisons=compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds'))
+    if ctx.manifest.get('schedule')==REPAIR:
+        for row in comparisons:
+            if row['claim'].startswith('clean-rebuild') or row['claim'].startswith('reproducibility'):
+                row.update(verdict='not-applicable',reference='deferred: one fresh repaired cluster cannot establish two-cluster reproducibility',artifacts=[])
+    rows.extend(comparisons)
     return dict(protocol=ctx.manifest.get('schedule',THESIS),
                 local_contract_protocol=(ctx.manifest.get('local_contract_evidence') or {}).get('protocol'),
                 product_revision=ctx.manifest['product_pins']['karthos_revision'],claims=rows)

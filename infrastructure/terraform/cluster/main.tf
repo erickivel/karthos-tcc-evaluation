@@ -7,7 +7,12 @@ resource "google_container_cluster" "evaluation" {
   subnetwork               = var.subnetwork
   remove_default_node_pool = true
   initial_node_count       = 1
-  deletion_protection      = false
+  # GKE creates this bootstrap pool before removing it; never use the default SA.
+  node_config {
+    service_account = var.node_service_account
+    oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+  deletion_protection = false
   # Explicit Calico enforcement; Dataplane V2 restricts custom eBPF programs.
   network_policy {
     enabled  = true

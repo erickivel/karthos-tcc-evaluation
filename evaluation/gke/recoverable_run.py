@@ -7,7 +7,7 @@ import shutil
 import time
 import traceback
 from pathlib import Path
-from .models import canonical_sha, read, sha, write
+from .models import canonical_sha, read, sha, write, REPAIR, RECOVERABLE_SCHEDULES
 
 
 class SafetyFailure(RuntimeError):
@@ -37,7 +37,7 @@ def planning_forecast(config, matrix, continuation=None):
     if missing:return {'fits':False,'seconds':None,'missing':missing,'reason':'reviewed phase timing estimates required; no local benchmark required'}
     groups=sum(1 for i,row in enumerate(matrix) if i==0 or (row['repeat'],row['cell'])!=(matrix[i-1]['repeat'],matrix[i-1]['cell']) or row['phase'] in ('arbitration','restart'))
     rebuild=estimates['rebuild'] if len({row['repeat'] for row in matrix})>1 else 0
-    history=estimates['history'] if any(row['repeat']==1 and row['cell']=='boutique-mesh' and row['phase']=='baseline' for row in matrix) and not (continuation or {}).get('history') else 0
+    history=estimates['history'] if any(row.get('history_observation',True) and row['repeat']==1 and row['cell']=='boutique-mesh' and row['phase']=='baseline' for row in matrix) and not (continuation or {}).get('history') else 0
     resource_preparation=estimates.get('resource_prepare',0)
     if type(resource_preparation) not in (int,float) or not math.isfinite(resource_preparation) or resource_preparation<0:raise ValueError('invalid resource preparation allowance')
     resource_preparation*=sum(row['phase']=='resource' for row in matrix)
@@ -52,7 +52,7 @@ def planning_forecast(config, matrix, continuation=None):
 def validate_launch(ctx):
     from .models import validate_schedule
     from .readiness import validate_cost
-    if validate_schedule(ctx.manifest)!='thesis-qualification-v4':raise ValueError('v4 launch requires exact versioned schedule')
+    if validate_schedule(ctx.manifest) not in RECOVERABLE_SCHEDULES:raise ValueError('v4 launch requires exact versioned schedule')
     if ctx.manifest.get('readiness_check') is not None:raise ValueError('legacy readiness gate must not be active in v4')
     if ctx.manifest.get('minimal_readiness')!={'version':4,'mode':'per-cell-read-only','observation_seconds':120,'traffic':False}:
         raise ValueError('minimal readiness contract missing or changed')
@@ -75,6 +75,12 @@ def validate_launch(ctx):
     from .thesis import local_contract
     local_contract(ctx.manifest.get('local_contract_evidence'),ctx.manifest['product_pins'])
     continuation=ctx.manifest.get('continuation')
+    if ctx.manifest.get('schedule')==REPAIR and not ctx.manifest.get('origin_evidence',{}).get('report_sha256'):
+        raise ValueError('repair origin evidence missing')
+    if ctx.manifest.get('schedule')==REPAIR and ctx.config.get('execution_segment','all')!='all':
+        raise ValueError('repair validation runs its complete six-window matrix; split study segments are unsupported')
+    if ctx.manifest.get('schedule')==REPAIR and continuation:
+        raise ValueError('repair validation must not import predecessor passes as continuation')
     if continuation:
         if continuation.get('binding')!=binding(ctx.manifest):raise ValueError('continuation changed protocol, product, scoring or implementation')
         if not continuation.get('export',{}).get('verified'):raise ValueError('continuation needs verified immutable predecessor checkpoint')
@@ -226,7 +232,7 @@ def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_po
     execution=report.get('execution',{}).get('state','unattempted')
     valid=report.get('evidence',{}).get('valid') is True
     failed=bool(failure or execution!='complete' or not valid or type(unexpected) is int and unexpected>0)
-    return {'id':spec['logical_id'],'attempt_id':spec['id'],'state':'failed' if failed else 'complete',
+    return {'id':spec['logical_id'],'origin_id':spec.get('origin_id'),'attempt_id':spec['id'],'state':'failed' if failed else 'complete',
             'execution':execution,'evidence_valid':valid,'evidence_scope':'local measurement; export and continuation reported separately',
             'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
             'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
@@ -383,10 +389,10 @@ def execute(ctx,driver):
                 if number==1 and spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
                     prerequisite=next(r for r in matrix if r['phase']=='arbitration' and r['scenario']=='both-sources')
                     driver.setup({**prerequisite,'id':attempt['id']+'-prerequisite'});active_cell=None
-            if spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
+            if ctx.manifest.get('schedule')!=REPAIR and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
                 history={'state':'blocked','reason':'Boutique deployment unavailable after baseline attempts','action_taken':False}
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
-            if spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
+            if ctx.manifest.get('schedule')!=REPAIR and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
                 history_errors=[]
                 for number in (1,2):
                     try:
@@ -434,12 +440,12 @@ def execute(ctx,driver):
     claims=claim_matrix(ctx,records,history,readiness_report);ctx.write(ctx.result/'claim-matrix.json',claims)
     launch_ids={row['id'] for row in launch_matrix}
     segment_complete=not failure and all(row.get('retry_policy_complete') for row in records if row['id'] in launch_ids) and launch_ids<={row['id'] for row in records}
-    if ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
-    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and history is not None
-    report={'protocol':'thesis-qualification-v4','state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
+    if ctx.manifest.get('schedule')!=REPAIR and ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
+    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and (history is not None or ctx.manifest.get('schedule')==REPAIR)
+    report={'protocol':ctx.manifest.get('schedule','thesis-qualification-v4'),'state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
             'planned_windows':len(matrix),'attempted_windows':sum(bool(r.get('attempts')) for r in records),'attempts':sum(len(r.get('attempts',[])) for r in records),
             'records':records,'windows':records,'history':history,'readiness':readiness_report,'failure':failure,'cleanup':cleanup,
-            'qualified':not failure and all(r['state'] not in ('unattempted','blocked') for r in records) and all(r['verdict']=='pass' for r in claims['claims']),
+            'qualified':not failure and all(r['state'] not in ('unattempted','blocked') for r in records) and all(r['verdict'] in ('pass','not-applicable') for r in claims['claims']),
             'numerical_disagreement_is_result':True,'temporary_removal_confirmed':False,'claim_matrix':'claim-matrix.json'}
     ctx.write(ctx.result/'run-report.json',report);return report
 
@@ -450,7 +456,7 @@ def failed_staging(ctx,driver,reason):
     export.render_matrix(ctx.result,ctx.manifest['matrix'],records)
     try:cleanup=driver.finish()
     except Exception as exc:cleanup={'error':str(exc)}
-    report={'protocol':'thesis-qualification-v4','state':'incomplete','records':records,'windows':records,'failure':reason,'cleanup':cleanup,'qualified':False}
+    report={'protocol':ctx.manifest.get('schedule','thesis-qualification-v4'),'state':'incomplete','records':records,'windows':records,'failure':reason,'cleanup':cleanup,'qualified':False}
     ctx.write(ctx.result/'run-report.json',report);return report
 
 

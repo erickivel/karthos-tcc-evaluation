@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 from collections import Counter
-from .models import read,write,sha,identifier,implementation_fingerprint
+from .models import read,write,sha,identifier,implementation_fingerprint,RECOVERABLE_SCHEDULES
 from .coverage_report import build as build_coverage, render as render_coverage
 
 def analyse(root,run_id,analysis_id):
@@ -13,7 +13,7 @@ def analyse(root,run_id,analysis_id):
     if destination.exists():raise FileExistsError('analysis IDs are immutable')
     run=read(report);windows=[];inputs={str(report.relative_to(root)):sha(report)}
     execution_rows=run.get('windows',run.get('records',[]))
-    if run.get('protocol')=='thesis-qualification-v4':
+    if run.get('protocol') in RECOVERABLE_SCHEDULES:
         execution_rows=[dict(attempt,id=attempt['attempt_id'],logical_id=row['id']) for row in execution_rows for attempt in row.get('attempts',[])]
     for row in execution_rows:
         candidates=list(source.rglob(row['id']+'/gke-evaluation.json'))
@@ -33,6 +33,7 @@ def analyse(root,run_id,analysis_id):
         result['verifier_version']='thesis-qualification-v3-analysis-1'
     if any(w.get('protocol')=='thesis-qualification-v4' for w in windows):
         result['verifier_version']='thesis-qualification-v4-analysis-1'
+    if run.get('protocol')=='thesis-repair-validation-v1':result['verifier_version']='thesis-repair-validation-v1-analysis-1'
     result['coverage_schema_version']='metric-window-coverage-v1'
     coverage_rows=[]
     for window in windows:

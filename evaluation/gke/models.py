@@ -9,7 +9,9 @@ REHEARSAL='diagnostic-rehearsal'
 THESIS_V2='thesis-qualification-v2'
 THESIS_V3='thesis-qualification-v3'
 THESIS='thesis-qualification-v4'
-THESIS_SCHEDULES=(THESIS_V2,THESIS_V3,THESIS)
+REPAIR='thesis-repair-validation-v1'
+RECOVERABLE_SCHEDULES=(THESIS,REPAIR)
+THESIS_SCHEDULES=(THESIS_V2,THESIS_V3,*RECOVERABLE_SCHEDULES)
 THESIS_HISTORY_SECONDS=720
 PHASES=('smoke','baseline','resource','arbitration','restart')
 
@@ -40,6 +42,20 @@ def validate_config(c):
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
+    if schedule==REPAIR:
+        if (p.get('id')!=REPAIR or p.get('repetitions')!=1 or p.get('rebuild_cluster') is not False
+                or p.get('history_observation_seconds')!=0 or p.get('origin_protocol')!=THESIS
+                or p.get('cluster_cell_order')!=[['boutique-trace','astronomy-mesh','boutique-mesh']]):
+            raise ValueError('repair validation requires the reviewed one-cluster six-window definition')
+        original=dict(p,id=THESIS,repetitions=2,rebuild_cluster=True,history_observation_seconds=THESIS_HISTORY_SECONDS,
+                      cluster_cell_order=[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh'],['boutique-mesh','boutique-trace']])
+        frozen=build_matrix(original,schedule=THESIS)
+        rows=[]
+        for rep,cell in ((2,'boutique-trace'),(1,'astronomy-mesh'),(2,'boutique-mesh')):
+            for phase in ('smoke','baseline'):
+                row=next(row for row in frozen if row['repeat']==rep and row['cell']==cell and row['phase']==phase)
+                rows.append(dict(row,id='repair-'+row['id'][3:],origin_id=row['id'],repeat=1,history_observation=False))
+        return rows
     if p['id']!=(schedule if schedule in THESIS_SCHEDULES else PROTOCOL) or p['repetitions']!=2 or not p['rebuild_cluster']:raise ValueError('invalid frozen protocol')
     if p['baseline_rate']!=2 or p['smoke_seconds']!=60 or p['baseline_seconds']!=300 or p['diagnostic_seconds']!=300:raise ValueError('frozen workloads or duration changed')
     rows=[]

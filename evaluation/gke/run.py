@@ -7,6 +7,7 @@ perform final VM teardown. Expected disruption never turns missing evidence into
 an accuracy or traffic-oracle pass.
 """
 from __future__ import annotations
+from .models import RECOVERABLE_SCHEDULES
 
 import copy
 import hashlib
@@ -53,7 +54,7 @@ def execute_matrix(ctx,driver,*,gate=None):
     work; completed disruption windows retain an explicitly incomplete verdict.
     """
     schedule=validate_schedule(ctx.manifest)
-    if schedule == 'thesis-qualification-v4':
+    if schedule in RECOVERABLE_SCHEDULES:
         from .recoverable_run import execute
         return execute(ctx,driver)
     rehearsal=schedule==REHEARSAL
@@ -422,7 +423,7 @@ class LiveDriver:
             state.update(generator_start_marker=marker,triggered_at=time.time())
             if spec['phase']=='resource':
                 from .diagnostics.resources import bind_network_target,build_resources_both,verify_network_result
-                if self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+                if self.ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
                     from .prepared_resources import release
                     state['release']=release(self.ctx,self,objects,path)
                     state['prepared_before_measurement']=True
@@ -455,7 +456,7 @@ class LiveDriver:
                 while time.time()<deadline:
                     pods=self.ctx.json('get','pods','-n',self.cell.namespace,'-l','evaluation.karthos.dev/run-id='+token).get('items',[])
                     selected=[pod for pod in pods if pod['metadata']['name'] in expected]
-                    if self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+                    if self.ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
                         for pod in selected:
                             statuses=pod.get('status',{}).get('containerStatuses',[])
                             stimulus=next((c for c in statuses if c['name']=='stimulus'),{})
@@ -537,7 +538,7 @@ class LiveDriver:
         self.ctx.write(scratch/'versions-before.json',verify_versions(self.ctx))
         try:
             reference_obj,reference_pods=self._reference_start(self.cell.namespace,token,scratch)
-            if spec['phase']=='resource' and self.ctx.manifest.get('schedule')=='thesis-qualification-v4':
+            if spec['phase']=='resource' and self.ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
                 from .prepared_resources import prepare
                 prepare(self.ctx,self,spec,token,scratch,objects)
             if spec['phase'] in ('resource','restart'):
@@ -720,13 +721,13 @@ def run(ctx):
         def failed_stage(context, active):
             probes=ProbeDriver(active)
             return execute(context,None,None,probes.publish,initial_failure=reason)
-        if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+        if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
             from .recoverable_run import failed_staging
             report=failed_staging(ctx,driver,reason)
         else:report=execute_matrix(ctx,driver,gate=failed_stage)
     else:
         with legacy_context(ctx):
-            report=execute_matrix(ctx,driver,gate=None if ctx.manifest.get('schedule')=='thesis-qualification-v4' else readiness_gate)
+            report=execute_matrix(ctx,driver,gate=None if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES else readiness_gate)
 
     summary=ctx.result/'final-summary';summary.mkdir(exist_ok=False)
     for name in ('matrix.json','matrix.csv','matrix.html','attempts.json','attempts.csv','run-report.json','claim-matrix.json'):
@@ -738,11 +739,11 @@ def run(ctx):
     readiness_matrix=ctx.result/'readiness/matrix/matrix.json'
     if readiness_matrix.is_file():
         shutil.copy2(readiness_matrix,summary/'readiness-matrix.json')
-    if ctx.manifest.get('schedule')=='thesis-qualification-v4':
+    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
         for folder in ('checkpoint-receipts','readiness'):
             source=ctx.result/folder
             if source.is_dir():shutil.copytree(source,summary/folder)
-    if ctx.manifest.get('schedule')=='thesis-qualification-v4':
+    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
         from .failure_evidence import retain_attempt_reports, copy_summary_diagnostics
         records=report.get('records',report.get('windows',[]))
         retain_attempt_reports(ctx,records,summary)

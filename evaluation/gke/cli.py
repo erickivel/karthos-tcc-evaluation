@@ -2,13 +2,14 @@
 from __future__ import annotations
 import argparse,json,os,sys,signal
 from pathlib import Path
-from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS
+from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS,REPAIR
 from .context import LiveContext
 
 
 def parser():
     p=argparse.ArgumentParser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
-    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,),default=THESIS)
+    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR),default=THESIS)
+    prep.add_argument('--origin-report',type=Path);prep.add_argument('--origin-seal',type=Path);prep.add_argument('--origin-uri')
     prep.add_argument('--continuation-dir',type=Path);prep.add_argument('--continuation-receipt',type=Path)
     analysis=sub.add_parser('analyse');analysis.add_argument('--run-id',required=True);analysis.add_argument('--analysis-id',required=True)
     for name in ['provision','run','runtime']:
@@ -25,7 +26,7 @@ def dispatch(a,root):
         return analyse(root,a.run_id,a.analysis_id)
     if a.command=='prepare':
         from .prepare import prepare
-        return {'manifest':str(prepare(root,root/a.config,a.id,product_snapshot=a.product_snapshot,schedule=a.schedule,benchmark=getattr(a,'benchmark',None),product_lock=getattr(a,'product_lock',None),local_evidence=getattr(a,'local_evidence',None),continuation_dir=getattr(a,'continuation_dir',None),continuation_receipt=getattr(a,'continuation_receipt',None))),'cloud_started':False}
+        return {'manifest':str(prepare(root,root/a.config,a.id,product_snapshot=a.product_snapshot,schedule=a.schedule,benchmark=getattr(a,'benchmark',None),product_lock=getattr(a,'product_lock',None),local_evidence=getattr(a,'local_evidence',None),continuation_dir=getattr(a,'continuation_dir',None),continuation_receipt=getattr(a,'continuation_receipt',None),origin_report=getattr(a,'origin_report',None),origin_seal=getattr(a,'origin_seal',None),origin_uri=getattr(a,'origin_uri',None))),'cloud_started':False}
     if a.command=='status':
         from .export import redact_document
         data=Path(os.environ.get('GKE_EVAL_DATA_ROOT',str(root)));state=data/'.work/gke'/identifier(a.run_id)/'execution.json'

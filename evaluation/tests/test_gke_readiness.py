@@ -206,21 +206,15 @@ class ReadinessTests(unittest.TestCase):
             self.assertFalse(result['ready'])
             self.assertIn('handoff archive readback',result['error'])
 
-    def test_launcher_rejects_absent_and_stale_replay_before_work(self):
-        from evaluation.gke import benchmark
-        ctx = self.context(Path('.'))
+    def test_launcher_rejects_legacy_probe_gate_before_work(self):
         from evaluation.gke.models import THESIS, build_matrix
-        protocol = read(Path(__file__).resolve().parents[2]/'protocols'/THESIS/'protocol.yaml')
-        ctx.manifest.update(schedule=THESIS, protocol_definition=protocol, matrix=build_matrix(protocol, schedule=THESIS))
-        with self.assertRaisesRegex(ValueError,'mandatory readiness definition'):
-            readiness.validate_launch(ctx)
-        ctx.manifest['readiness_check'] = readiness.definition()
-        for value in ({}, {'privacy_fingerprint':'earlier-source'}, {
-            'privacy_fingerprint':benchmark.privacy_fingerprint(), 'cases':{}}):
-            with self.subTest(value=value):
-                ctx.manifest['readiness_benchmark'] = value
-                with self.assertRaisesRegex(ValueError,'offline benchmark|offline replay'):
-                    readiness.validate_launch(ctx)
+        ctx=self.context(Path('.'))
+        protocol=read(Path(__file__).resolve().parents[2]/'protocols'/THESIS/'protocol.yaml')
+        ctx.manifest.update(schedule=THESIS,protocol_definition=protocol,matrix=build_matrix(protocol,schedule=THESIS))
+        for legacy in (None,readiness.definition()):
+            ctx.manifest['readiness_check']=legacy
+            with self.assertRaisesRegex(ValueError,'minimal readiness|legacy readiness'):
+                readiness.validate_launch(ctx)
 
     def test_readiness_preflight_failure_marks_all_cases_unattempted(self):
         with tempfile.TemporaryDirectory() as folder:

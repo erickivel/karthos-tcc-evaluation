@@ -38,6 +38,7 @@ class ExecutionDiagnostics:
         self.saturated = False
         self.start_error = None
         self._stopped = False
+        self.log_cursors = {}
 
     def __enter__(self):
         return self.start()
@@ -154,12 +155,25 @@ class ExecutionDiagnostics:
     def _logs(self, item, *, previous=False):
         if self.saturated or self.stop_event.is_set():
             return
+        terminated = item.get('terminated_instance', {})
+        container_id = terminated.get('containerID') if previous else item['container_id']
+        identity = {'containerID':container_id} if container_id else {'restart_count':item['restart_count']-int(previous)}
+        log_key = hashlib.sha256(json.dumps([item['uid'], item['container'], identity], sort_keys=True).encode()).hexdigest()
+        history = self.log_cursors.setdefault(log_key, {'bytes':0, 'chunks':0, 'since':self.started_at})
+        remaining = self.instance_limit-history['bytes']
+        if remaining <= 0:
+            if not history.get('budget_reported'):
+                self._write('log-index.ndjson', {**item, 'path':None, 'observed_at':time.time(),
+                    'coverage_gap':'instance byte budget exhausted'}, append=True)
+                history['budget_reported'] = True
+            return
+        requested_since = history['since']
         args = ['logs', item['pod'], '-n', item['namespace'], '-c', item['container'],
-                '--timestamps=true', '--limit-bytes='+str(self.instance_limit)]
+                '--timestamps=true', '--limit-bytes='+str(remaining)]
         if previous:
             args.append('--previous')
         else:
-            args.append('--since-time='+self.started_at)
+            args.append('--since-time='+requested_since)
         requested = time.time()
         try:
             response = self.ctx.kube(*args, timeout=5, check=False, cleanup=True)
@@ -174,17 +188,35 @@ class ExecutionDiagnostics:
                 self._error('log-identity-recheck', exc, **item)
             scope = 'previous' if previous else 'current'
             # Keep raced logs as explicitly unattributed diagnostics, never an oracle.
-            terminated = item.get('terminated_instance', {})
-            container_id = terminated.get('containerID') if previous else item['container_id']
-            log_identity = {'containerID':container_id} if container_id else {'restart_count':item['restart_count']-int(previous)}
-            log_key = hashlib.sha256(json.dumps([item['uid'], item['container'], log_identity], sort_keys=True).encode()).hexdigest()
-            name = 'logs/'+log_key+'.log'
-            output = response.stdout if isinstance(response.stdout, bytes) else response.stdout.encode()
-            output = output[:self.instance_limit]
+            history['chunks'] += 1
+            name = 'logs/'+log_key+'/'+str(history['chunks']).zfill(6)+'.log'
+            raw = response.stdout if isinstance(response.stdout, bytes) else response.stdout.encode()
+            output = raw[:remaining]
             saved = self._write(name, output)
+            partial = bool(output and not output.endswith(b'\n'))
+            if saved:
+                history['bytes'] += len(output)
+                # The inclusive timestamp cursor deliberately preserves boundary
+                # overlap. Do not deduplicate equal timestamps or identical lines:
+                # distinct application events can have identical contents.
+                if response.returncode == 0 and attributed and not previous:
+                    for line in output.splitlines(keepends=True):
+                        if not line.endswith(b'\n'):
+                            continue
+                        stamp = line.split(b' ',1)[0].decode('ascii', errors='replace')
+                        try:
+                            parsed = datetime.fromisoformat(stamp.replace('Z','+00:00'))
+                            old = datetime.fromisoformat(history['since'].replace('Z','+00:00'))
+                            if parsed >= old:
+                                history['since'] = stamp
+                        except (ValueError, TypeError):
+                            pass
             self._write('log-index.ndjson', {**item, 'scope':scope, 'requested_at':requested,
                 'received_at':time.time(), 'returncode':response.returncode, 'attributed':attributed,
-                'path':name if saved else None, 'bytes':len(output), 'truncation_possible':len(output)>=self.instance_limit,
+                'path':name if saved else None, 'bytes':len(output), 'truncation_possible':len(raw)>=remaining,
+                'requested_since_time':None if previous else requested_since, 'overlap_possible':not previous,
+                'partial_last_line':partial, 'sha256':hashlib.sha256(output).hexdigest(),
+                'coverage_gap':('request byte bound reached' if len(raw)>=remaining else None),
                 'previous_scope':'last terminated instance only' if previous else None,
                 'stderr':redact_text(str(response.stderr))[-2000:]}, append=True)
         except Exception as exc:
@@ -242,7 +274,8 @@ class ExecutionDiagnostics:
                    'retained_bytes':self.used_bytes, 'total_limit_bytes':self.total_limit,
                    'instance_log_limit_bytes':self.instance_limit,
                    'poll_seconds':self.poll_seconds, 'instances':len(self.states),
-                   'coverage':'best effort; bounded round-robin current logs and last previous instance only'}
+                   'coverage':'best effort; immutable incremental chunks with explicit inclusive-cursor overlap and byte-budget gaps',
+                   'instance_budgets_exhausted':sum(bool(v.get('budget_reported')) for v in self.log_cursors.values())}
         if stopped:
             self._stopped = True
             with suppress(Exception):

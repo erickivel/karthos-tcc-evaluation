@@ -1,0 +1,78 @@
+{
+  "arbitration_scenarios": [
+    "both-sources",
+    "replanned-trace"
+  ],
+  "attempt_policy": {
+    "baseline_requires_passing_smoke": false,
+    "maximum_attempts": 2,
+    "numerical_disagreement_retry": false
+  },
+  "baseline_rate": 2,
+  "baseline_seconds": 300,
+  "clock_bound_seconds": 0.25,
+  "cluster_cell_order": [
+    [
+      "boutique-trace",
+      "astronomy-mesh",
+      "boutique-mesh"
+    ]
+  ],
+  "demos": [
+    "boutique",
+    "astronomy"
+  ],
+  "diagnostic_demo": "boutique",
+  "diagnostic_generator": "k6",
+  "diagnostic_seconds": 300,
+  "drain_seconds": 90,
+  "exclusions": [
+    "shopping-agent-scenario",
+    "gpu",
+    "causal-overhead",
+    "production-scale"
+  ],
+  "generators": [
+    "k6"
+  ],
+  "history_observation_seconds": 0,
+  "id": "thesis-repair-validation-v1",
+  "interleaving": "actual concurrent request timings may differ; compare recorded ledgers, not bit-identical order",
+  "measured_generators": [
+    "k6"
+  ],
+  "minimal_readiness_seconds": 120,
+  "numerical_disagreement_is_result": true,
+  "preroll_seconds": 60,
+  "quiet_timeout_seconds": 90,
+  "random_seed": null,
+  "readiness_cases": 0,
+  "readiness_definition_version": 4,
+  "readiness_load_seconds": 0,
+  "rebuild_cluster": false,
+  "recipe_order": "deterministic global iteration-indexed matched journey schedule; no random generator is introduced",
+  "reference_capture": {
+    "boundary_slack_seconds": 1.25,
+    "maximum_gap_seconds": 2.5,
+    "period_seconds": 1,
+    "semantics": "required evidence coverage only; does not relax numeric metric tolerances"
+  },
+  "repetitions": 1,
+  "resource_scenarios": [
+    "cpu-memory",
+    "storage",
+    "network"
+  ],
+  "restart_scenarios": [
+    "checkout",
+    "gateway"
+  ],
+  "restart_trigger": "after first observed generator WINDOW marker; actual restart request and completion recorded",
+  "schema_version": 1,
+  "smoke_seconds": 60,
+  "sources": [
+    "trace",
+    "mesh"
+  ],
+  "origin_protocol": "thesis-qualification-v4"
+}

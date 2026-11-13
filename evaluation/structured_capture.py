@@ -4,13 +4,13 @@ RepairCapture(cell, window_path, study_deadline_epoch, config=None) rolls out
 bounded OTLP JSON file exporters and the exact kubelet receiver input proxy,
 then starts inventory/log capture and three independent sampling loops. Stop
 exports immutable archives before guarded restoration. Source gaps, restarts,
-rotation and unavailable inputs invalidate capture explicitly in status.json.
+legacy rotation and unavailable inputs invalidate capture explicitly in status.json.
 Instrumentation is intentionally outside measurement/preroll; its resources
 and setup/cleanup time are reported separately. No global debug logging.
 
 File exporter contract: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.156.0/exporter/fileexporter/README.md (archived
 in results/root-cause-20261020/upstream). JSON lines, no compression, bounded
-rotation (flush_interval is ignored when rotation is configured). Rotation is conservatively invalid for a window, even when retained.
+append-only buffered files without rotation. The owned emptyDir retains its 512Mi sizeLimit, and extraction rejects expanded archives above MAX_BYTES. Legacy rotated archives remain conservatively invalid: merely retaining some segments does not prove completeness. This also keeps timing-tail offsets stable and avoids rotated unbuffered writes.
 """
 from __future__ import annotations
 import copy
@@ -49,7 +49,7 @@ def instrumentation_plan(kind, cm, workload, owner, settings):
     key=keys[0];config=load_config(cm['data'][key])
     exporters=config.setdefault('exporters',{})
     if any(k.startswith('file/evaluation-') for k in exporters):raise ValueError('collector already instrumented')
-    exporters['file/evaluation-metrics']={'path':'/diag/metrics.json','format':'json','flush_interval':'1s','rotation':{'max_megabytes':64,'max_backups':2}}
+    exporters['file/evaluation-metrics']={'path':'/diag/metrics.json','format':'json','flush_interval':'1s','append':True}
     pipelines=config['service']['pipelines']
     metrics=[p for n,p in pipelines.items() if n.split('/')[0]=='metrics']
     if not metrics:raise ValueError('metrics source unavailable')
@@ -57,7 +57,7 @@ def instrumentation_plan(kind, cm, workload, owner, settings):
     if kind=='gateway':
         receivers=list(dict.fromkeys(x for n,p in pipelines.items() if n.split('/')[0]=='traces' for x in p['receivers']))
         if not receivers:raise ValueError('trace ingress source unavailable')
-        exporters['file/evaluation-traces']={'path':'/diag/traces.json','format':'json','flush_interval':'1s','rotation':{'max_megabytes':64,'max_backups':2}}
+        exporters['file/evaluation-traces']={'path':'/diag/traces.json','format':'json','flush_interval':'1s','append':True}
         pipelines['traces/evaluation-ingress']={'receivers':receivers,'processors':[],'exporters':['file/evaluation-traces']}
     template=workload['spec']['template'];spec=template['spec']
     template.setdefault('metadata',{}).setdefault('annotations',{})[OWNER]=owner

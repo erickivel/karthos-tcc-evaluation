@@ -4,6 +4,7 @@ All state/plan/tfvars bytes stay in private ctx.work. Events contain only phase
 and coarse counts. This module never creates a project or billing account.
 """
 from __future__ import annotations
+from .models import RECOVERABLE_SCHEDULES
 import hashlib,json,os,re,shutil,time,uuid
 from pathlib import Path
 from datetime import datetime,timezone
@@ -443,9 +444,17 @@ def register_creation_intents(ctx,candidates):
     assert_project_lease(ctx)
     if ctx.state.get('creation_intents'):raise ValueError('prior creation is unresolved; inspect binding/status before retry')
     intents=[]
+    # Bind later audit reconciliation to the identity actually making this request.
+    creator=None
+    try:
+        impersonated=ctx.command(['gcloud','config','get-value','auth/impersonate_service_account'],check=False).stdout.strip()
+        active=ctx.command(['gcloud','auth','list','--filter=status:ACTIVE','--format=value(account)'],check=False).stdout.strip()
+        candidate_creator=impersonated if impersonated and impersonated!='(unset)' else active
+        if re.fullmatch(r'[^\s@]+@[^\s@]+',candidate_creator):creator=candidate_creator
+    except (OSError,RuntimeError,TimeoutError):pass
     for candidate in candidates:
         intent_id=uuid.uuid4().hex
-        intents.append(dict(candidate,intent_id=intent_id,binding_object='control/'+ctx.run_id+'/uid-bindings/'+intent_id+'.json'))
+        intents.append(dict(candidate,intent_id=intent_id,registered_at=time.time(),expected_creator=creator,binding_object='control/'+ctx.run_id+'/uid-bindings/'+intent_id+'.json'))
     ctx.state['creation_intents']=intents;ctx.state['pending_resources']=intents
     ctx.event('creation-intents-recorded')
     return _pin_inventory(ctx,_inventory_record(ctx,ctx.state.get('resources',[]),intents))
@@ -482,13 +491,71 @@ def resolve_creation_uid(ctx,intent,*,cleanup=False):
     return {'kind':intent['kind'],'name':intent['name'],'uid':str(value['uid']),'binding':{'uri':uri,'generation':generation}}
 
 
+def _terminal_cluster_rejection(intent, audits, operations):
+    """A rejected API request is different from an accepted operation failing later."""
+    from datetime import datetime
+    def stamp(value):
+        return datetime.fromisoformat(value.replace('Z','+00:00')).timestamp()
+    def name(value):
+        return str(value).split('/projects/',1)[-1].removeprefix('projects/').replace('/zones/','/locations/')
+    if not intent.get('expected_creator') or intent.get('kind')!='cluster' or intent.get('observed_uid') or not isinstance(intent.get('registered_at'),(int,float)):
+        return None
+    target=name(intent['name']);started=intent['registered_at']
+    for operation in operations:
+        if name(operation.get('targetLink',''))!=target:continue
+        if operation.get('operationType')!='CREATE_CLUSTER':continue
+        try:before=stamp(operation['startTime'])<started
+        except (KeyError,TypeError,ValueError):before=False
+        if not before:return None
+    matching=[]
+    for audit in audits:
+        payload=audit.get('protoPayload',{})
+        try:recent=stamp(audit['timestamp'])>=started
+        except (KeyError,TypeError,ValueError):continue
+        if not recent or name(payload.get('resourceName',''))!=target:continue
+        if payload.get('serviceName')!='container.googleapis.com' or not payload.get('methodName','').endswith('.CreateCluster'):continue
+        # Even a named failed operation was accepted and may have created resources.
+        if payload.get('response',{}).get('name') or audit.get('operation'):return None
+        if payload.get('status',{}).get('code') not in (3,7,9):return None
+        principal=payload.get('authenticationInfo',{}).get('principalEmail')
+        if principal!=intent['expected_creator'] or not audit.get('insertId'):return None
+        matching.append({'audit_insert_id':audit['insertId'],'request_at':audit['timestamp'],'principal':principal,
+                         'status_code':payload['status']['code'],'intent_id':intent['intent_id'],'resource':intent['name']})
+    return matching[0] if len(matching)==1 else None
+
+
+def _reconcile_rejected_cluster(ctx,intent):
+    """Optional read-only audit reconciliation; unavailable proof leaves intent pending."""
+    from datetime import datetime,timezone
+    if intent.get('kind')!='cluster' or 'registered_at' not in intent:return None
+    after=datetime.fromtimestamp(intent['registered_at'],timezone.utc).isoformat()
+    project=ctx.config['gcp']['project_id'];zone=ctx.config['gcp']['zone']
+    query='protoPayload.serviceName="container.googleapis.com" AND protoPayload.methodName:"CreateCluster" AND timestamp>="'+after+'"'
+    try:
+        audits=doc(ctx,['gcloud','logging','read',query,'--project='+project,'--limit=100','--format=json'],cleanup=True)
+        operations=doc(ctx,['gcloud','container','operations','list','--location='+zone,'--project='+project,'--format=json'],cleanup=True)
+        if not isinstance(audits,list) or not isinstance(operations,list) or len(audits)>=100:return None
+        receipt=_terminal_cluster_rejection(intent,audits,operations)
+        if receipt is None or cloud_get(ctx,intent,cleanup=True) is not None:return None
+        directory=ctx.result/'infrastructure/rejected-creations'/intent['intent_id']
+        write(directory/'audit.json',audits);write(directory/'operations.json',operations)
+        write(directory/'resolution.json',dict(receipt,absence_observed_at=time.time(),no_uid_binding=True))
+        return receipt
+    except (ValueError,RuntimeError,OSError,TimeoutError) as exc:
+        ctx.event('creation-rejection-proof-unavailable',intent_id=intent['intent_id'],reason=str(exc))
+        return None
+
+
 def resolve_creation_intents(ctx,*,cleanup=False):
     """First observed UID is CAS0-persisted before it can enter deletion inventory."""
     assert_project_lease(ctx,cleanup=cleanup)
     pending=[];resolved=[]
     for intent in ctx.state.get('creation_intents',[]):
         bound=resolve_creation_uid(ctx,intent,cleanup=cleanup)
-        if bound is None:pending.append(intent)
+        if bound is None:
+            rejection=_reconcile_rejected_cluster(ctx,intent) if cleanup else None
+            if rejection is None:pending.append(intent)
+            else:ctx.state.setdefault('rejected_creation_receipts',[]).append(rejection)
         else:resolved.append(bound)
     by_name={r['name']:r for r in ctx.state.get('resources',[])}
     by_name.update({r['name']:r for r in resolved});ctx.state['resources']=list(by_name.values())
@@ -667,7 +734,7 @@ def create_cluster(ctx,repeat,*,credentials=True):
     require_context(ctx)
     assert_project_lease(ctx)
     if repeat not in (1,2):raise ValueError('protocol has exactly two cluster generations')
-    v4=ctx.manifest.get('schedule')=='thesis-qualification-v4'
+    v4=ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES
     if repeat==2 and ctx.state.get('cluster_generation',0)>=2 and not v4:raise ValueError('second generation was already created; refuse extra rebuild')
     existing=[r for r in ctx.state.get('resources',[]) if r['kind']=='cluster']
     if existing and (repeat==1 or (v4 and ctx.state.get('cluster_generation')==repeat)):
