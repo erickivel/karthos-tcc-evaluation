@@ -117,7 +117,7 @@ def extract_archive(archive, destination, max_bytes=MAX_BYTES):
         tar.extractall(destination,filter='data')
     return inspect_directory(destination)
 
-def inspect_directory(destination):
+def inspect_directory(destination,max_bytes=MAX_BYTES):
     destination=Path(destination)
     files=[];errors=[]
     for file in sorted(destination.rglob('*')):
@@ -130,7 +130,9 @@ def inspect_directory(destination):
                 except (ValueError,UnicodeError):errors.append('invalid-json:'+entry['path']+':'+str(index+1))
         if file.suffix=='.json' and file.stem not in ('metrics','traces'):errors.append('rotation:'+entry['path'])
     if not files:errors.append('empty-archive')
-    return {'files':files,'errors':errors,'total_bytes':sum(f['bytes'] for f in files)}
+    total=sum(f['bytes'] for f in files)
+    if total>max_bytes:errors.append('capture aggregate byte bound exceeded')
+    return {'files':files,'errors':errors,'total_bytes':total}
 
 def parse_time(value):
     return datetime.fromisoformat(value.replace('Z','+00:00')).timestamp()
@@ -765,11 +767,16 @@ class RepairCapture:
                 for name in sorted(required-listed):result['errors'].append('source unavailable:'+name)
                 for name in sorted(listed):
                     try:
-                        used=sum(row.get('sealed_bytes',0) for row in result['files'].values())
+                        # Retained bytes consume the budget even when reader cleanup fails.
+                        used=sum(file.stat().st_size for file in destination.iterdir() if file.is_file())
                         with SnapshotReader(before,name,deadline) as reader:
-                            receipt=freeze_prefix(reader,destination/name,deadline=deadline,maximum_bytes=MAX_BYTES-used)
+                            try:
+                                receipt=freeze_prefix(reader,destination/name,deadline=deadline,maximum_bytes=MAX_BYTES-used)
+                            except SnapshotIncomplete as exc:
+                                result['files'][name]=exc.receipt
+                                raise
                             receipt['transport_recoveries']=reader.recoveries if hasattr(reader,'recoveries') else []
-                        result['files'][name]=receipt
+                            result['files'][name]=receipt
                     except SnapshotIncomplete as exc:
                         result['files'][name]=exc.receipt;result['errors'].append(name+': '+str(exc))
                     except Exception as exc:

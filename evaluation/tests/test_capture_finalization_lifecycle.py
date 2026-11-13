@@ -41,6 +41,34 @@ class FinalizationLifecycleTests(unittest.TestCase):
             self.assertTrue(component['files']['metrics.json']['complete'])
             self.assertEqual((Path(component['raw_directory'])/'metrics.json').read_bytes(),data)
 
+    def test_reader_close_failure_preserves_receipt_and_retained_byte_budget(self):
+        with tempfile.TemporaryDirectory() as directory:
+            capture=RepairCapture(SimpleNamespace(namespace='app'),Path(directory),time.time()+300,
+                                  {'capture_finalization_version':2})
+            capture.pods={'gateway':pod()}
+            data=b'{}\n'
+            class Reader:
+                def __init__(self,pod,name,deadline):self.name=name
+                def __enter__(self):return self
+                def __exit__(self,*args):
+                    if self.name=='metrics.json':raise RuntimeError('reader close failed')
+                def __call__(self,offset):return {'inode':7,'size':len(data),'data':data[offset:],
+                    'requested_at_ns':100,'received_at_ns':200}
+            with patch('evaluation.capture_finalization.SnapshotReader',Reader), \
+                 patch('evaluation.structured_capture.MAX_BYTES',5), \
+                 patch.object(capture,'_pod',return_value=pod()), \
+                 patch('evaluation.structured_capture.r.kube',return_value=SimpleNamespace(stdout='file\t/diag/metrics.json\nfile\t/diag/traces.json\n')):
+                result=capture.freeze_snapshots()
+            component=result['components']['gateway'];raw=Path(component['raw_directory'])
+            self.assertFalse(result['complete'])
+            self.assertTrue(component['files']['metrics.json']['complete'])
+            self.assertEqual(component['files']['metrics.json']['sealed_bytes'],len(data))
+            self.assertEqual((raw/'metrics.json').read_bytes(),data)
+            self.assertFalse(component['files']['traces.json']['complete'])
+            self.assertLessEqual(sum(file.stat().st_size for file in raw.iterdir()),5)
+            self.assertTrue(any('reader close failed' in error for error in component['errors']))
+            self.assertTrue(any('byte bound' in error for error in component['errors']))
+
     def test_timing_consumes_frozen_remainder_before_closing_streams(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);raw=root/'frozen';raw.mkdir();(raw/'metrics.json').write_bytes(b'{"a":1}\n')
@@ -128,3 +156,14 @@ class RetainedReceiptTests(unittest.TestCase):
             status=json.loads((dest/'archive-attempt-1-status.json').read_text())
             self.assertEqual(status['raw_directory'],str(dest/'raw'))
             self.assertTrue(Path(status['finalization']['raw_directory']).is_dir())
+
+class AggregateSnapshotTests(unittest.TestCase):
+    def test_directory_overflow_is_reported_without_discarding_originals(self):
+        from evaluation.structured_capture import inspect_directory
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'metrics.json').write_bytes(b'{}\n');(root/'traces.json').write_bytes(b'{}\n')
+            result=inspect_directory(root,max_bytes=5)
+            self.assertEqual(result['total_bytes'],6)
+            self.assertIn('capture aggregate byte bound exceeded',result['errors'])
+            self.assertEqual(len(result['files']),2)
+            self.assertEqual((root/'traces.json').read_bytes(),b'{}\n')
