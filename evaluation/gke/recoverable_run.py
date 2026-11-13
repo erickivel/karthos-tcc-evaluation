@@ -60,6 +60,9 @@ def validate_launch(ctx):
     if not forecast['fits'] or forecast!=ctx.manifest.get('time_forecast'):raise ValueError('reviewed complete time forecast missing, changed or exceeds budget')
     if ctx.config.get('execution_scope','qualification')!='qualification':raise ValueError('v4 is per-cell readiness followed by measurement; readiness-only scope retired')
     validate_cost(ctx)
+    if ctx.manifest.get('schedule')==REPAIR:
+        from .repair import validate_budget
+        validate_budget(ctx.manifest)
     study=ctx.manifest.get('study_budget',{})
     if ctx.config.get('execution_segment','all')!='all':
         allocations=study.get('launch_allocations_usd',{})

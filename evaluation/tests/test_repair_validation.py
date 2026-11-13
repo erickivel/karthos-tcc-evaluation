@@ -104,6 +104,16 @@ class RepairValidationTests(unittest.TestCase):
             report.write_text('{}')
             with self.assertRaisesRegex(ValueError,'seal mismatch'):origin_evidence(report,seal,receipt['report_uri'],rows)
 
+    def test_combined_budget_cannot_ignore_previous_launches(self):
+        from evaluation.gke.repair import validate_budget
+        budget={'gross_limit_usd':100,'prior_runtime_allowance_usd':17.18,'combined_estimate_usd':93.88,'shared_allowances_cumulative':True,'basis':'conservative archived runtime plus cumulative shared allowances'}
+        manifest={'config':{'readiness':{'study_budget':budget}},'study_budget':budget,'cost_preview':{'gross_estimate':76.70}}
+        validate_budget(manifest)
+        import copy
+        for key,value in [('combined_estimate_usd',76.70),('prior_runtime_allowance_usd',float('nan')),('shared_allowances_cumulative',False),('combined_estimate_usd',101)]:
+            changed=copy.deepcopy(manifest);changed['study_budget'][key]=value;changed['config']['readiness']['study_budget']=changed['study_budget']
+            with self.subTest(key=key),self.assertRaises(ValueError):validate_budget(changed)
+
     def test_repair_forecast_omits_history_and_rebuild(self):
         rows=models.build_matrix(self.protocol(),schedule=REPAIR)
         c={'readiness':{'phase_estimates_seconds':{key:10 for key in ['provision','rebuild','setup','capture_setup_restore','export','history','retry_reserve']}},'limits':{'cleanup_reserve_seconds':1200,'infrastructure_seconds':43200}}
