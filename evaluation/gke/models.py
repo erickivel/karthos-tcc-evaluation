@@ -10,7 +10,9 @@ THESIS_V2='thesis-qualification-v2'
 THESIS_V3='thesis-qualification-v3'
 THESIS='thesis-qualification-v4'
 REPAIR='thesis-repair-validation-v1'
-RECOVERABLE_SCHEDULES=(THESIS,REPAIR)
+REPAIR_V2='thesis-repair-validation-v2'
+REPAIR_SCHEDULES=(REPAIR,REPAIR_V2)
+RECOVERABLE_SCHEDULES=(THESIS,*REPAIR_SCHEDULES)
 THESIS_SCHEDULES=(THESIS_V2,THESIS_V3,*RECOVERABLE_SCHEDULES)
 THESIS_HISTORY_SECONDS=720
 PHASES=('smoke','baseline','resource','arbitration','restart')
@@ -42,6 +44,21 @@ def validate_config(c):
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
+    if schedule==REPAIR_V2:
+        expected={'id':REPAIR_V2,'repetitions':1,'rebuild_cluster':False,'history_observation_seconds':0,
+                  'origin_protocol':REPAIR,'origin_run_id':'thesis-repair-09a2330-20261113',
+                  'cluster_cell_order':[['boutique-mesh','astronomy-mesh','boutique-trace']],
+                  'capture_finalization_version':2,'servicegraph_store_max_items':10000,
+                  'generators':['k6'],'measured_generators':['k6'],'baseline_rate':2,
+                  'smoke_seconds':60,'baseline_seconds':300,'diagnostic_seconds':300,
+                  'readiness_definition_version':4,'readiness_cases':0,'readiness_load_seconds':0,
+                  'attempt_policy':{'maximum_attempts':2,'numerical_disagreement_retry':False,'baseline_requires_passing_smoke':False}}
+        if any(type(p.get(k)) is not type(v) or p.get(k)!=v for k,v in expected.items()):
+            raise ValueError('v2 requires the reviewed active contract and six-window order')
+        original=dict(p,id=REPAIR,origin_protocol=THESIS,cluster_cell_order=[['boutique-trace','astronomy-mesh','boutique-mesh']])
+        frozen=build_matrix(original,schedule=REPAIR)
+        return [dict(row,id='repair-v2-'+row['id'][7:],origin_id=row['id'],origin_run_id=p['origin_run_id'])
+                for cell in p['cluster_cell_order'][0] for row in frozen if row['cell']==cell]
     if schedule==REPAIR:
         if (p.get('id')!=REPAIR or p.get('repetitions')!=1 or p.get('rebuild_cluster') is not False
                 or p.get('history_observation_seconds')!=0 or p.get('origin_protocol')!=THESIS
@@ -164,3 +181,21 @@ def classify_readiness(c,artifact_checks):
     for row in artifact_checks:
         if row.get('state')!='verified':issues.append(row['name']+': '+row.get('reason','not verified'))
     return issues
+
+
+def validate_v2_inputs(manifest,run_id):
+    """Active runner fields and a current-epoch quarantine target, never history."""
+    if manifest.get('schedule')!=REPAIR_V2:return
+    config=manifest['config']
+    if type(config.get('limits',{}).get('optional_local_download_bytes')) is not int or config['limits']['optional_local_download_bytes']!=5*1024**3:
+        raise ValueError('v2 requires the explicit5 GiB optional local download cap')
+    for key,value in (('capture_finalization_version',2),('servicegraph_store_max_items',10000)):
+        if any(type(source.get(key)) is not int or source.get(key)!=value for source in
+               (manifest,config,manifest['protocol_definition'])):
+            raise ValueError('v2 active '+key+' missing or changed')
+    quarantine=config.get('quarantine',{})
+    if not quarantine.get('bucket') or quarantine.get('prefix')!='gke-quarantine-v1/runs/'+identifier(run_id)+'/':
+        raise ValueError('v2 quarantine requires exact current-run epoch prefix')
+    foundation=config.get('gcp',{}).get('foundation_reference',{}).get('expected_outputs',{})
+    if foundation.get('quarantine_bucket')!=quarantine['bucket']:
+        raise ValueError('v2 quarantine bucket requires refreshed protected foundation reference')

@@ -672,7 +672,7 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.0'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     accuracy=[]
@@ -689,6 +689,8 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     for row in accuracy:row['storage_api_parity']=storage_api.get(row['name'],{'state':'insufficient','reason':'selected product-rendered API/storage parity export unavailable'})
     report['storage_api_parity']={'metrics':storage_api,'independent_accuracy_claimed':False}
     report['selected_accuracy']=accuracy
+    from .report_summary import family_summaries
+    report['families']=family_summaries(report)
     from .coverage_report import build as build_coverage
     report['metric_window_coverage']=build_coverage(coverage,traffic,start=start,end=end,checks=all_checks,resources=resource_report)
     report['state']='diagnostic' if executed else 'incomplete'
@@ -707,6 +709,8 @@ def evaluate(ctx,spec,path,traffic_report=None):
                 'coverage':coverage,'references':{'errors':[str(exc)]},
                 'traffic':{'oracle_valid':False,'report':traffic_report,'reason':'unusable per-window exported evidence'}}
         from .coverage_report import build as build_coverage
+        from .report_summary import family_summaries
+        report['families']=family_summaries(report)
         report['metric_window_coverage']=build_coverage(coverage,traffic_report or {})
         ctx.write(Path(path)/'gke-evaluation.json',report)
         return report

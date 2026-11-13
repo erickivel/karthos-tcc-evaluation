@@ -1,0 +1,122 @@
+{
+  "metrics": [
+    {
+      "canonical_unit": "cores",
+      "comparison": "same-measurement",
+      "name": "container.cpu.usage",
+      "reference": "kubelet"
+    },
+    {
+      "canonical_unit": "bytes",
+      "comparison": "same-measurement",
+      "name": "container.memory.usage",
+      "reference": "kubelet"
+    },
+    {
+      "canonical_unit": "ratio",
+      "comparison": "paired-cpu-ticks",
+      "name": "system.cpu.utilization",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes",
+      "comparison": "state-partition",
+      "name": "system.memory.usage",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes_per_second",
+      "comparison": "monotonic-brackets",
+      "name": "system.disk.io.read",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes_per_second",
+      "comparison": "monotonic-brackets",
+      "name": "system.disk.io.write",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes_per_second",
+      "comparison": "monotonic-brackets",
+      "name": "system.network.io.receive",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes_per_second",
+      "comparison": "monotonic-brackets",
+      "name": "system.network.io.transmit",
+      "reference": "host"
+    },
+    {
+      "canonical_unit": "bytes",
+      "comparison": "matching-mount",
+      "name": "system.filesystem.usage",
+      "reference": "filesystem"
+    },
+    {
+      "canonical_unit": "ratio",
+      "comparison": "matching-mount",
+      "name": "system.filesystem.utilization",
+      "reference": "filesystem"
+    },
+    {
+      "canonical_unit": "bytes",
+      "comparison": "matching-volume",
+      "name": "k8s.pod.volume.available",
+      "reference": "kubelet"
+    },
+    {
+      "canonical_unit": "bytes",
+      "comparison": "matching-volume",
+      "name": "k8s.pod.volume.capacity",
+      "reference": "kubelet"
+    },
+    {
+      "canonical_unit": "count",
+      "comparison": "observed-state",
+      "name": "k8s.container.ready",
+      "reference": "kubernetes-api"
+    },
+    {
+      "canonical_unit": "count",
+      "comparison": "same-object-version-gauge",
+      "name": "k8s.container.restart.count",
+      "reference": "kubernetes-api",
+      "source_semantics": "native gauge may reset after kubelet dead-container pruning; do not assume monotonicity"
+    },
+    {
+      "canonical_unit": "count",
+      "comparison": "observed-state",
+      "name": "k8s.pod.status.phase",
+      "reference": "kubernetes-api"
+    },
+    {
+      "canonical_unit": "per_second",
+      "comparison": "settled-and-fixed-separate",
+      "name": "servicegraph.request.count",
+      "reference": "traffic-ledgers"
+    },
+    {
+      "canonical_unit": "per_second",
+      "comparison": "source-owned-policy",
+      "name": "servicegraph.request.error.count",
+      "reference": "traffic-ledgers"
+    },
+    {
+      "canonical_unit": "seconds",
+      "comparison": "matching-population-sum-count",
+      "name": "servicegraph.request.duration",
+      "reference": "raw-source"
+    }
+  ],
+  "rules": [
+    "preserve full source and dimensions",
+    "missing is not zero",
+    "no comparison across unmatched populations",
+    "configured stimulus is not truth",
+    "no numerical tolerance fitting after measured outcomes",
+    "fixtures are not live proof"
+  ],
+  "schema_version": 1
+}

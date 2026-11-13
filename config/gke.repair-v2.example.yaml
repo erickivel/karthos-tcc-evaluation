@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "protocol": "gke-qualification-v1",
+  "gcp": {
+    "project_id": null,
+    "billing_account_id": null,
+    "region": "us-central1",
+    "zone": "us-central1-a",
+    "foundation_reference": {
+      "expected_outputs": {
+        "quarantine_bucket": "karthos-karthos-eval-quarantine"
+      },
+      "source_files": null,
+      "review_note": "Supply the refreshed complete reference after scoped foundation review; preparation never applies it."
+    }
+  },
+  "infrastructure": {
+    "worker_count": 3,
+    "worker_machine_type": "e2-standard-4",
+    "controller_machine_type": "e2-standard-4",
+    "kubernetes_version": null,
+    "controller_boot_image": null,
+    "controller_image": null,
+    "watchdog_image": null,
+    "extra_image_lock": {},
+    "product_image_mirrors": {},
+    "bootstrap_sdk_image": null,
+    "release_channel": "STABLE",
+    "resource_policy": "requests-v1",
+    "gateway_reader_cpu_limit_m": 750
+  },
+  "limits": {
+    "gross_limit_usd": 100,
+    "launch_ceiling_usd": 80,
+    "infrastructure_seconds": 43200,
+    "diagnostic_hold_seconds": 1800,
+    "cleanup_reserve_seconds": 1800,
+    "raw_evidence_retention_days": 90,
+    "max_evidence_bytes": 107374182400,
+    "optional_local_download_bytes": 5368709120
+  },
+  "readiness": {
+    "billing_and_credit_verified": false,
+    "quotas_verified": false,
+    "pricing_verified": false,
+    "secondary_export_destination": null,
+    "resource_helper_image": null,
+    "toolchain_verified": false,
+    "capacity_verified": false,
+    "secondary_export_verified": false,
+    "phase_estimates_seconds": {
+      "provision": null,
+      "rebuild": null,
+      "setup": null,
+      "capture_setup_restore": null,
+      "export": null,
+      "history": null,
+      "retry_reserve": null
+    },
+    "study_budget": {
+      "gross_limit_usd": 100,
+      "prior_runtime_allowance_usd": null,
+      "combined_estimate_usd": null,
+      "shared_allowances_cumulative": true,
+      "basis": null
+    }
+  },
+  "baseline": "results/timing-20261025-g",
+  "product_snapshot": null,
+  "source_policy": "validated-snapshot-only",
+  "execution_segment": "all",
+  "capture_finalization_version": 2,
+  "servicegraph_store_max_items": 10000,
+  "quarantine": {
+    "bucket": "karthos-karthos-eval-quarantine",
+    "prefix": "gke-quarantine-v1/runs/REPLACE-WITH-PREPARATION-ID/"
+  }
+}

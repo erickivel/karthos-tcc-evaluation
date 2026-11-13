@@ -15,7 +15,7 @@ COMPUTE_CLI_PATHS={'instance':('instances',),'disk':('disks',),'router':('router
 APIS={'cloudbilling.googleapis.com','compute.googleapis.com','container.googleapis.com','storage.googleapis.com',
       'artifactregistry.googleapis.com','run.googleapis.com','cloudscheduler.googleapis.com','iam.googleapis.com','iamcredentials.googleapis.com'}
 OUTPUTS={
- 'foundation':{'backup_bucket','evidence_bucket','state_bucket','artifact_repository','controller_service_account','node_service_account','watchdog_service_account','scheduler_service_account'},
+ 'foundation':{'quarantine_bucket','backup_bucket','evidence_bucket','state_bucket','artifact_repository','controller_service_account','node_service_account','watchdog_service_account','scheduler_service_account'},
  'controller':{'network','subnetwork','controller_name','controller_uid','watchdog_uri','router_resource_name','watchdog_service_name','scheduler_name','network_resource_name','subnetwork_resource_name','firewall_resource_name'},
  'cluster':{'cluster_name','cluster_resource_name','node_pools'},
 }
@@ -121,6 +121,9 @@ def refuse_foreign_controller(ctx):
 def live_preflight(ctx):
     require_context(ctx)
     config=ctx.config;g=config['gcp'];project=g['project_id']
+    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+        from .cloud_identity import principal_preflight
+        ctx.write(ctx.work/'principal-preflight.json',principal_preflight(ctx))
     if not project or not g.get('billing_account_id'):
         raise ValueError('dedicated project and billing inputs required')
     actual=doc(ctx,['gcloud','projects','describe',project,'--format=json'])
@@ -298,7 +301,8 @@ def reuse_foundation(ctx):
         raise ValueError('invalid explicit foundation prefix/lineage')
     if ref.get('source_files')!=foundation_source_hashes(ctx):raise ValueError('foundation source differs from prepared reference')
     expected=ref.get('expected_outputs',{})
-    if set(expected)!=OUTPUTS['foundation'] or expected.get('state_bucket')!=bucket:
+    required=OUTPUTS['foundation'] if ctx.manifest.get('schedule')=='thesis-repair-validation-v2' else OUTPUTS['foundation']-{'quarantine_bucket'}
+    if not required<=set(expected) or set(expected)-OUTPUTS['foundation'] or expected.get('state_bucket')!=bucket:
         raise ValueError('complete foundation output identity required')
     members=doc(ctx,['gcloud','storage','buckets','list','--project='+g['project_id'],'--format=json'])
     if not any(b.get('name')==bucket or str(b.get('storage_url','')).rstrip('/')=='gs://'+bucket for b in members):
@@ -314,7 +318,7 @@ def reuse_foundation(ctx):
     if result.returncode!=0:raise ValueError('foundation reuse rejected: plan has changes or failed; inspect private plan output')
     raw=doc(ctx,['terraform','-chdir='+str(directory),'output','-json'])
     outputs={key:item['value'] for key,item in raw.items() if key in OUTPUTS['foundation'] and not item.get('sensitive')}
-    if outputs!=expected:raise ValueError('foundation output identity mismatch')
+    if {k:outputs.get(k) for k in expected}!=expected or (ctx.manifest.get('schedule')=='thesis-repair-validation-v2' and 'quarantine_bucket' not in outputs):raise ValueError('foundation output identity mismatch')
     ctx.state.setdefault('terraform',{})['foundation']=outputs
     ctx.state.setdefault('tfvars',{})['foundation']=variables
     ctx.event('foundation-reused',foundation_lineage=ref['lineage'],foundation_prefix=ref['prefix'])

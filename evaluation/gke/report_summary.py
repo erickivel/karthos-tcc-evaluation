@@ -26,6 +26,7 @@ def save_summary(path,report):
             'evidence':{'valid':report.get('evidence',{}).get('valid')},
             'manifest':{k:report.get('manifest',{}).get(k) for k in ('namespace','source_id')},
             'source_selection':report.get('source_selection',{}),
+            'families':report.get('families') or family_summaries(report),
             'numerical_agreement':{'state':report.get('numerical_agreement',{}).get('state')},
             'coverage':{'contract':{'valid':(report.get('coverage',{}).get('contract') or {}).get('valid')}},
             'thesis_answers':{key:{'state':value.get('state')} for key,value in report.get('thesis_answers',{}).items()},
@@ -56,3 +57,33 @@ def load_summary(path):
         return value
     except Exception as exc:
         return {'state':'unavailable','reason':str(exc),'path':str(path),'report_scope':'no bounded finalized summary available; raw evidence not decoded'}
+
+
+def _family(checks,scope):
+    states=[check.get('state','insufficient') for check in checks if isinstance(check,dict)]
+    verdict='fail' if 'fail' in states else ('pass' if states and all(x=='pass' for x in states) else 'insufficient')
+    return {'state':verdict,'scope':scope,'checks':len(states),
+            'counts':{key:states.count(key) for key in ('pass','fail','insufficient','incomplete')}}
+
+
+def family_summaries(report):
+    """Bounded independent verdicts over existing checks; no new denominators."""
+    traffic=report.get('traffic',{}).get('report') or {}
+    selected={x.get('name'):x for x in report.get('selected_accuracy',[])}
+    # Only versioned selected accuracy carries the source-population gate.
+    families={key:_family([selected.get(metric,{})],scope) for key,metric,scope in (
+        ('traffic_count','servicegraph.request.count','existing request-count parity and matched-source accuracy'),
+        ('traffic_error','servicegraph.request.error.count','existing same-policy error-count parity and matched-source accuracy'),
+        ('traffic_duration','servicegraph.request.duration','existing duration parity and matched-population accuracy'))}
+    parity=traffic.get('api_storage_parity',{}).get('checks',{}) or traffic.get('windows',{}).get('whole',{}).get('api_storage_parity',{}).get('checks',{})
+    aliases=(('exact_request_count_api','request-count'),('exact_error_count_api','error-count'),('exact_duration_api','duration'))
+    families['exact_api_storage_parity']=_family([parity.get(a,parity.get(b,{})) for a,b in aliases],
+        'whole fixed interval full-series request/error/duration parity; independent source accuracy separate')
+    families['resource_accuracy']=_family([report.get('numerical_agreement',{})],'existing selected resource-only numerical scope')
+    timing=traffic.get('required_evidence',{})
+    families['timing_validity']=_family([{'state':'pass' if timing.get('valid') is True else 'insufficient'}],
+        'existing required recorder, identity, clock, availability, quiet partition and interval parity evidence')
+    unexpected=traffic.get('generator_contract',{}).get('retained_generator',{}).get('unexpected_outcomes')
+    families['application_outcomes']=_family([{'state':('fail' if unexpected else 'pass') if type(unexpected) is int and unexpected>=0 else 'insufficient'}],
+        'retained generator declared unexpected outcomes; traffic numerical agreement separate')
+    return families

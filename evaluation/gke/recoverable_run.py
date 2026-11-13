@@ -7,7 +7,7 @@ import shutil
 import time
 import traceback
 from pathlib import Path
-from .models import canonical_sha, read, sha, write, REPAIR, RECOVERABLE_SCHEDULES
+from .models import canonical_sha, read, sha, write, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
 
 
 class SafetyFailure(RuntimeError):
@@ -60,7 +60,9 @@ def validate_launch(ctx):
     if not forecast['fits'] or forecast!=ctx.manifest.get('time_forecast'):raise ValueError('reviewed complete time forecast missing, changed or exceeds budget')
     if ctx.config.get('execution_scope','qualification')!='qualification':raise ValueError('v4 is per-cell readiness followed by measurement; readiness-only scope retired')
     validate_cost(ctx)
-    if ctx.manifest.get('schedule')==REPAIR:
+    from .models import validate_v2_inputs
+    validate_v2_inputs(ctx.manifest,ctx.run_id)
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
         from .repair import validate_budget
         validate_budget(ctx.manifest)
     study=ctx.manifest.get('study_budget',{})
@@ -78,11 +80,11 @@ def validate_launch(ctx):
     from .thesis import local_contract
     local_contract(ctx.manifest.get('local_contract_evidence'),ctx.manifest['product_pins'])
     continuation=ctx.manifest.get('continuation')
-    if ctx.manifest.get('schedule')==REPAIR and not ctx.manifest.get('origin_evidence',{}).get('report_sha256'):
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES and not ctx.manifest.get('origin_evidence',{}).get('report_sha256'):
         raise ValueError('repair origin evidence missing')
-    if ctx.manifest.get('schedule')==REPAIR and ctx.config.get('execution_segment','all')!='all':
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES and ctx.config.get('execution_segment','all')!='all':
         raise ValueError('repair validation runs its complete six-window matrix; split study segments are unsupported')
-    if ctx.manifest.get('schedule')==REPAIR and continuation:
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES and continuation:
         raise ValueError('repair validation must not import predecessor passes as continuation')
     if continuation:
         if continuation.get('binding')!=binding(ctx.manifest):raise ValueError('continuation changed protocol, product, scoring or implementation')
@@ -218,7 +220,8 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     document['attempt_report_retention']=retain_attempt_reports(ctx,records,directory)
     ctx.write(directory/'checkpoint.json',document)
     projection=ctx.result/'checkpoint-projections'/directory.name
-    export.export_projection(directory,projection)
+    from .quarantine import from_context
+    export.export_projection(directory,projection,quarantine=from_context(ctx))
     receipt=export._upload(ctx,projection,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/checkpoints/'+directory.name)
     if receipt.get('verified') is not True:raise SafetyFailure('phase checkpoint readback failed')
     receipt['checkpoint_sha256']=sha(projection/'checkpoint.json')
@@ -239,6 +242,7 @@ def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_po
             'execution':execution,'evidence_valid':valid,'evidence_scope':'local measurement; export and continuation reported separately',
             'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
             'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
+            'families':report.get('families',{}),
             'reason':failure or report.get('reason'),'path':report.get('path'),
             'export':receipt or {'verified':False},'evidence_export_verified':(receipt or {}).get('verified') is True,
             'transition':barrier,'continuation_safe':barrier.get('safe') if isinstance(barrier,dict) else None,
@@ -392,10 +396,10 @@ def execute(ctx,driver):
                 if number==1 and spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
                     prerequisite=next(r for r in matrix if r['phase']=='arbitration' and r['scenario']=='both-sources')
                     driver.setup({**prerequisite,'id':attempt['id']+'-prerequisite'});active_cell=None
-            if ctx.manifest.get('schedule')!=REPAIR and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
+            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
                 history={'state':'blocked','reason':'Boutique deployment unavailable after baseline attempts','action_taken':False}
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
-            if ctx.manifest.get('schedule')!=REPAIR and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
+            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
                 history_errors=[]
                 for number in (1,2):
                     try:
@@ -443,8 +447,8 @@ def execute(ctx,driver):
     claims=claim_matrix(ctx,records,history,readiness_report);ctx.write(ctx.result/'claim-matrix.json',claims)
     launch_ids={row['id'] for row in launch_matrix}
     segment_complete=not failure and all(row.get('retry_policy_complete') for row in records if row['id'] in launch_ids) and launch_ids<={row['id'] for row in records}
-    if ctx.manifest.get('schedule')!=REPAIR and ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
-    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and (history is not None or ctx.manifest.get('schedule')==REPAIR)
+    if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
+    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and (history is not None or ctx.manifest.get('schedule') in REPAIR_SCHEDULES)
     report={'protocol':ctx.manifest.get('schedule','thesis-qualification-v4'),'state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
             'planned_windows':len(matrix),'attempted_windows':sum(bool(r.get('attempts')) for r in records),'attempts':sum(len(r.get('attempts',[])) for r in records),
             'records':records,'windows':records,'history':history,'readiness':readiness_report,'failure':failure,'cleanup':cleanup,

@@ -6,7 +6,7 @@ import math
 import re
 from pathlib import Path
 
-from .models import THESIS,THESIS_SCHEDULES,REPAIR,sha
+from .models import THESIS,THESIS_SCHEDULES,REPAIR,REPAIR_SCHEDULES,sha
 
 START_REVISION='f37f408dea46abfcfdfbdc6a32c06ac2a353d9ef'
 PRODUCT_NAMES=('karthos-backend','karthos-frontend')
@@ -341,7 +341,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
                 by_window[row['id']]=(row['export'].get('uri'),evidence)
     rows=[]
-    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule')==REPAIR else 6
+    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in REPAIR_SCHEDULES else 6
     def add(claim,verdict,reference,artifacts):
         rows.append(dict(claim=claim,verdict=verdict,reference=reference,artifacts=artifacts))
     local=(ctx.manifest.get('local_contract_evidence') or {}).get('checks',{})
@@ -380,13 +380,13 @@ def claim_matrix(ctx,windows,history,readiness_report):
         states=[extract(data) for _,data in baselines]
         verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
         add(claim,verdict,reference,[uri for uri,_ in baselines if uri])
-    if ctx.manifest.get('schedule')==REPAIR:
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
         for row in rows:
             if row['claim']=='retained-replicas-and-health':
                 row.update(verdict='not-applicable',reference='deferred: no new cloud historical observation in repair validation',artifacts=[])
     from .thesis_comparison import compare_pairs
     comparisons=compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds'))
-    if ctx.manifest.get('schedule')==REPAIR:
+    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
         for row in comparisons:
             if row['claim']=='source-independence-astronomy':
                 row.update(verdict='not-applicable',reference='deferred: repair includes Astronomy Istio only; cross-source equivalence requires a fresh Astronomy trace baseline')

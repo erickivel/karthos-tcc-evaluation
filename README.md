@@ -38,3 +38,5 @@ python3 -B -m unittest discover -s evaluation/tests -q
 Research drafts, historical planning notes and explanatory briefs are kept locally in `.plan-docs/`, which is ignored by Git. They are not runtime dependencies. Historical result bundles are preserved.
 
 Targeted product/harness repair validation: [protocol and operator guide](docs/thesis-repair-validation-v1.md). This named six-window run preserves the original qualification definitions and requires separate launch approval.
+
+The fresh six-window repair epoch is documented in [Thesis repair validation v2](docs/thesis-repair-validation-v2.md); use `config/gke.repair-v2.example.yaml`. Offline preparation does not authorize cloud work.

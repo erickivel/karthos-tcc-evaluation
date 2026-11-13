@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib,fcntl,hashlib,json,os,subprocess,time
 from pathlib import Path
 from .models import read,write,identifier,canonical_sha
+from .cloud_identity import sanitized_error
 from .provision import COMPUTE_CLI_PATHS,require_context,verify_resource,tf_apply,disarm_watchdog,arm_watchdog,cloud_get,tf_init,cluster_variables,_controller_vars,assert_project_lease,mark_lease_cleanup,release_project_lease,resolve_creation_intents,resolve_creation_uid
 
 
@@ -153,7 +154,7 @@ def teardown(ctx):
                 tf_apply(ctx,'cluster',variables,destroy=True,cleanup=True)
             else:
                 for resource in cluster:delete_bound_cluster(ctx,resource)
-        except Exception as exc:errors.append({'stage':'cluster','type':type(exc).__name__})
+        except Exception as exc:errors.append({'stage':'cluster','type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     # Cluster removal can leave or finish provisioning additional PVC disks.
     # A failed second observation must retain watchdog/lease, never claim empty.
     resources=list(refresh_cleanup_disks(ctx))
@@ -166,7 +167,7 @@ def teardown(ctx):
                 raise ValueError('owned disk remains attached; retain cleanup controls')
             parts=resource['name'].split('/')
             ctx.command(['gcloud','compute','disks','delete',parts[-1],('--region=' if parts[2]=='regions' else '--zone=')+parts[3],'--project='+ctx.config['gcp']['project_id'],'--quiet'],cleanup=True)
-        except Exception as exc:errors.append({'stage':'disk','name':resource['name'],'type':type(exc).__name__})
+        except Exception as exc:errors.append({'stage':'disk','name':resource['name'],'type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     # Do not delete watchdog/control-plane until cluster and retained disks are
     # observed absent. Failed/attached disks leave watchdog available for retries.
     blockers=[]
@@ -175,7 +176,7 @@ def teardown(ctx):
         try:
             if verify_resource(ctx,resource,cleanup=True) is not None:blockers.append(resource['name'])
         except Exception as exc:
-            blockers.append(resource['name']);errors.append({'stage':'verify','name':resource['name'],'type':type(exc).__name__})
+            blockers.append(resource['name']);errors.append({'stage':'verify','name':resource['name'],'type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     controller=ctx.state.get('terraform',{}).get('controller')
     if controller and not blockers:
         try:
@@ -187,13 +188,13 @@ def teardown(ctx):
             # Scheduler remain available if NAT/router/VM deletion is partial.
             tf_init(ctx,'controller',cleanup=True)
             tf_apply(ctx,'controller',variables,destroy=True,cleanup=True,targets=['google_compute_instance.controller','google_compute_router_nat.evaluation','google_compute_router.evaluation','google_compute_firewall.internal','google_compute_subnetwork.evaluation','google_compute_network.evaluation'])
-        except Exception as exc:errors.append({'stage':'controller-billable','type':type(exc).__name__})
+        except Exception as exc:errors.append({'stage':'controller-billable','type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     residual=[]
     for resource in resources:
         try:
             if verify_resource(ctx,resource,cleanup=True) is not None:residual.append(resource['name'])
         except Exception as exc:
-            residual.append(resource['name']);errors.append({'stage':'verify','name':resource['name'],'type':type(exc).__name__})
+            residual.append(resource['name']);errors.append({'stage':'verify','name':resource['name'],'type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     if not residual and controller:
         try:
             # Only now can the cold independent service/timer be removed.
@@ -203,7 +204,7 @@ def teardown(ctx):
             ctx.state['resources']=[]
             release_project_lease(ctx,confirmed_absent=True)
         except Exception as exc:
-            residual.append('controller-root-control-resources');errors.append({'stage':'controller-final','type':type(exc).__name__})
+            residual.append('controller-root-control-resources');errors.append({'stage':'controller-final','type':type(exc).__name__,'reason':sanitized_error(str(exc))})
     result={'residual':residual,'errors':errors,'foundation_preserved':True,'not_hard_guarantee':True,'project_lease_released':bool(ctx.state.get('project_lease_released',False))}
     ctx.event('teardown-complete' if not residual else 'teardown-partial',residual=residual,error_count=len(errors))
     return result
@@ -258,8 +259,9 @@ class CleanupContext:
         elif args[:4]==['gcloud','scheduler','jobs','pause']:pass
         elif args[:4]==['gcloud','run','services','update'] and any('DRY_RUN=true' in arg for arg in args):pass
         else:raise ValueError('unsupported emergency cleanup command')
-        value=self.executor(args,cwd=cwd,input=input_text,text=not binary,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
-        if check and value.returncode:raise RuntimeError('cleanup command failed; inspect exact residual resource status')
+        from .cloud_identity import command_environment,command_failure
+        value=self.executor(args,env=command_environment(getattr(self,"root",Path.cwd())),cwd=cwd,input=input_text,text=not binary,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout)
+        if check and value.returncode:raise command_failure(self,args,value)
         return value
 
     def event(self,phase,**fields):

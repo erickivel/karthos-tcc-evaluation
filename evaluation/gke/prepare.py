@@ -3,7 +3,7 @@ from __future__ import annotations
 import json,math
 from datetime import datetime,timezone
 from pathlib import Path
-from .models import read,write,sha,canonical_sha,identifier,validate_config,QUALIFICATION,THESIS,REPAIR,RECOVERABLE_SCHEDULES,build_matrix,implementation_hashes,classify_readiness
+from .models import read,write,sha,canonical_sha,identifier,validate_config,QUALIFICATION,THESIS,REPAIR,REPAIR_V2,REPAIR_SCHEDULES,RECOVERABLE_SCHEDULES,build_matrix,implementation_hashes,classify_readiness
 
 
 def cost_preview(config):
@@ -99,11 +99,13 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
         except ValueError as exc:
             thesis_pending.append(str(exc))
     origin=None
-    if schedule==REPAIR:
+    if schedule in REPAIR_SCHEDULES:
         from .repair import origin_evidence
         if config.get('execution_segment','all')!='all':raise ValueError('repair requires execution_segment=all')
         if continuation_dir or continuation_receipt:raise ValueError('repair references origins without continuation')
-        origin=origin_evidence(origin_report,origin_seal,origin_uri,matrix)
+        origin=origin_evidence(origin_report,origin_seal,origin_uri,matrix,
+                               expected_protocol=REPAIR if schedule==REPAIR_V2 else THESIS,
+                               expected_run_id=protocol.get('origin_run_id'))
     checks=[snapshot_check(snapshot,pins['karthos_source_hash'])]
     foundation_check=foundation_checkpoint_check(root,config)
     if foundation_check is not None:checks.append(foundation_check)
@@ -122,13 +124,27 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
     if cost['gross_estimate']>config['limits']['launch_ceiling_usd']:pending.append('cost estimate exceeds launch ceiling')
     dest.mkdir(parents=True)
     from .previews import previews
-    preview=previews(root,dest/'rendered',baseline,config,lock,preparation_id,chart_snapshot=chart_snapshot,product_snapshot=Path(snapshot) if schedule in RECOVERABLE_SCHEDULES else None)
+    preview=previews(root,dest/'rendered',baseline,config,lock,preparation_id,chart_snapshot=chart_snapshot,product_snapshot=Path(snapshot) if schedule in RECOVERABLE_SCHEDULES else None,schedule=schedule)
     if preview['state']!='complete':pending.append('rendered manifests contain unresolved images or render errors; inspect rendered/status.json')
     manifest={'schema_version':1,'id':preparation_id,'protocol':protocol['id'],'prepared_at':datetime.now(timezone.utc).isoformat(),
         'study_budget':config.get('readiness',{}).get('study_budget'),'schedule':schedule,'readiness_check':None,'minimal_readiness':minimal_definition,'time_forecast':forecast,'readiness_benchmark':replay,'config':config,'protocol_definition':protocol,'matrix':matrix,'implementation_hashes':files,'implementation_sha256':canonical_sha(files),
         'product_pins':pins,'product_snapshot':str(Path(snapshot).resolve()) if snapshot else None,'image_lock':lock,
         'thresholds':read(baseline/'frozen-thresholds.json'),'baseline_config':read(baseline/'locked-config.json'),
         'artifact_checks':checks,'pending_prerequisites':pending,'execution_ready':not pending,'cost_preview':cost,'bundle':bundle,'rendered_previews':preview}
+    if schedule==REPAIR_V2:
+        from .models import validate_v2_inputs
+        for key in ('capture_finalization_version','servicegraph_store_max_items'):
+            manifest[key]=config.get(key)
+        try:validate_v2_inputs(manifest,preparation_id)
+        except ValueError as exc:pending.append(str(exc))
+        from .repair import validate_budget
+        try:validate_budget(manifest)
+        except ValueError as exc:pending.append(str(exc))
+        quarantine=config.get('quarantine',{})
+        manifest['quarantine_requirements']={'bucket':quarantine.get('bucket'),'prefix':quarantine.get('prefix'),
+            'required_permissions':['storage.objects.create','storage.objects.get'],
+            'remote_permissions_verified':False,'scope':'current-run prefix conditional IAM only; review in chat before cloud changes'}
+        manifest['execution_ready']=not pending
     if origin is not None:manifest['origin_evidence']=origin
     if continuation_dir or continuation_receipt:
         if not continuation_dir or not continuation_receipt:raise ValueError('continuation needs checkpoint directory and export receipt')
@@ -145,5 +161,5 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
         manifest['historical_timing_inputs']={'baseline':summary['baseline'],'product_pins':summary['pins']}
     write(dest/'readiness-matrix.json',[]);write(dest/'manifest.json',manifest);write(dest/'matrix.json',matrix);write(dest/'prior-evidence-analysis.json',summary)
     pending_lines='\n'.join('- '+issue for issue in pending) or '- None.'
-    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes. Per-cell readiness is read-only; recoverable execution failures have at most one labeled retry. The 12-hour infrastructure allowance includes cleanup.\n\nRead the architecture and phase plan in docs/thesis-qualification-v4.md. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
+    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes. Per-cell readiness is read-only; recoverable execution failures have at most one labeled retry. The 12-hour infrastructure allowance includes cleanup.\n\nRead the architecture and phase plan in {('docs/thesis-repair-validation-v2.md' if schedule==REPAIR_V2 else 'docs/thesis-qualification-v4.md')}. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
     return dest/'manifest.json'

@@ -112,6 +112,11 @@ class ThesisVersionCompatibilityTests(unittest.TestCase):
                     config={'limits':{'cleanup_reserve_seconds':1200},'infrastructure':{}},
                     manifest={'schedule':schedule,'product_snapshot':str(root),'baseline_config':{},
                               'product_pins':{'karthos_revision':thesis.START_REVISION},'image_lock':{}})
+                if schedule==models.REPAIR_V2:
+                    ctx.run_id='fixture'
+                    ctx.config['limits']['optional_local_download_bytes']=5*1024**3
+                    ctx.config.update(capture_finalization_version=2,servicegraph_store_max_items=10000,quarantine={'bucket':'q','prefix':'gke-quarantine-v1/runs/fixture/'},gcp={'foundation_reference':{'expected_outputs':{'quarantine_bucket':'q'}}})
+                    ctx.manifest.update(capture_finalization_version=2,servicegraph_store_max_items=10000,config=ctx.config,protocol_definition=models.read(ROOT/'protocols'/schedule/'protocol.yaml'))
                 with patch.dict('os.environ',{'GKE_EVAL_PRODUCT_ROOT':str(root)}),setup.legacy_context(ctx):
                     self.assertTrue(runner.CONFIG['thesis_metric_contract'])
 

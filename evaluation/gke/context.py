@@ -47,9 +47,10 @@ class LiveContext:
         if self.manifest.get('readiness_check') and not self.state.get('readiness_handoff_at'):
             from .readiness import RESERVE, cutoff
             deadline, reserve = min(deadline, cutoff(self)), RESERVE
-        remaining=ensure_budget(deadline,reserve=0 if cleanup else reserve)
-        result=self.executor([str(x) for x in args],cwd=cwd,input=input_text.encode() if binary and isinstance(input_text,str) else input_text,text=not binary,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=min(timeout,remaining))
-        if check and result.returncode:raise RuntimeError(str(args[0])+' failed: '+(result.stderr.decode(errors='backslashreplace') if binary else result.stderr)[-1200:])
+        remaining=timeout if cleanup else ensure_budget(deadline,reserve=reserve)
+        from .cloud_identity import command_environment,command_failure
+        result=self.executor([str(x) for x in args],env=command_environment(self.root),cwd=cwd,input=input_text.encode() if binary and isinstance(input_text,str) else input_text,text=not binary,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=min(timeout,remaining))
+        if check and result.returncode:raise command_failure(self,args,result)
         return result
     def kube(self,*args,**kwargs):return self.command(['kubectl','--kubeconfig',str(self.kubeconfig),*args],**kwargs)
     def json(self,*args):return json.loads(self.kube(*args,'-o','json').stdout)
