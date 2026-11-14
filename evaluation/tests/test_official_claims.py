@@ -172,3 +172,36 @@ class CompleteClaimMatrixTests(unittest.TestCase):
                 models.write(path/'gke-evaluation.json',report)
                 result=thesis.claim_matrix(ctx,windows,history,{'ready':True})
                 self.assertFalse(thesis.required_claims_confirmed(result))
+
+class DetailedBoundaryTests(unittest.TestCase):
+    def test_nested_parity_keeps_partition_values_and_frontend_identity_counts(self):
+        from evaluation.gke.boundary_summary import summarize
+        v={'frontend':{'state':'pass','observed':2,'checks':[
+                {'request_id':'r1','observer_status':200,'state':'pass'},
+                {'request_id':'r2','observer_status':500,'state':'pass'}]},
+           'counts_path':{'exact_request_count_api':{'state':'pass','checks':[
+                {'reference':290,'observed':290,'timestamp':100,'labels':{'grpc_status':'0'},'state':'pass'},
+                {'reference':58,'observed':58,'timestamp':100,'labels':{'grpc_status':'13'},'state':'pass'}]}},
+           'source':{'series':[{'first':1,'last':101,'metric':'requests','labels':{'grpc_status':'0'}}]},
+           'resources':{'checks':[{'metric':'cpu','state':'pass','container':['app','pod','container'],
+                        'independent_agreement':{'state':'pass','reference':.2,'observed':.2},'measurement_timestamp':25}]}}
+        result=summarize({'manifest':{'start':2,'end':100}},v)
+        front=result['boundaries'][0]
+        self.assertEqual((front['expected'],front['observed']),(2,2))
+        parity=next(r for r in result['boundaries'] if r['boundary']=='storage-to-api')
+        self.assertIsNone(parity['expected']) # Never sum unlike or repeated partitions.
+        self.assertEqual(parity['comparison_count'],2)
+        self.assertEqual(parity['examples'][1]['reference'],58)
+        self.assertEqual(parity['examples'][1]['timestamp'],100)
+        self.assertEqual(result['source_counter_brackets']['examples'][0]['first'],1)
+        self.assertEqual(result['resource_comparisons'][0]['eligible_aligned_measurements'],1)
+        self.assertIn('structured/status.json',result['diagnostic_evidence'])
+
+    def test_nested_examples_are_bounded_without_losing_denominator(self):
+        from evaluation.gke.boundary_summary import summarize
+        checks=[{'state':'pass','reference':n,'observed':n,'timestamp':n} for n in range(1000)]
+        result=summarize({}, {'counts_path':{'exact_request_count_api':{'state':'pass','checks':checks}}})
+        parity=next(r for r in result['boundaries'] if r['boundary']=='storage-to-api')
+        self.assertEqual(parity['comparison_count'],1000)
+        self.assertLessEqual(len(parity['examples']),8)
+        self.assertEqual(parity['omitted_examples'],992)
