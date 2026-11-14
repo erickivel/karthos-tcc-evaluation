@@ -46,7 +46,7 @@ class CompletionScheduleTests(unittest.TestCase):
         config['execution_segment']='thesis'
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'config.json';path.write_text(json.dumps(config))
-            with self.assertRaisesRegex(ValueError,'all ten windows'):
+            with self.assertRaisesRegex(ValueError,'entire frozen matrix'):
                 prepare(ROOT,path,'never-created',schedule=SCHEDULE)
 
     def test_completion_budget_amendment_is_scoped_and_enforced(self):
