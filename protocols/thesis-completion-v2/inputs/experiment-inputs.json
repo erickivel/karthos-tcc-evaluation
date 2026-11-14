@@ -1,0 +1,203 @@
+{
+  "baseline_config": {
+    "artifact_export_seconds": 180,
+    "artifact_recovery_deadline_policy": "idle recovery may extend up to artifact_recovery_seconds past study deadline",
+    "artifact_recovery_seconds": 1800,
+    "astronomy_app_version": "3.1.0",
+    "astronomy_chart_version": "0.42.2",
+    "astronomy_locust_image": "ghcr.io/open-telemetry/demo:3.1.0-load-generator@sha256:b130d6cee6cb36a2799787a553168811e3ccc5408fe5dad0bc4b4d8302c7a63c",
+    "boutique_git_commit": "5b3a712ab85ccb8f6f7cd5b720d36ba9a8d041eb",
+    "boutique_git_tag": "v0.10.6",
+    "boutique_locust_image": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/loadgenerator:v0.10.6@sha256:9bed9dec88ae439b9c10e3689dee57201aad47c9abb9faf04add562481482421",
+    "capture_log_max_bytes": 268435456,
+    "capture_preroll_seconds": 60,
+    "capture_sample_max_bytes": 268435456,
+    "capture_sample_max_uncompressed_bytes": 8589934592,
+    "collector_image": "otel/opentelemetry-collector-contrib:0.155.0@sha256:4935caa35e9a4cb387e35732e8fb22b2b5759af8d12e7043357f03837f6e8df5",
+    "instrumentation_budget_seconds": 1200,
+    "k6_duration_seconds": 180,
+    "k6_image": "grafana/k6:1.8.2@sha256:bd6ae8607c0a05d0dc0dc3f5753c464b0929baf083ef0f20b7eed845a3d9e6b4",
+    "k6_rate_per_second": 2,
+    "locust_duration_seconds": 180,
+    "observer_image": "nginx:1.28.0-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+    "protocol_version": 4,
+    "scoring_window": "3m",
+    "servicegraph_store_max_items": 10000,
+    "study_deadline_seconds": 14400,
+    "telemetry_drain_seconds": 90,
+    "thresholds": {
+      "cpu_absolute_tolerance_millicores": 10,
+      "duration_absolute_tolerance_ms": 5,
+      "duration_relative_tolerance": 0.2,
+      "max_alignment_seconds": 10,
+      "max_counter_boundary_seconds": 45,
+      "max_freshness_seconds": 60,
+      "max_mesh_counter_boundary_seconds": 15,
+      "memory_absolute_tolerance_bytes": 1048576,
+      "request_absolute_tolerance": 2,
+      "request_relative_tolerance": 0.15,
+      "resource_relative_tolerance": 0.2
+    }
+  },
+  "image_lock": {
+    "docker.io/grafana/k6:1.8.2": "docker.io/grafana/k6@sha256:bd6ae8607c0a05d0dc0dc3f5753c464b0929baf083ef0f20b7eed845a3d9e6b4",
+    "docker.io/istio/proxyv2:1.28.2": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+    "docker.io/library/busybox:latest": "docker.io/library/busybox@sha256:fd7dc98638c8e305f4dc34e979f1c0fdfdcaeb0fbf8fcff77ae834b6da3d7e6e",
+    "docker.io/library/postgres:18.4": "docker.io/library/postgres@sha256:a02db8cac496f15b094798a38254f14d6e00741f709360e5e00bb6668ea31636",
+    "docker.io/otel/opentelemetry-collector-contrib:0.156.0": "docker.io/otel/opentelemetry-collector-contrib@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108",
+    "docker.io/otel/opentelemetry-collector-contrib:0.160.0": "docker.io/otel/opentelemetry-collector-contrib@sha256:799dc6cf12c96192af37b5bdba804da8c10b3bc563b43cb90c3f3c58d9572ad6",
+    "docker.io/victoriametrics/victoria-metrics:v1.138.0": "docker.io/victoriametrics/victoria-metrics@sha256:b9b667f6709f20044328ddefae8869c56ced840ebafdf89bc3bba1f28f2d7e60",
+    "ghcr.io/open-feature/flagd:v0.16.0": "ghcr.io/open-feature/flagd@sha256:32234e63c1d0634883aabd31cbd46802934aaaef0153dfd653b5d1017940bb4e",
+    "ghcr.io/open-telemetry/demo:3.1.0-accounting": "ghcr.io/open-telemetry/demo@sha256:bfd9d13ac58a4eb5eb5130aa9ac1920686e2214030f4f2ab8bf178121879fcd9",
+    "ghcr.io/open-telemetry/demo:3.1.0-ad": "ghcr.io/open-telemetry/demo@sha256:dfd7a4697116d7f961f2c6e8be1bd187f2af7555d6d4138c016097921d7c7ed0",
+    "ghcr.io/open-telemetry/demo:3.1.0-agent": "ghcr.io/open-telemetry/demo@sha256:d0f4ae0b32a84c66ed7829e1ae726b254a3b2ea671cc57b5122a9ce266230dab",
+    "ghcr.io/open-telemetry/demo:3.1.0-cart": "ghcr.io/open-telemetry/demo@sha256:17c881cf29af5032e47d3dbd677afb132cbde66aad6355c7c2af8a6dbfc80581",
+    "ghcr.io/open-telemetry/demo:3.1.0-chatbot": "ghcr.io/open-telemetry/demo@sha256:604b1f493c92e54c342c3bcdddcb012e6b4537726ece7021017fcc4081d2bac0",
+    "ghcr.io/open-telemetry/demo:3.1.0-checkout": "ghcr.io/open-telemetry/demo@sha256:d4448ff541290fc57cca71d4bfd35d522959edf62a8bb55158467583f9fad4e2",
+    "ghcr.io/open-telemetry/demo:3.1.0-currency": "ghcr.io/open-telemetry/demo@sha256:ba65e72d5841f909e0ee09498572092923f59e249ae4bf084ab63a82b33811c1",
+    "ghcr.io/open-telemetry/demo:3.1.0-email": "ghcr.io/open-telemetry/demo@sha256:bd7754c1e0986f892b86ed6ab9067a372640d342ff8eee2074bedb61c649ce71",
+    "ghcr.io/open-telemetry/demo:3.1.0-flagd-ui": "ghcr.io/open-telemetry/demo@sha256:97a3d37e709f80e2018cdc0d45ea12d5b59092693e0e003d65089da966107062",
+    "ghcr.io/open-telemetry/demo:3.1.0-fraud-detection": "ghcr.io/open-telemetry/demo@sha256:a07ee694304b23e3e4e1ca9bdaa7a02e3eb30d1805d87dfe95e7ea31cd3aa703",
+    "ghcr.io/open-telemetry/demo:3.1.0-frontend": "ghcr.io/open-telemetry/demo@sha256:28358db4620686eda30dfabfc770b9ff0db73819ebac0895064271b446110289",
+    "ghcr.io/open-telemetry/demo:3.1.0-frontend-proxy": "ghcr.io/open-telemetry/demo@sha256:fd4da88bfeaadd9437a4ee00f708e129a9eedb9c48874cea8e94b034983280a1",
+    "ghcr.io/open-telemetry/demo:3.1.0-image-provider": "ghcr.io/open-telemetry/demo@sha256:46d1a7e95109c0064122ca0bfb49cd05191fb90a6264b6be508e0d98f2c963f1",
+    "ghcr.io/open-telemetry/demo:3.1.0-kafka": "ghcr.io/open-telemetry/demo@sha256:4402ba7fd54470782a445f07c67e1d3f44d88ac8c5c0abf5d8298190a3f7a6ee",
+    "ghcr.io/open-telemetry/demo:3.1.0-load-generator": "ghcr.io/open-telemetry/demo@sha256:b130d6cee6cb36a2799787a553168811e3ccc5408fe5dad0bc4b4d8302c7a63c",
+    "ghcr.io/open-telemetry/demo:3.1.0-mcp": "ghcr.io/open-telemetry/demo@sha256:81db69cdd0b683d9214d30089b539c904d6a9fe93253f26155e88ed2db87bba7",
+    "ghcr.io/open-telemetry/demo:3.1.0-opamp-server": "ghcr.io/open-telemetry/demo@sha256:3b6c6220bf9c7d8e6fdb8d1966316e80c5ac2004db6ae29c46681009d50e2093",
+    "ghcr.io/open-telemetry/demo:3.1.0-payment": "ghcr.io/open-telemetry/demo@sha256:10d6bd20d8a00abe7705d553ab23a4f35e29b2816ab021049e63e89d07cc9192",
+    "ghcr.io/open-telemetry/demo:3.1.0-product-catalog": "ghcr.io/open-telemetry/demo@sha256:7578cbf65fa4f0fc68e077e4f299ecccaa31d9778d407e41ab5973d247fd4b8e",
+    "ghcr.io/open-telemetry/demo:3.1.0-quote": "ghcr.io/open-telemetry/demo@sha256:e0b1ab3784fdbf0112521d3c5c733643f1cefa4eef5f592f845977465400181e",
+    "ghcr.io/open-telemetry/demo:3.1.0-recommendation": "ghcr.io/open-telemetry/demo@sha256:9dd7d7c320d2794a87c78cf534892519dace661a9022eb2cad5de1b75d994c18",
+    "ghcr.io/open-telemetry/demo:3.1.0-shipping": "ghcr.io/open-telemetry/demo@sha256:7130dba0e77e90575b3f04fa8be39182cffe05f39df586a6620e9d221ee31e77",
+    "ghcr.io/open-telemetry/demo:3.1.0-telemetry-docs": "ghcr.io/open-telemetry/demo@sha256:3f257a843222df2462d903fd57b12af5f31dc99a0f174b45136a4f3ba5c71203",
+    "ghcr.io/valkey-io/valkey:9.0.4-alpine3.23": "ghcr.io/valkey-io/valkey@sha256:107b203169a20ef7c87548c157f4e4a833dbbbd20fefd3a26740b7f98ac80216",
+    "registry-1.docker.io/bitnami/postgresql:latest": "registry-1.docker.io/bitnami/postgresql@sha256:bb51e14bc63942fe575e353b0844a2c8d2baa78bb04836e8798f1663952957e7",
+    "sha256:1b9b412390ced96f5b421f032c7695aec84aec437c00b47dac6a0db44213fe02": "docker.io/otel/opentelemetry-collector-contrib@sha256:4935caa35e9a4cb387e35732e8fb22b2b5759af8d12e7043357f03837f6e8df5",
+    "sha256:55563f45704d59e891b6aa643014bb6b562abf21909a44b3b297502415b68e29": "docker.io/library/redis@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005",
+    "sha256:c318e336065b17ff460aeac6d14bce5d0b13e35f25d5cb1843b635359fc00c9a": "docker.io/library/nginx@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/adservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/adservice@sha256:f580c4853e896dd2083f0c270c4b7aa5feda6dd56058a93b87d0c88334a4c07d",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/cartservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/cartservice@sha256:b5c29ddb3238474ea8d1842f07004fedeeae47f660627ab111a613a681cd0356",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/currencyservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/currencyservice@sha256:7b2f3f804555c926861d67cd22c1b7c9e32d46b81cf1a64dd3089ae424d73be9",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/emailservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/emailservice@sha256:77fd45d411b3550cbd39e30bda83ed6ea23d87fd6e58e69cf9fa2808e003984d",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/frontend:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/frontend@sha256:c06df08eccd78568a37292cfbe889df42fac48691b7fb05f2deeba0ae8d669ef",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/loadgenerator:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/loadgenerator@sha256:9bed9dec88ae439b9c10e3689dee57201aad47c9abb9faf04add562481482421",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/paymentservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/paymentservice@sha256:735b6d3255e2c74b0135a95cfc2337987e492f24e163c0bb9a853635876993c4",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/productcatalogservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/productcatalogservice@sha256:fb8568ecfc948717eb07746a6ce360fb8e5f906ae8a874cbad666891f0d21790",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/recommendationservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/recommendationservice@sha256:5d8321f2d24132889f654f75308e541b0626e6ae0cbacf81b170e5eb0921b415",
+    "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/shippingservice:v0.10.6": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/shippingservice@sha256:8527bafff8c8776e345f2dca0641f6e8595b053ce67f9a5af66f5a85d9eaca9d"
+  },
+  "pins": {
+    "astronomy_chart": "0.42.2",
+    "astronomy_chart_hash": "720d08362931b36e285ccd182c582b2b24bd77b8a2b5ac21dc4dedbae717d4bb",
+    "boutique_commit": "5b3a712ab85ccb8f6f7cd5b720d36ba9a8d041eb",
+    "boutique_source_hash": "53d5afbcaf0dac68b786270647c3f78356b28a75e9872224b5edd32a5656cd91",
+    "karthos_chart_hash": "69af8e3b92dd5aac3909a7981ae96724e3c1150f9a9a8e840bb3ecb9f53580d2",
+    "karthos_dirty": false,
+    "karthos_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+    "karthos_source_hash": "7c4bdb9860338407da908fcb9e1ce98e58c49dd45a3e632c3539027a38b070e3",
+    "openapi_sha256": "0be7faa22d79068cfa6ae530c5798a1764c129be74511a31037889a716abee2c"
+  },
+  "schema_version": 1,
+  "scope": "Frozen experiment settings, not prior-run evidence; live discovery is mandatory.",
+  "thresholds": {
+    "calibration": {
+      "cells": [
+        {
+          "cell": "r1-boutique-trace",
+          "valid": true,
+          "windows": [
+            {
+              "name": "k6-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            },
+            {
+              "name": "locust-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            }
+          ]
+        },
+        {
+          "cell": "r1-astronomy-trace",
+          "valid": true,
+          "windows": [
+            {
+              "name": "locust-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            },
+            {
+              "name": "k6-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            }
+          ]
+        },
+        {
+          "cell": "r1-boutique-mesh",
+          "valid": true,
+          "windows": [
+            {
+              "name": "k6-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            },
+            {
+              "name": "locust-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            }
+          ]
+        },
+        {
+          "cell": "r1-astronomy-mesh",
+          "valid": true,
+          "windows": [
+            {
+              "name": "locust-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            },
+            {
+              "name": "k6-checkout-heavy",
+              "oracle_valid": true,
+              "source_valid": true,
+              "state": "pass",
+              "unexpected_outcomes": 0
+            }
+          ]
+        }
+      ],
+      "completed_before_measurements": true,
+      "method": "fixed pilot bounds; smoke qualifies evidence, never fits measurement error"
+    },
+    "cpu_absolute_tolerance_millicores": 10,
+    "duration_absolute_tolerance_ms": 5,
+    "duration_relative_tolerance": 0.2,
+    "max_alignment_seconds": 10,
+    "max_counter_boundary_seconds": 45,
+    "max_freshness_seconds": 60,
+    "max_mesh_counter_boundary_seconds": 15,
+    "memory_absolute_tolerance_bytes": 1048576,
+    "request_absolute_tolerance": 2,
+    "request_relative_tolerance": 0.15,
+    "resource_relative_tolerance": 0.2
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "boutique_repository": "https://github.com/GoogleCloudPlatform/microservices-demo.git",
+  "controller_base": "docker.io/library/python@sha256:034c3e9d991f148d14c32ff8350286b91420baca7757d37819c7a9cc771317a0",
+  "downloads": {
+    "astronomy": {
+      "sha256": "72ca2252ae8e7af9c5f1ea42d49f945d06e71235904d4b3ad9e49223e6741885",
+      "url": "https://github.com/open-telemetry/opentelemetry-helm-charts/releases/download/opentelemetry-demo-0.42.2/opentelemetry-demo-0.42.2.tgz"
+    },
+    "gcloud": {
+      "sha256": "bd5afc0d249609cb40d45f665209190fdd38b9937954291b8f9ae54206c75d83",
+      "url": "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-567.0.0-linux-x86_64.tar.gz"
+    },
+    "gke-gcloud-auth-plugin": {
+      "sha256": "25f88f7acfb9a7266e46e57d20a40110b847e59c7b224bf69bfd8e4cbffda03b",
+      "url": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-gke-gcloud-auth-plugin-linux-x86_64-20260424041539.tar.gz"
+    },
+    "go": {
+      "sha256": "708effb774be8237570d0add163225abbdfaf4fca28b2611df167beba4feef89",
+      "url": "https://go.dev/dl/go1.26.6.linux-amd64.tar.gz"
+    },
+    "helm": {
+      "sha256": "29454bc351f4433e66c00f5d37841627cbbcc02e4c70a6d796529d355237671c",
+      "url": "https://get.helm.sh/helm-v4.0.4-linux-amd64.tar.gz"
+    },
+    "istioctl": {
+      "sha256": "80b1b61d3052dac657ae0921dc58e65ee33619ab2e8fd8f796f17af29669f71b",
+      "url": "https://github.com/istio/istio/releases/download/1.28.2/istioctl-1.28.2-linux-amd64.tar.gz"
+    },
+    "kubectl": {
+      "sha256": "9591f3d75e1581f3f7392e6ad119aab2f28ae7d6c6e083dc5d22469667f27253",
+      "url": "https://dl.k8s.io/release/v1.34.2/bin/linux/amd64/kubectl"
+    },
+    "postgresql-18.5.11.tgz": {
+      "docker_repository": "bitnamicharts/postgresql",
+      "sha256": "fa8ac7f8fcf16661fccdd35a7c0b3a410319adcc95f7853b329bcfb3935293b6",
+      "url": "https://registry-1.docker.io/v2/bitnamicharts/postgresql/blobs/sha256:fa8ac7f8fcf16661fccdd35a7c0b3a410319adcc95f7853b329bcfb3935293b6"
+    },
+    "task": {
+      "sha256": "4e7d24f1bf38218aec8f244eb7ba671f898830f9f87b3c9b30ff1c09e3135576",
+      "url": "https://github.com/go-task/task/releases/download/v3.49.1/task_linux_amd64.tar.gz"
+    },
+    "terraform": {
+      "sha256": "38034b38d03096399a7a1264a14561a8029b2b496fd1f169452656e53968f1b7",
+      "url": "https://releases.hashicorp.com/terraform/1.16.6/terraform_1.16.6_linux_amd64.zip"
+    },
+    "victoria-metrics-single-0.33.0.tgz": {
+      "sha256": "584e3e8808c553122ef0bfef748375c76a6267fde38e158b838f803db1ed4d2c",
+      "url": "https://github.com/VictoriaMetrics/helm-charts/releases/download/victoria-metrics-single-0.33.0/victoria-metrics-single-0.33.0.tgz"
+    }
+  },
+  "product_bases": {
+    "alpine:3.20": "docker.io/library/alpine@sha256:d9e853e87e55526f6b2917df91a2115c36dd7c696a35be12163d44e6e2a4b6bc",
+    "golang:1.26.6-alpine": "docker.io/library/golang@sha256:3889b425f035be855a72fb4755265311293b6d414521f0a519d819df32222d83",
+    "nginx:alpine": "docker.io/library/nginx@sha256:fed7e14be83cbd2661a75cdc5b872d936cf155d46c327084d30b8df19ae88d72",
+    "node:20-alpine": "docker.io/library/node@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293"
+  },
+  "product_repository": "https://github.com/erickivel/karthos.git",
+  "schema_version": 1,
+  "versions": {
+    "gcloud": "567.0.0",
+    "gke-gcloud-auth-plugin": "0.5.14",
+    "go": "1.26.6",
+    "helm": "v4.0.4",
+    "istioctl": "1.28.2",
+    "kubectl": "v1.34.2",
+    "task": "3.49.1",
+    "terraform": "1.16.6"
+  }
+}

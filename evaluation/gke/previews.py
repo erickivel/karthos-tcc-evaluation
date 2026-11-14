@@ -2,7 +2,7 @@
 from __future__ import annotations
 import json,subprocess
 from pathlib import Path
-from .models import CAPTURE_V2_SCHEDULES, read,write,sha
+from .models import CAPTURE_V2_SCHEDULES, COMPLETION_V2, read,write,sha
 from .render import transform
 from ..manifests import demo_values
 
@@ -50,5 +50,5 @@ def previews(root,destination,baseline,config,lock,run_id,*,executor=subprocess.
             write(destination/(label+'.yaml'),yamlio.dump_all(rendered));status['objects'][label]=len(rendered)
         except (OSError,ValueError,subprocess.TimeoutExpired) as exc:status['errors'].append(label+': '+str(exc))
     status['state']='pending' if status['errors'] or status['unresolved_images'] else 'complete'
-    status['prior_profile_limitation']='Karthos previews use recorded local discovery inputs solely to show chart shape; fresh GKE discovery is required at runtime.'
+    status['prior_profile_limitation']=('Synthetic render-only capability profiles; never deployment or discovery evidence; fresh GKE discovery is required at runtime.' if schedule==COMPLETION_V2 else 'Karthos previews use recorded local discovery inputs solely to show chart shape; fresh GKE discovery is required at runtime.')
     write(destination/'status.json',status);return status

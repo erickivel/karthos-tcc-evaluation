@@ -1,0 +1,82 @@
+{
+  "cluster_id": "0000000000000000000000000000000000000000000000000000000000000000",
+  "cluster_name": "offline-render-only",
+  "discovered_at": "2026-01-01T00:00:00Z",
+  "capabilities": [
+    {
+      "source_id": "host-os",
+      "kind": "direct",
+      "status": "available",
+      "signals": [
+        "metric"
+      ],
+      "evidence": {}
+    },
+    {
+      "source_id": "kube-cluster",
+      "kind": "direct",
+      "status": "available",
+      "signals": [
+        "metric"
+      ],
+      "evidence": {}
+    },
+    {
+      "source_id": "kubelet",
+      "kind": "direct",
+      "status": "available",
+      "signals": [
+        "metric"
+      ],
+      "evidence": {}
+    },
+    {
+      "source_id": "kubernetes.structure",
+      "kind": "direct",
+      "status": "available",
+      "signals": [
+        "structure"
+      ],
+      "evidence": {}
+    },
+    {
+      "source_id": "mesh.istio",
+      "kind": "direct",
+      "status": "available",
+      "signals": [
+        "metric"
+      ],
+      "evidence": {
+        "mesh": {
+          "flavor": "istio",
+          "mode": "sidecar",
+          "injected_namespaces": [
+            "karthos-eval-astronomy"
+          ],
+          "metrics_port": 15020,
+          "metrics_path": "/stats/prometheus"
+        }
+      }
+    },
+    {
+      "source_id": "prometheus.app",
+      "kind": "direct",
+      "status": "unavailable",
+      "signals": null,
+      "evidence": {}
+    },
+    {
+      "source_id": "traces.servicegraph",
+      "kind": "derived",
+      "status": "available",
+      "signals": [
+        "metric"
+      ],
+      "evidence": {
+        "otlp": {
+          "traces_enabled": true
+        }
+      }
+    }
+  ]
+}
