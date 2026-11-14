@@ -463,7 +463,7 @@ def compare_volume(observed,inputs,references,*,snapshots=()):
     if declared_type and declared_type!='persistentVolumeClaim':
         declarations=[]
         for snapshot in snapshots:
-            if not _valid_bracket(snapshot) or snapshot.get('node_uids',{}).get(observed['node'])!=observed['node_uid']:continue
+            if not (_valid_bracket(snapshot) or snapshot.get('immutable_spec_declaration')) or snapshot.get('node_uids',{}).get(observed['node'])!=observed['node_uid']:continue
             for pod in snapshot.get('items',[]):
                 meta=pod.get('metadata',{});spec=pod.get('spec',{})
                 if (meta.get('uid'),meta.get('name'),meta.get('namespace'),spec.get('nodeName'))!=(observed['pod_uid'],observed.get('pod'),observed.get('namespace'),observed['node']):continue
@@ -489,13 +489,16 @@ def compare_volume(observed,inputs,references,*,snapshots=()):
                 if identity['pvc_name']:identity['volume_type']='persistentVolumeClaim'
                 if any(identity.get(key)!=value for key,value in dims.items() if key!='volume_type' or declared_type=='persistentVolumeClaim'):continue
                 if volume.get(field) is not None and volume.get('time') is not None:matches.append((row,volume))
-    if len(matches)!=1:return _blocked(result,'missing or ambiguous exact volume receiver input','one receiver response tied to collector UID/Pod UID/node/volume and original source datapoint interval')
-    receiver,volume=matches[0]
-    selected=[row for row in references if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else declared_type))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),volume['time']) and _valid_bracket(row)]
+    measurements={(volume['time'],volume[field]) for _,volume in matches}
+    if len(measurements)!=1:return _blocked(result,'missing or ambiguous exact volume receiver input','one underlying measurement tied to collector UID/Pod UID/node/volume; repeated identical cache observations allowed')
+    measurement_time,receiver_value=next(iter(measurements))
+    brackets=sorted({(row['requested_at_ns']/1e9,row['received_at_ns']/1e9) for row,_ in matches})
+    result.update(receiver_observation_count=len(matches),receiver_acquisition_brackets=brackets)
+    selected=[row for row in references if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else declared_type))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),measurement_time) and _valid_bracket(row)]
     values={row['value'] for row in selected}
-    result.update(receiver_value=volume[field],measurement_timestamp=volume['time'],receiver_acquisition_bracket=[receiver['requested_at_ns']/1e9,receiver['received_at_ns']/1e9])
+    result.update(receiver_value=receiver_value,measurement_timestamp=measurement_time)
     if len(values)!=1:return _blocked(result,'missing or conflicting same-measurement independent volume reference','independent kubelet sample with exact fs.time, Pod UID/node/volume/PVC identity')
-    reference=next(iter(values));result['conversion']={'state':'pass' if float(observed['value'])==float(volume[field]) else 'fail','factor':1}
+    reference=next(iter(values));result['conversion']={'state':'pass' if float(observed['value'])==float(receiver_value) else 'fail','factor':1}
     _numeric(result,observed['value'],reference,matching_references=selected,comparison='exact receiver fs.time and independently observed same volume measurement')
     if result['conversion']['state']=='fail':result['state']='fail'
     return result
@@ -516,17 +519,14 @@ def compare_traffic(name,traffic,verification):
     # A passing aggregate comparison is useful evidence, but never a proof that
     # independently bracketed counters or duration histograms contain the same calls.
     result['independent_comparison']=dict(source,scope='retained source/store bracketing comparison; original bounds and tolerances')
-    source_series=verification.get('source',{}).get('series',[])
-    stored_series=verification.get('vm',{}).get('series',[])
-    result['population_equivalence']={'state':'insufficient',
-        'source_brackets':sorted({(row.get('first'),row.get('last')) for row in source_series if row.get('first') is not None and row.get('last') is not None}),
-        'stored_brackets':sorted({(row.get('first'),row.get('last')) for row in stored_series if row.get('first') is not None and row.get('last') is not None}),
-        'reason':'exact source/store call membership and equivalent duration populations not established by bracketing counts',
-        'required_acquisition':'source and stored partition membership proof, with original measurement boundaries; aggregate equality is insufficient'}
-    result['source_accuracy']={'state':'insufficient','reason':result['population_equivalence']['reason']}
-    result['state']='fail' if parity.get('state')=='fail' or source.get('state')=='fail' else 'insufficient'
-    result['reason']='numerical comparisons retained separately from unproved source/store population equivalence'
-    result['required_acquisition']=result['population_equivalence']['required_acquisition']
+    from .population import prove
+    proof=prove(name,traffic,verification)
+    result['population_equivalence']=proof
+    result['source_accuracy']={'state':source.get('state','insufficient') if proof['state']=='pass' else 'insufficient',
+                               'scope':proof['scope'],'reason':proof.get('reason')}
+    result['state']='fail' if parity.get('state')=='fail' or source.get('state')=='fail' else ('pass' if proof['state']=='pass' and source.get('state')=='pass' and parity.get('state')=='pass' else 'insufficient')
+    result['reason']='controlled source accounting and exact API/storage parity; API event-time fidelity remains separate' if result['state']=='pass' else proof.get('reason','independent comparison or parity unavailable')
+    result['required_acquisition']=None if proof['state']=='pass' else 'the missing scoped identity, partition or measurement-boundary evidence identified above'
     return result
 
 
@@ -652,6 +652,8 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     cpu_name,memory_name=container_metrics(thesis)
     path=Path(path);manifest=_read(path/'manifest.json');start=manifest.get('start');end=manifest.get('end')
     traffic=timing_analysis.analyze_window(path) if traffic_report is None else traffic_report
+    from .population import resolve_scope
+    traffic=resolve_scope(traffic,spec)
     disruption=spec.get('phase') in ('resource','restart')
     scenario=spec.get('execution_result') or _read(path/'scenario-result.json')
     executed=(scenario.get('state')=='complete' if disruption else
@@ -701,7 +703,7 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.1'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     accuracy=[]

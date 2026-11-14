@@ -525,3 +525,69 @@ archive and every consumed member against `GKE-SHA256SUMS`, rejects unsafe archi
 paths/duplicates, and writes compact `summary.json`, `comparison-changes.json`,
 `analysis-manifest.json` and output checksums. Comparisons outside the repaired
 scope retain their original results. Missing historical inputs stay missing.
+
+
+### Complete offline recovery (`accuracy-evidence-v2.4.0`)
+
+The recovery reads sealed archives only. It recovers the demo from the explicit
+frozen window specification when the legacy workload manifest omitted it; a
+conflicting declaration is rejected. This repairs the missing target in the
+independent checkout reference. Positive traffic verdicts require scoped
+observer/source identities, unique full preserved outcome partitions, reset-free
+counter brackets, capture lifetime, the recorded clock bound and no extra calls
+in actual counter slack. Trace comparisons also require the generator/observer/
+paired-span identity join. This proves controlled aggregate accounting, not
+individual request storage or exact API event-time membership.
+
+Duration uses a separate histogram-count population check. An additional settled
+diagnostic reads the **already-recorded** quiet-before/after timestamps, not an
+interval chosen for agreement. It requires matching sums/counts with identical
+per-partition brackets, known units, the same controlled operation population and
+unchanged numerical tolerances. Its result never replaces the original fixed
+window. The report retains both outcomes and the actual selected brackets.
+
+Preserved Pod inventories provide UID-scoped volume declarations. Their immutable
+spec fields may be read without fabricating an API measurement time; see the
+[pinned Kubernetes v1.34 Pod validation](https://github.com/kubernetes/kubernetes/blob/v1.34.0/pkg/apis/core/validation/validation.go).
+Diagnostic lifecycle rows are associated only with a unique recorded outer
+poll-iteration bracket and independent Node UID. These references prove observed
+presence; they do not manufacture a collector cache resourceVersion or exact
+measurement time. Identical receiver observations with the same volume/time/value
+are one cached underlying measurement; differing measurements remain ambiguous.
+
+All original comparisons remain in their denominators. Recovery does not silently
+exclude un-oracled system/helper Pods. Remaining reasons are reported by namespace,
+with per-comparison links and all consumed-member checksums. Run the same offline
+command shown above with a new output directory for each new analysis version.
+
+
+The offline diagnostic reports two explicit observation scopes, independently:
+quiet-source to quiet-storage, and quiet-source to the **unchanged original
+stored counter/histogram selection**. The latter can establish controlled
+aggregate duration agreement when the former lacks an archived end sample; it
+never asserts quiet-end storage coverage. Both outcomes are retained, including
+insufficiency. No endpoint is searched or selected based on numerical agreement.
+The current archives reveal that the stored export ends at the predeclared
+workload end + 90 seconds, while quiet checks can finish later. Future capture
+must export through the recorded final quiet observation if that coverage is
+claimed. This gap is a harness export-range limitation, not evidence of product
+loss. Original workload windows and their duration verdicts remain unchanged.
+
+
+A third explicitly labelled diagnostic uses the last stored sample **within the
+original declared VM drain-export horizon** (`extended/vm-export-request.json`),
+regardless of its value. It blocks if that export does not reach the workload end.
+It must prove the same controlled operation population and synchronized per-series
+histogram sums/counts before comparing means. It is not a replacement for the
+fixed window or a claim of coverage through quiet-after. The report retains all
+three scopes, including missing quiet-end evidence, and never searches endpoints
+for a passing value.
+
+
+Receiver `/pods` responses are also consumed. They were already captured alongside
+`/stats/summary`, including system-Pod specifications and their original versions.
+Recovery binds successful responses to their collector/node, actual acquisition
+bracket and independent Node UID. These are labelled exact source-input
+references, not independent API-history observations. Mutable lifecycle checks
+still require the original source version/time; no version is copied into an OTLP
+observation merely because a matching Pod was found.

@@ -58,3 +58,33 @@ class AccuracyReanalysisTests(unittest.TestCase):
                 archive,sha=self.archive(root,report=original,extras=extras)
                 summary=r.reanalyse_archive(archive,root/'analysis',expected_sha256=sha)
                 self.assertEqual(summary['families']['volume_accuracy']['state'],expected)
+
+    def test_frozen_demo_recovers_a_positive_traffic_verdict_from_sealed_archive(self):
+        from evaluation.tests import test_offline_population as fixtures
+        traffic,verification=fixtures.PopulationTests().fixture()
+        traffic['manifest'].pop('demo')
+        traffic['api_storage_parity']={'checks':{'exact_request_count_api':{'state':'pass'}}}
+        verification['counts_path']={'source_to_vm':{'state':'pass'}}
+        old={'spec':{'demo':'boutique'},'resources':{},'selected_accuracy':[{'name':'servicegraph.request.count'}],
+             'numerical_agreement':{'checks':[]},'traffic':{'report':traffic}}
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);archive,sha=self.archive(root,report=old,extras={'verification.json':json.dumps(verification).encode()})
+            summary=r.reanalyse_archive(archive,root/'analysis',expected_sha256=sha)
+            self.assertEqual(summary['families']['traffic_count']['state'],'pass')
+            self.assertEqual(summary['traffic']['servicegraph.request.count'][0]['population_equivalence']['independent_reference']['target'],'checkoutservice')
+
+    def test_receiver_pods_inventory_recovers_unread_system_volume_declaration(self):
+        from evaluation.tests import test_accuracy_evidence_repairs as fixtures
+        obs,inputs,refs,snapshots=fixtures.AccuracyEvidenceRepairs().volume()
+        pod=snapshots[0]['items'][0];pod['metadata']['resourceVersion']='7'
+        pods=dict(inputs[0],path='/pods',body={'items':[pod]})
+        original={'spec':{},'resources':{},'selected_accuracy':[], 'numerical_agreement':{'state':'insufficient','checks':[{'state':'insufficient','observed':obs}]},'traffic':{}}
+        independent={'node_name':'n','node_uid':'nid','summary':inputs[0]['body'],'requested_at_ns':4800000000,'received_at_ns':5100000000}
+        extras={'structured/nodes-before.json':json.dumps({'items':[{'metadata':{'name':'n','uid':'nid'}}]}).encode(),
+                'structured/agent/n/raw/receiver-input.ndjson':('\n'.join(json.dumps(x) for x in inputs+[pods])+'\n').encode(),
+                'kubelet-n.ndjson':(json.dumps(independent)+'\n').encode()}
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);archive,sha=self.archive(root,report=original,extras=extras)
+            summary=r.reanalyse_archive(archive,root/'analysis',expected_sha256=sha)
+            self.assertEqual(summary['families']['volume_accuracy']['state'],'pass')
+            self.assertEqual(summary['recovery_inventory']['receiver_pod_snapshots'],1)

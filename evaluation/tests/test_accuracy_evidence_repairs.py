@@ -45,7 +45,7 @@ class AccuracyEvidenceRepairs(unittest.TestCase):
 
     def test_volume_ambiguity_wrong_type_and_bad_value_remain_visible(self):
         obs,inputs,refs,snapshots=self.volume()
-        self.assertEqual(e.compare_volume(obs,inputs+copy.deepcopy(inputs),refs,snapshots=snapshots)['state'],'insufficient')
+        self.assertEqual(e.compare_volume(obs,inputs+copy.deepcopy(inputs),refs,snapshots=snapshots)['state'],'pass')
         obs['value']=31
         self.assertEqual(e.compare_volume(obs,inputs,refs,snapshots=snapshots)['state'],'fail')
         obs['value']=30;obs['dimensions']['volume_type']='secret'
