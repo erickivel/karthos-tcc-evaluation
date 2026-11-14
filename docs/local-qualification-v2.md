@@ -8,6 +8,8 @@ Install the pinned product's Go/Task toolchain, Docker, kind, kubectl, Helm, ist
 
 Use a disposable local workstation/container engine with capacity for the product's two-node kind fixture. The helper refuses an existing `karthos-thesis-*` cluster name and binds every Kubernetes operation to its private kubeconfig/context. Product fixture node selectors are adapted only from `karthos-test-{control-plane,worker}` to the owned nodes; before/after render artifacts are retained. The existing product setup uses the local `karthos-kind-registry` on port 5001 and port 8080 for the fixture; ensure those ports are available or the existing registry belongs to your local testing setup. The shared registry is deliberately retained after cleanup, never removed by this helper.
 
+On Linux, check `sysctl fs.inotify.max_user_instances fs.inotify.max_user_watches` before creating the fixture. If node logs report a failed inotify allocation / “Too many open files”, ask the host administrator to raise the limits temporarily; kind documents `max_user_instances=512` and `max_user_watches=524288` in its [known issues](https://kind.sigs.k8s.io/docs/user/known-issues/#pod-errors-due-to-too-many-open-files). Record the original values and restore them after owned-cluster cleanup. Do not treat this node-boot failure as a Karthos result.
+
 Do not run against a production or shared Kubernetes context. The helper installs/removes its owned Istio, deploys fixtures and Karthos, generates controlled traffic, and replaces a fixture Pod. It does not create GCP resources.
 
 ## 1. Capture structure, replacement and arbitration
