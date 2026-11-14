@@ -3,7 +3,7 @@ from __future__ import annotations
 import json,math
 from datetime import datetime,timezone
 from pathlib import Path
-from .models import read,write,sha,canonical_sha,identifier,validate_config,QUALIFICATION,THESIS,REPAIR,REPAIR_V2,REPAIR_SCHEDULES,RECOVERABLE_SCHEDULES,build_matrix,implementation_hashes,classify_readiness
+from .models import read,write,sha,canonical_sha,identifier,validate_config,QUALIFICATION,THESIS,REPAIR,REPAIR_V2,COMPLETION,CAPTURE_V2_SCHEDULES,REPAIR_SCHEDULES,RECOVERABLE_SCHEDULES,build_matrix,implementation_hashes,classify_readiness
 
 
 def cost_preview(config):
@@ -70,11 +70,13 @@ def baseline_summary(root,baseline):
     return {'baseline':str(baseline.relative_to(root)),'recorded_evidence_footprint':footprint,'original_unchanged':True,'pins':pins,'windows':summaries,'claims':{'preservation':'supported on evaluated populations','event_window_equality':'not established by API/storage parity','cross_node':'not established by single-node baseline','causal_overhead':'not claimed','scale':'not claimed'}}
 
 
-def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THESIS,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None,origin_report=None,origin_seal=None,origin_uri=None):
+def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COMPLETION,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None,origin_report=None,origin_seal=None,origin_uri=None):
     """Build experiment inputs offline. Human confirmation stays in the conversation."""
     if schedule not in RECOVERABLE_SCHEDULES:
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
     root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path))
+    if schedule==COMPLETION and config.get('execution_segment','all')!='all':
+        raise ValueError('completion requires all ten windows, not an inherited split segment')
     protocol=read(root/'protocols'/schedule/'protocol.yaml');matrix=build_matrix(protocol,schedule=schedule)
     dest=root/'build/gke/prepared'/preparation_id
     if dest.exists():raise FileExistsError('prepared experiment already exists; choose a new ID')
@@ -131,7 +133,7 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
         'product_pins':pins,'product_snapshot':str(Path(snapshot).resolve()) if snapshot else None,'image_lock':lock,
         'thresholds':read(baseline/'frozen-thresholds.json'),'baseline_config':read(baseline/'locked-config.json'),
         'artifact_checks':checks,'pending_prerequisites':pending,'execution_ready':not pending,'cost_preview':cost,'bundle':bundle,'rendered_previews':preview}
-    if schedule==REPAIR_V2:
+    if schedule in CAPTURE_V2_SCHEDULES:
         from .models import validate_v2_inputs
         for key in ('capture_finalization_version','servicegraph_store_max_items'):
             manifest[key]=config.get(key)
@@ -161,5 +163,5 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=THE
         manifest['historical_timing_inputs']={'baseline':summary['baseline'],'product_pins':summary['pins']}
     write(dest/'readiness-matrix.json',[]);write(dest/'manifest.json',manifest);write(dest/'matrix.json',matrix);write(dest/'prior-evidence-analysis.json',summary)
     pending_lines='\n'.join('- '+issue for issue in pending) or '- None.'
-    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes. Per-cell readiness is read-only; recoverable execution failures have at most one labeled retry. The 12-hour infrastructure allowance includes cleanup.\n\nRead the architecture and phase plan in {('docs/thesis-repair-validation-v2.md' if schedule==REPAIR_V2 else 'docs/thesis-qualification-v4.md')}. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
+    write(dest/'README.md',f"# Prepared GKE experiment: {preparation_id}\n\n{len(matrix)} windows; {sum(row['duration_seconds'] for row in matrix)//60} scheduled matrix load minutes. Per-cell readiness is read-only; recoverable execution failures have at most one labeled retry. The 12-hour infrastructure allowance includes cleanup.\n\nRead the architecture and phase plan in {('docs/thesis-completion-v1.md' if schedule==COMPLETION else 'docs/thesis-repair-validation-v2.md' if schedule==REPAIR_V2 else 'docs/thesis-qualification-v4.md')}. No review commands, approval receipts or signatures are needed. Codex presents the setup in chat and waits for your explicit go-ahead before cloud work.\n\n## Pending technical inputs\n\n{pending_lines}\n\nmanifest.json records the frozen configuration and source/artifact hashes for reproducibility. Checksums on collected evidence and ownership/deadline safeguards are retained. No cloud work was executed by preparation.\n")
     return dest/'manifest.json'

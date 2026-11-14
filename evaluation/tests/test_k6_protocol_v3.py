@@ -38,7 +38,7 @@ class K6ProtocolV3Tests(unittest.TestCase):
         self.assertEqual(protocol['generators'],['k6'])
         self.assertEqual(protocol['history_observation_seconds'],720)
         args=parser().parse_args(['prepare','--id','fixture'])
-        self.assertEqual(args.schedule,models.THESIS)
+        self.assertEqual(args.schedule,models.COMPLETION)
         with self.assertRaises(ValueError):
             readiness.validate_launch(SimpleNamespace(manifest={'schedule':models.THESIS_V2}))
 

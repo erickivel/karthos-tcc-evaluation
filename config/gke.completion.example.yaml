@@ -1,0 +1,79 @@
+{
+  "baseline": "results/timing-20261025-g",
+  "capture_finalization_version": 2,
+  "execution_segment": "all",
+  "export_horizon_version": "recorded-horizon-v1",
+  "gcp": {
+    "billing_account_id": null,
+    "foundation_reference": {
+      "expected_outputs": {
+        "quarantine_bucket": "karthos-karthos-eval-quarantine"
+      },
+      "review_note": "Supply the refreshed complete reference after scoped foundation review; preparation never applies it.",
+      "source_files": null
+    },
+    "project_id": null,
+    "region": "us-central1",
+    "zone": "us-central1-b"
+  },
+  "infrastructure": {
+    "bootstrap_sdk_image": null,
+    "controller_boot_image": null,
+    "controller_image": null,
+    "controller_machine_type": "e2-standard-4",
+    "extra_image_lock": {},
+    "gateway_reader_cpu_limit_m": 750,
+    "kubernetes_version": null,
+    "product_image_mirrors": {},
+    "release_channel": "STABLE",
+    "resource_policy": "requests-v1",
+    "watchdog_image": null,
+    "worker_count": 3,
+    "worker_machine_type": "e2-standard-4"
+  },
+  "limits": {
+    "cleanup_reserve_seconds": 1800,
+    "diagnostic_hold_seconds": 1800,
+    "gross_limit_usd": 100,
+    "infrastructure_seconds": 43200,
+    "launch_ceiling_usd": 80,
+    "max_evidence_bytes": 107374182400,
+    "optional_local_download_bytes": 5368709120,
+    "raw_evidence_retention_days": 90
+  },
+  "product_snapshot": null,
+  "protocol": "gke-qualification-v1",
+  "quarantine": {
+    "bucket": "karthos-karthos-eval-quarantine",
+    "prefix": "gke-quarantine-v1/runs/REPLACE-WITH-PREPARATION-ID/"
+  },
+  "readiness": {
+    "billing_and_credit_verified": false,
+    "capacity_verified": false,
+    "phase_estimates_seconds": {
+      "capture_setup_restore": null,
+      "export": null,
+      "history": null,
+      "provision": null,
+      "rebuild": null,
+      "retry_reserve": null,
+      "setup": null
+    },
+    "pricing_verified": false,
+    "quotas_verified": false,
+    "resource_helper_image": null,
+    "secondary_export_destination": null,
+    "secondary_export_verified": false,
+    "study_budget": {
+      "basis": null,
+      "combined_estimate_usd": null,
+      "gross_limit_usd": 100,
+      "prior_runtime_allowance_usd": null,
+      "shared_allowances_cumulative": true
+    },
+    "toolchain_verified": false
+  },
+  "schema_version": 1,
+  "servicegraph_store_max_items": 10000,
+  "source_policy": "validated-snapshot-only"
+}

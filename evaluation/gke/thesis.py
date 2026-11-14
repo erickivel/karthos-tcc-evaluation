@@ -6,7 +6,7 @@ import math
 import re
 from pathlib import Path
 
-from .models import THESIS,THESIS_SCHEDULES,REPAIR,REPAIR_SCHEDULES,sha
+from .models import THESIS,THESIS_SCHEDULES,REPAIR,REPAIR_SCHEDULES,COMPLETION,sha
 
 START_REVISION='f37f408dea46abfcfdfbdc6a32c06ac2a353d9ef'
 PRODUCT_NAMES=('karthos-backend','karthos-frontend')
@@ -341,7 +341,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
                 by_window[row['id']]=(row['export'].get('uri'),evidence)
     rows=[]
-    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in REPAIR_SCHEDULES else 6
+    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION) else 6
     def add(claim,verdict,reference,artifacts):
         rows.append(dict(claim=claim,verdict=verdict,reference=reference,artifacts=artifacts))
     local=(ctx.manifest.get('local_contract_evidence') or {}).get('checks',{})
@@ -371,11 +371,12 @@ def claim_matrix(ctx,windows,history,readiness_report):
         'bounded GKE checkout replacement with independently observed before and after inventories',
         [history['export']['uri']] if history.get('export',{}).get('verified') else [])
     baselines=[(uri,data) for uri,data in by_window.values() if data.get('spec',{}).get('phase')=='baseline']
+    from .thesis_comparison import representative_state
     for claim,reference,extract in (
         ('catalog-contract', '43 pinned names, units, sources and aggregation contracts',
          lambda d: 'pass' if (d.get('coverage',{}).get('contract') or {}).get('valid') else 'insufficient'),
         ('representative-numerical-agreement', 'aligned source and independent measurements; exact API/storage checks reported separately',
-         lambda d: d.get('numerical_agreement',{}).get('state')),
+         lambda d: representative_state(d) if ctx.manifest.get('schedule')==COMPLETION else d.get('numerical_agreement',{}).get('state')),
     ):
         states=[extract(data) for _,data in baselines]
         verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
@@ -392,6 +393,15 @@ def claim_matrix(ctx,windows,history,readiness_report):
                 row.update(verdict='not-applicable',reference='deferred: repair includes Astronomy Istio only; cross-source equivalence requires a fresh Astronomy trace baseline')
             if row['claim'].startswith('clean-rebuild') or row['claim'].startswith('reproducibility'):
                 row.update(verdict='not-applicable',reference='deferred: one fresh repaired cluster cannot establish two-cluster reproducibility',artifacts=[])
+    if ctx.manifest.get('schedule')==COMPLETION:
+        from .thesis_comparison import arbitration_claim
+        rows.append(arbitration_claim(ctx.manifest['matrix'],by_window))
+        comparisons=[row for row in comparisons if not row['claim'].startswith('clean-rebuild')]
+        add('cross-deployment-reproducibility','insufficient',
+            'separate checksum-bound comparison with prior deployment required; no old passes imported',[])
+        add('host-lifecycle-exact-alignment','insufficient',
+            'exact kernel read/cache-version alignment unavailable; catalog visibility and bounded lifecycle/history observation lag are separate descriptive evidence',
+            [uri for uri,_ in baselines if uri])
     rows.extend(comparisons)
     return dict(protocol=ctx.manifest.get('schedule',THESIS),
                 local_contract_protocol=(ctx.manifest.get('local_contract_evidence') or {}).get('protocol'),

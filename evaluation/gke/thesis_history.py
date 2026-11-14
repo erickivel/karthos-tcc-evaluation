@@ -7,7 +7,7 @@ import re
 from . import export
 from .consumer import capture_consumer
 from .diagnostics.restarts import observe_restart,restart_target
-from .models import THESIS_HISTORY_SECONDS,read
+from .models import THESIS_HISTORY_SECONDS,RECOVERABLE_SCHEDULES,read
 from .thesis import replica_inventory,score_history
 from ..consumers.api_only import APIConsumer
 from ..protocol import source_id
@@ -24,7 +24,7 @@ def capture(ctx,cell,spec):
     monotonic_start=time.monotonic()
     monotonic_end=monotonic_start+(operation_end-started)
     relative='thesis-history'
-    if ctx.manifest.get('schedule') == 'thesis-qualification-v4':
+    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
         attempt_id=spec.get('id')
         if not isinstance(attempt_id,str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,180}',attempt_id):
             raise ValueError('bounded history attempt identity required')

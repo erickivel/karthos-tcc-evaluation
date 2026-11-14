@@ -2,7 +2,7 @@
 from __future__ import annotations
 import contextlib,fcntl,hashlib,json,os,re,subprocess,tempfile,time,uuid
 from pathlib import Path
-from .models import REPAIR_V2,identifier,read,sha
+from .models import CAPTURE_V2_SCHEDULES,REPAIR_V2,identifier,read,sha
 from .cloud_identity import command_environment,sanitized_error
 
 LIMIT=5*1024**3
@@ -59,7 +59,7 @@ def download(root,manifest_path,run_id,object_uri,destination,*,executor=subproc
     """Reserve one known immutable object before download; no recursive or raw reads."""
     if os.environ.get('GKE_EVAL_BOOTSTRAP_CONTEXT'):raise ValueError('optional download is operator-only; controller readbacks remain separate')
     run_id=identifier(run_id);manifest=read(manifest_path);config=manifest['config']
-    if manifest.get('schedule')!=REPAIR_V2 or manifest.get('id')!=run_id:
+    if manifest.get('schedule') not in CAPTURE_V2_SCHEDULES or manifest.get('id')!=run_id:
         raise ValueError('optional download requires the exact current v2 run manifest')
     limit=config.get('limits',{}).get('optional_local_download_bytes')
     if type(limit) is not int or limit!=LIMIT:raise ValueError('v2 optional downloads require the configured5 GiB cap')

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import json,subprocess
 from pathlib import Path
-from .models import read,write,sha
+from .models import CAPTURE_V2_SCHEDULES, read,write,sha
 from .render import transform
 from ..manifests import demo_values
 
@@ -24,7 +24,7 @@ def previews(root,destination,baseline,config,lock,run_id,*,executor=subprocess.
         values=historical/'karthos-values.yaml'
         if product_snapshot is not None:
             values=destination/(cell+'-generated-values.yaml')
-            command=plan_command(historical/'profile.json',values,destination/(cell+'-resolved-plan.json'),chart,thesis=True,servicegraph_store_max_items=config.get('servicegraph_store_max_items') if schedule=='thesis-repair-validation-v2' else None)
+            command=plan_command(historical/'profile.json',values,destination/(cell+'-resolved-plan.json'),chart,thesis=True,servicegraph_store_max_items=config.get('servicegraph_store_max_items') if schedule in CAPTURE_V2_SCHEDULES else None)
             status['commands'].append(command)
             try:
                 result=executor(command,cwd=product_snapshot,capture_output=True,text=True,timeout=120)

@@ -11,8 +11,10 @@ THESIS_V3='thesis-qualification-v3'
 THESIS='thesis-qualification-v4'
 REPAIR='thesis-repair-validation-v1'
 REPAIR_V2='thesis-repair-validation-v2'
+COMPLETION='thesis-completion-v1'
+CAPTURE_V2_SCHEDULES=(REPAIR_V2,COMPLETION)
 REPAIR_SCHEDULES=(REPAIR,REPAIR_V2)
-RECOVERABLE_SCHEDULES=(THESIS,*REPAIR_SCHEDULES)
+RECOVERABLE_SCHEDULES=(THESIS,*REPAIR_SCHEDULES,COMPLETION)
 THESIS_SCHEDULES=(THESIS_V2,THESIS_V3,*RECOVERABLE_SCHEDULES)
 THESIS_HISTORY_SECONDS=720
 PHASES=('smoke','baseline','resource','arbitration','restart')
@@ -44,6 +46,31 @@ def validate_config(c):
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
+    if schedule==COMPLETION:
+        expected={'id':COMPLETION,'repetitions':1,'rebuild_cluster':False,
+                  'cluster_cell_order':[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh']],
+                  'history_observation_seconds':720,'arbitration_seconds':60,'export_horizon_version':'recorded-horizon-v1',
+                  'baseline_rate':2,'smoke_seconds':60,'baseline_seconds':300,'diagnostic_seconds':300,
+                  'clock_bound_seconds':0.25,'preroll_seconds':60,'drain_seconds':90,'quiet_timeout_seconds':90,
+                  'generators':['k6'],'measured_generators':['k6'],'readiness_definition_version':4,
+                  'readiness_cases':0,'readiness_load_seconds':0,'capture_finalization_version':2,
+                  'servicegraph_store_max_items':10000,'resource_scenarios':[],'restart_scenarios':[],
+                  'arbitration_scenarios':['both-sources','replanned-trace'],
+                  'attempt_policy':{'maximum_attempts':2,'numerical_disagreement_retry':False,'baseline_requires_passing_smoke':False}}
+        if any(type(p.get(k)) is not type(v) or p.get(k)!=v for k,v in expected.items()):
+            raise ValueError('completion requires the reviewed ten-window contract')
+        rows=[]
+        for cell in p['cluster_cell_order'][0]:
+            demo,source=cell.split('-',1)
+            for phase in ('smoke','baseline'):
+                rows.append(dict(id='completion-'+phase+'-'+cell,repeat=1,phase=phase,cell=cell,
+                    demo=demo,source=source,generator='k6',scenario='matched',duration_seconds=p[phase+'_seconds'],
+                    rate=2,execution='serial',history_observation=cell=='boutique-mesh' and phase=='baseline'))
+        for scenario,source in [('both-sources','mesh'),('replanned-trace','trace')]:
+            rows.append(dict(id='completion-arbitration-'+scenario,repeat=1,phase='arbitration',cell='boutique-'+source,
+                demo='boutique',source=source,generator='k6',scenario=scenario,duration_seconds=60,rate=2,
+                execution='serial',history_observation=False))
+        return rows
     if schedule==REPAIR_V2:
         expected={'id':REPAIR_V2,'repetitions':1,'rebuild_cluster':False,'history_observation_seconds':0,
                   'origin_protocol':REPAIR,'origin_run_id':'thesis-repair-09a2330-20261113',
@@ -185,7 +212,7 @@ def classify_readiness(c,artifact_checks):
 
 def validate_v2_inputs(manifest,run_id):
     """Active runner fields and a current-epoch quarantine target, never history."""
-    if manifest.get('schedule')!=REPAIR_V2:return
+    if manifest.get('schedule') not in CAPTURE_V2_SCHEDULES:return
     config=manifest['config']
     if type(config.get('limits',{}).get('optional_local_download_bytes')) is not int or config['limits']['optional_local_download_bytes']!=5*1024**3:
         raise ValueError('v2 requires the explicit5 GiB optional local download cap')

@@ -26,6 +26,8 @@ def save_summary(path,report):
             'evidence':{'valid':report.get('evidence',{}).get('valid')},
             'manifest':{k:report.get('manifest',{}).get(k) for k in ('namespace','source_id')},
             'source_selection':report.get('source_selection',{}),
+            'arbitration_transition':report.get('arbitration_transition') or (read(path/'setup-arbitration-transition.json') if (path/'setup-arbitration-transition.json').is_file() else None),
+            'evidence_horizon':report.get('evidence_horizon',{}),
             'families':report.get('families') or family_summaries(report),
             'numerical_agreement':{'state':report.get('numerical_agreement',{}).get('state')},
             'coverage':{'contract':{'valid':(report.get('coverage',{}).get('contract') or {}).get('valid')}},
@@ -86,6 +88,8 @@ def family_summaries(report):
         families[family]=_family([check for check in resource_checks if str(check.get('metric',check.get('observed',{}).get('metric',''))).startswith(prefixes)],'selected '+family+' comparisons; absence stays insufficient')
     for family,metric in (('traffic_count_comparison','servicegraph.request.count'),('traffic_error_comparison','servicegraph.request.error.count'),('traffic_duration_comparison','servicegraph.request.duration')):
         families[family]=_family([check.get('independent_comparison',{}) for check in selected.get(metric,{}).get('checks',[])],'source/store numerical comparison under retained boundaries; no exact call-population claim')
+    families['evidence_horizon']=_family([report.get('evidence_horizon',{})],'recorded evidence horizon and exact quiet endpoint coverage; fixed-window parity separate')
+    families['settled_traffic_duration']=_family([report.get('settled_duration_diagnostics',{}).get('native_settled_to_declared_drain_export',{})],'matched settled histogram population inside recorded export horizon')
     timing=traffic.get('required_evidence',{})
     families['timing_validity']=_family([{'state':'pass' if timing.get('valid') is True else 'insufficient'}],
         'existing required recorder, identity, clock, availability, quiet partition and interval parity evidence')

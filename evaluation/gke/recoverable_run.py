@@ -7,7 +7,7 @@ import shutil
 import time
 import traceback
 from pathlib import Path
-from .models import canonical_sha, read, sha, write, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
+from .models import canonical_sha, read, sha, write, COMPLETION, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
 
 
 class SafetyFailure(RuntimeError):
@@ -62,9 +62,11 @@ def validate_launch(ctx):
     validate_cost(ctx)
     from .models import validate_v2_inputs
     validate_v2_inputs(ctx.manifest,ctx.run_id)
-    if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
+    if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION):
         from .repair import validate_budget
         validate_budget(ctx.manifest)
+    if ctx.manifest.get('schedule')==COMPLETION and ctx.config.get('execution_segment','all')!='all':
+        raise ValueError('completion requires all ten windows')
     study=ctx.manifest.get('study_budget',{})
     if ctx.config.get('execution_segment','all')!='all':
         allocations=study.get('launch_allocations_usd',{})

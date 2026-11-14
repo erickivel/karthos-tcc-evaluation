@@ -119,7 +119,7 @@ def quiet_counter(cell,path,phase):
                 if remaining<=0:break
                 sleep_bounded(min(interval or 5,remaining))
     except Exception as exc:result['error']=str(exc)
-    result.update(elapsed_seconds=time.monotonic()-began,finished_at=r.utc())
+    result.update(elapsed_seconds=time.monotonic()-began,finished_at=r.utc(),completed_at_epoch=time.time())
     r.write(path/f'quiet-{phase}.json',result)
     return result
 

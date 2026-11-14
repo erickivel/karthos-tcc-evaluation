@@ -33,7 +33,7 @@ def analyse(root,run_id,analysis_id):
         result['verifier_version']='thesis-qualification-v3-analysis-1'
     if any(w.get('protocol')=='thesis-qualification-v4' for w in windows):
         result['verifier_version']='thesis-qualification-v4-analysis-1'
-    if run.get('protocol') in ('thesis-repair-validation-v1','thesis-repair-validation-v2'):result['verifier_version']=run['protocol']+'-analysis-1'
+    if run.get('protocol') in ('thesis-repair-validation-v1','thesis-repair-validation-v2','thesis-completion-v1'):result['verifier_version']=run['protocol']+'-analysis-1'
     result['coverage_schema_version']='metric-window-coverage-v1'
     coverage_rows=[]
     for window in windows:

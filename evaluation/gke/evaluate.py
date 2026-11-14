@@ -142,7 +142,10 @@ def capture_extended(ctx,cell,path,start,end):
     else:
         expression='|'.join(re.escape(name.replace('.','_'))+'(_sum|_count|_bucket)?' for name in names)
         selector='{__name__=~"'+expression+'"}'
-        params={'match[]':selector,'start':_iso(_time(start)-60),'end':_iso(_time(end)+90)}
+        from .. import export_horizon
+        horizon=export_horizon.resolve(path,start,end)
+        ctx.write(root/'vm-export-horizon.json',horizon)
+        params={'match[]':selector,'start':export_horizon.iso(horizon['export_start_epoch']),'end':export_horizon.iso(horizon['export_end_epoch'])}
         ctx.write(root/'vm-export-request.json',params)
         try:
             with r.forward('service/'+candidates[0],'karthos-system',28929,8428) as base:
@@ -155,7 +158,9 @@ def capture_extended(ctx,cell,path,start,end):
                         if line.strip():json.loads(line)
                     return text
                 raw=request('VM raw export',export)
-                if raw is not None:ctx.write(root/'vm-raw.ndjson',raw)
+                if raw is not None:
+                    ctx.write(root/'vm-raw.ndjson',raw)
+                    ctx.write(root/'vm-export-coverage.json',export_horizon.coverage(path,raw,horizon))
                 from . import parity
                 parity_report=request('selected API/storage parity',lambda:parity.capture(ctx,root,base,status['accuracy_selected'],deployed_plan.get('metric_assignments',{}),start,end))
                 if parity_report is not None:ctx.write(root/'parity/manifest.json',parity_report)
@@ -712,9 +717,24 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2','thesis-completion-v1':'thesis-completion-v1.0'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
+    horizon_receipts={name:_read(path/relative) for name,relative in (
+        ('ordinary','vm-export-coverage.json'),('extended','extended/vm-export-coverage.json'))}
+    report['evidence_horizon']={'state':'pass' if all(row.get('state')=='pass' for row in horizon_receipts.values()) else 'insufficient',
+        'receipts':horizon_receipts,'scope':'raw export evidence only; fixed workload queries and numerical tolerances unchanged'}
+    if ctx.manifest.get('schedule')=='thesis-completion-v1':
+        from .accuracy_reanalysis import settled_mesh_duration
+        names=[name for name in ('istio-samples.ndjson','istio-samples.ndjson.gz','vm-raw.ndjson','vm-raw.ndjson.gz') if (path/name).is_file()]
+        report['settled_duration_diagnostics']=settled_mesh_duration(traffic,verification,names,
+            lambda name:_read(path/name),lambda name:iter_records(path/name),ctx.manifest.get('thresholds',{}))
+        # A complete histogram comparison cannot substitute for absent required quiet endpoints.
+        report['settled_duration_diagnostics']['export_coverage']=report['evidence_horizon']['state']
+        if report['evidence_horizon']['state']!='pass':
+            diagnostic=report['settled_duration_diagnostics'].get('native_settled_to_declared_drain_export')
+            if diagnostic and diagnostic.get('state')=='pass':
+                diagnostic.update(state='insufficient',reason='recorded quiet endpoints absent from one or more required exports')
     accuracy=[]
     for metric in selected:
         name=metric['name']

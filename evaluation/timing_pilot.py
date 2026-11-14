@@ -113,7 +113,7 @@ def export_intervals(cell,path,manifest):
  for name,(start,end) in intervals.items():
   dest=path/'intervals'/name;dest.mkdir(parents=True,exist_ok=False)
   seconds=round((parse_time(end)-parse_time(start)).total_seconds())
-  pilot.export_window(cell,dest,start,end,seconds)
+  pilot.export_window(cell,dest,start,end,seconds,evidence_path=path)
   export_parity(cell,dest,start,end,seconds)
   r.write(dest/'interval.json',dict(start=start,end=end,bounds='[start,end)',query_seconds=seconds))
   # Exact query verification uses the same compiler and both directions of series matching.
@@ -201,6 +201,7 @@ def run_window(cell,parent,spec,study,*,measure=None):
   manifest['phase']='drain';r.write(path/'manifest.json',manifest)
   with measure('drain'):
    pilot.sleep_bounded(r.CONFIG['telemetry_drain_seconds'])
+   manifest.setdefault('phase_boundaries',{})['drain_completed_at']=time.time()
    after=quiet_counter(cell,path,'after')
   if not after.get('stable'):raise RuntimeError('fresh post-load counter stability unavailable')
  except BaseException as exc:
@@ -209,6 +210,7 @@ def run_window(cell,parent,spec,study,*,measure=None):
   # Availability must stop before instrumentation restoration removes files.
   with measure('capture-archive-and-restore'):
    manifest.update(stop_captures(availability,capture))
+   manifest.setdefault('phase_boundaries',{})['capture_finalized_at']=time.time()
   saved=r._DEADLINE;r._DEADLINE=time.monotonic()+45
   try:pilot.cleanup_generator(job['metadata']['name'],cell.namespace,path,verified)
   except Exception as exc:r.write(path/'generator-cleanup.error',str(exc))

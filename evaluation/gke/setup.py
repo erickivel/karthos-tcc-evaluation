@@ -2,7 +2,7 @@
 from __future__ import annotations
 import contextlib,hashlib,json,os,shlex,subprocess,time,shutil
 from pathlib import Path
-from .models import read,write,sha
+from .models import CAPTURE_V2_SCHEDULES, read,write,sha
 from .render import transform
 
 SLOT='evaluation.karthos.dev/slot'
@@ -49,7 +49,7 @@ def post_renderer(ctx,mode):
 def legacy_context(ctx):
     """Single-controller adapter; all workers share one explicit immutable target."""
     from .. import runner as r
-    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+    if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:
         from .models import validate_v2_inputs
         validate_v2_inputs(ctx.manifest,ctx.run_id)
     from .. import semantics_pilot as sp
@@ -60,7 +60,7 @@ def legacy_context(ctx):
     r.CONFIG=dict(ctx.manifest['baseline_config'],expected_nodes=3,study_deadline_seconds=43200,artifact_recovery_seconds=1800,artifact_recovery_deadline_policy='within reserved cloud deadline',validated_product_revision=ctx.manifest['product_pins']['karthos_revision'])
     from .models import THESIS_SCHEDULES
     r.CONFIG['thesis_metric_contract']=ctx.manifest.get('schedule') in THESIS_SCHEDULES
-    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+    if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:
         for key in ('capture_finalization_version','servicegraph_store_max_items'):
             r.CONFIG[key]=ctx.config[key]
     r.CONFIG['kubelet_transport']='private-kubernetes-proxy'
@@ -116,7 +116,7 @@ def stage(ctx):
     for name,key in [('boutique','boutique_source_hash'),('opentelemetry-demo','astronomy_chart_hash'),('karthos-chart','karthos_chart_hash')]:
         p=ctx.root/'cache'/name
         if not p.is_dir() or tree_digest(p,exclude={'.git'})!=ctx.manifest['product_pins'][key]:raise ValueError('pinned chart/source cache missing or changed: '+name)
-    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+    if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:
         from .quarantine import probe_access
         receipt=probe_access(ctx,ctx.work/'quarantine-probe')
         ctx.write(ctx.result/'infrastructure/quarantine-access-probe.json',receipt)
@@ -170,19 +170,19 @@ def deploy_karthos(ctx,cell,path):
     from .models import THESIS_SCHEDULES
     ctx.command(plan_command(profile,values,resolved,r.CACHE/'karthos-chart',
                              thesis=ctx.manifest.get('schedule') in THESIS_SCHEDULES,
-                             servicegraph_store_max_items=ctx.config.get('servicegraph_store_max_items') if ctx.manifest.get('schedule')=='thesis-repair-validation-v2' else None),cwd=r.REPO,timeout=600)
+                             servicegraph_store_max_items=ctx.config.get('servicegraph_store_max_items') if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES else None),cwd=r.REPO,timeout=600)
     if ctx.manifest.get('schedule') in THESIS_SCHEDULES:
         # The archived values contain the effective connector configuration.
         # Legacy epochs preserve defaults; v2 explicitly overrides capacity and verifies effective settings.
         write(path/'generated-collector-contract.json',{'product_revision':ctx.manifest['product_pins']['karthos_revision'],
-            'connector_policy':'explicit reviewed v2 override' if ctx.manifest.get('schedule')=='thesis-repair-validation-v2' else 'product-generated defaults','values_sha256':sha(values),
+            'connector_policy':'explicit reviewed v2 override' if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES else 'product-generated defaults','values_sha256':sha(values),
             'source_plan_sha256':sha(resolved)})
     if selected_source(read(resolved))!=source_id(cell.source):raise ValueError('discovery selected wrong source')
     # Post-renderer maps the generated default product repository/tag to the frozen product digest.
     ctx.command(['helm','upgrade','--install','karthos',str(r.CACHE/'karthos-chart'),'-n','karthos-system','--create-namespace','--kubeconfig',str(ctx.kubeconfig),'-f',str(values),'--post-renderer',str(post_renderer(ctx,'karthos')),'--wait','--timeout','12m'],timeout=900)
     for resource in ['deployment/karthos-backend','daemonset/karthos-agent','deployment/karthos-gateway']:ctx.kube('rollout','status',resource,'-n','karthos-system','--timeout=300s',timeout=330)
     write(path/'locked-image-ids.json',{'demo':running_image_inventory(ctx.json('get','pods','-n',cell.namespace)),'karthos':running_image_inventory(ctx.json('get','pods','-n','karthos-system'))})
-    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+    if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:
         verify_effective_settings(ctx,path,values,trace=cell.source=='trace')
         verify_image_inventory(ctx,path,ctx.json('get','pods','-n',cell.namespace),name='demo-running-image-verification.json')
 

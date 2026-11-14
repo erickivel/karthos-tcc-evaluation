@@ -167,7 +167,7 @@ def install_scripts(cell) -> None:
             'data': data})
 
 
-def export_window(cell, path: Path, start: str, end: str, seconds: int) -> None:
+def export_window(cell, path: Path, start: str, end: str, seconds: int, *, evidence_path=None) -> None:
     import urllib.parse
     for ns, prefix in ((cell.namespace, 'k8s'), (r.KARTHOS_NAMESPACE, 'karthos')):
         for kind in ('pods', 'services', 'events'):
@@ -184,12 +184,16 @@ def export_window(cell, path: Path, start: str, end: str, seconds: int) -> None:
             with r.forward(f'service/{vm}', r.KARTHOS_NAMESPACE, 18428, 8428) as base:
                 names='|'.join(name.replace('.','_') for name in container_metrics(r.CONFIG.get('thesis_metric_contract',False)))
                 selector = '{__name__=~"servicegraph_request_.*|'+names+'"}'
-                from .verify import parse_time
+                from . import export_horizon
+                horizon = export_horizon.resolve(evidence_path or path, start, end)
+                r.write(path/'vm-export-horizon.json', horizon)
                 query = urllib.parse.urlencode({'match[]': selector,
-                    'start': (parse_time(start)-timedelta(seconds=60)).isoformat(),
-                    'end': (parse_time(end)+timedelta(seconds=90)).isoformat()})
+                    'start': export_horizon.iso(horizon['export_start_epoch']),
+                    'end': export_horizon.iso(horizon['export_end_epoch'])})
                 with r.urllib.request.urlopen(base + '/api/v1/export?' + query, timeout=r.http_timeout(15)) as response:
-                    r.write(path / 'vm-raw.ndjson', response.read().decode())
+                    raw = response.read().decode()
+                    r.write(path / 'vm-raw.ndjson', raw)
+                    r.write(path/'vm-export-coverage.json', export_horizon.coverage(evidence_path or path, raw, horizon))
         except Exception as exc:
             r.write(path / 'vm-raw.error', str(exc))
     else:

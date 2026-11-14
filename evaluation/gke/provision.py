@@ -4,7 +4,7 @@ All state/plan/tfvars bytes stay in private ctx.work. Events contain only phase
 and coarse counts. This module never creates a project or billing account.
 """
 from __future__ import annotations
-from .models import RECOVERABLE_SCHEDULES
+from .models import CAPTURE_V2_SCHEDULES, RECOVERABLE_SCHEDULES
 import hashlib,json,os,re,shutil,time,uuid
 from pathlib import Path
 from datetime import datetime,timezone
@@ -121,7 +121,7 @@ def refuse_foreign_controller(ctx):
 def live_preflight(ctx):
     require_context(ctx)
     config=ctx.config;g=config['gcp'];project=g['project_id']
-    if ctx.manifest.get('schedule')=='thesis-repair-validation-v2':
+    if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:
         from .cloud_identity import principal_preflight
         ctx.write(ctx.work/'principal-preflight.json',principal_preflight(ctx))
     if not project or not g.get('billing_account_id'):
@@ -301,7 +301,7 @@ def reuse_foundation(ctx):
         raise ValueError('invalid explicit foundation prefix/lineage')
     if ref.get('source_files')!=foundation_source_hashes(ctx):raise ValueError('foundation source differs from prepared reference')
     expected=ref.get('expected_outputs',{})
-    required=OUTPUTS['foundation'] if ctx.manifest.get('schedule')=='thesis-repair-validation-v2' else OUTPUTS['foundation']-{'quarantine_bucket'}
+    required=OUTPUTS['foundation'] if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES else OUTPUTS['foundation']-{'quarantine_bucket'}
     if not required<=set(expected) or set(expected)-OUTPUTS['foundation'] or expected.get('state_bucket')!=bucket:
         raise ValueError('complete foundation output identity required')
     members=doc(ctx,['gcloud','storage','buckets','list','--project='+g['project_id'],'--format=json'])
@@ -318,7 +318,7 @@ def reuse_foundation(ctx):
     if result.returncode!=0:raise ValueError('foundation reuse rejected: plan has changes or failed; inspect private plan output')
     raw=doc(ctx,['terraform','-chdir='+str(directory),'output','-json'])
     outputs={key:item['value'] for key,item in raw.items() if key in OUTPUTS['foundation'] and not item.get('sensitive')}
-    if {k:outputs.get(k) for k in expected}!=expected or (ctx.manifest.get('schedule')=='thesis-repair-validation-v2' and 'quarantine_bucket' not in outputs):raise ValueError('foundation output identity mismatch')
+    if {k:outputs.get(k) for k in expected}!=expected or (ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES and 'quarantine_bucket' not in outputs):raise ValueError('foundation output identity mismatch')
     ctx.state.setdefault('terraform',{})['foundation']=outputs
     ctx.state.setdefault('tfvars',{})['foundation']=variables
     ctx.event('foundation-reused',foundation_lineage=ref['lineage'],foundation_prefix=ref['prefix'])

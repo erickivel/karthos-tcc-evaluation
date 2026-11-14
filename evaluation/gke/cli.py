@@ -2,15 +2,16 @@
 from __future__ import annotations
 import argparse,json,os,sys,signal
 from pathlib import Path
-from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS,REPAIR,REPAIR_V2
+from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS,REPAIR,REPAIR_V2,COMPLETION
 from .context import LiveContext
 
 
 def parser():
     p=argparse.ArgumentParser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
-    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2),default=THESIS)
+    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2,COMPLETION),default=COMPLETION)
     prep.add_argument('--origin-report',type=Path);prep.add_argument('--origin-seal',type=Path);prep.add_argument('--origin-uri')
     prep.add_argument('--continuation-dir',type=Path);prep.add_argument('--continuation-receipt',type=Path)
+    comparison=sub.add_parser('compare-deployments');comparison.add_argument('--left',type=Path,required=True);comparison.add_argument('--right',type=Path,required=True);comparison.add_argument('--left-sha256',required=True);comparison.add_argument('--right-sha256',required=True)
     analysis=sub.add_parser('analyse');analysis.add_argument('--run-id',required=True);analysis.add_argument('--analysis-id',required=True)
     for name in ['provision','run','runtime']:
         q=sub.add_parser(name);q.add_argument('--manifest',required=True);q.add_argument('--run-id')
@@ -22,6 +23,9 @@ def parser():
 
 def dispatch(a,root):
     root=Path(root)
+    if a.command=='compare-deployments':
+        from .thesis_comparison import compare_deployments
+        return compare_deployments(a.left,a.right,left_sha256=a.left_sha256,right_sha256=a.right_sha256)
     if a.command=='analyse':
         from .analysis import analyse
         return analyse(root,a.run_id,a.analysis_id)
