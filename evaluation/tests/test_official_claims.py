@@ -74,6 +74,7 @@ class OfficialClaimTests(unittest.TestCase):
             {'repeat':2,'resources':[{'kind':'cluster','uid':'two'}]}]}
         rows={r['claim']:r for r in thesis.claim_matrix(ctx,[],None,None)['claims']}
         self.assertEqual(rows['fresh-cluster-identities']['verdict'],'pass')
+        self.assertEqual(rows['fresh-cluster-identities']['artifacts'],['progress.ndjson#phase-cluster-established'])
 
     def test_strict_comparison_requires_duration_and_error_evidence(self):
         from unittest.mock import patch

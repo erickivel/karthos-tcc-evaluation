@@ -416,7 +416,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
         available=all(len(value)==1 for value in identities.values())
         verdict=('pass' if identities[1]!=identities[2] else 'fail') if available else 'insufficient'
         add('fresh-cluster-identities',verdict,'provider UIDs from independently established cluster lifetimes',
-            ['state.json#/evaluation_cluster_instances'])
+            ['progress.ndjson#phase-cluster-established'])
         rows[-1]['observed']={str(k):sorted(v) for k,v in identities.items()}
     rows.extend(comparisons)
     return dict(protocol=ctx.manifest.get('schedule',THESIS),
