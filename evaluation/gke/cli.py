@@ -2,13 +2,18 @@
 from __future__ import annotations
 import argparse,json,os,sys,signal
 from pathlib import Path
-from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS,REPAIR,REPAIR_V2,COMPLETION
+from .models import read,sha,identifier,QUALIFICATION,REHEARSAL,THESIS,REPAIR,REPAIR_V2,COMPLETION,COMPLETION_V2
 from .context import LiveContext
 
 
 def parser():
     p=argparse.ArgumentParser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
-    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2,COMPLETION),default=COMPLETION)
+    build=sub.add_parser('build',help='Build pinned evaluation artifacts from an exact commit; never provisions cloud resources')
+    build.add_argument('--revision',required=True);build.add_argument('--destination',required=True,type=Path)
+    build.add_argument('--repository',type=Path);build.add_argument('--toolchain',type=Path)
+    build.add_argument('--product-repository',help='Authorized source URL or local committed checkout; pinned product SHA and hash still required')
+    build.add_argument('--image-prefix',default='karthos-eval');build.add_argument('--build-images',action='store_true')
+    prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.completion-v2.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2,COMPLETION,COMPLETION_V2),default=COMPLETION_V2)
     prep.add_argument('--origin-report',type=Path);prep.add_argument('--origin-seal',type=Path);prep.add_argument('--origin-uri')
     prep.add_argument('--continuation-dir',type=Path);prep.add_argument('--continuation-receipt',type=Path)
     comparison=sub.add_parser('compare-deployments');comparison.add_argument('--left',type=Path,required=True);comparison.add_argument('--right',type=Path,required=True);comparison.add_argument('--left-sha256',required=True);comparison.add_argument('--right-sha256',required=True)
@@ -23,6 +28,9 @@ def parser():
 
 def dispatch(a,root):
     root=Path(root)
+    if a.command=='build':
+        from .commit_build import build_from_commit
+        return build_from_commit(a.repository or root,a.revision,a.destination,toolchain=a.toolchain,build_images=a.build_images,image_prefix=a.image_prefix,product_repository=a.product_repository)
     if a.command=='compare-deployments':
         from .thesis_comparison import compare_deployments
         return compare_deployments(a.left,a.right,left_sha256=a.left_sha256,right_sha256=a.right_sha256)

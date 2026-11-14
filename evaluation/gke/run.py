@@ -176,13 +176,14 @@ def execute_matrix(ctx,driver,*,gate=None):
         report['qualified']=False
     report['last_completed_phase']=last_completed(ctx.result/'phase-timings.ndjson')
     if schedule in THESIS_SCHEDULES:
-        from .thesis import claim_matrix
+        from .thesis import claim_matrix, required_claims_confirmed
+        from .models import COMPLETION_V2
         report['protocol']=schedule
         report['history']=history
         claim_report=claim_matrix(ctx,records,history,readiness_report)
         ctx.write(ctx.result/'claim-matrix.json',claim_report)
         report['claim_matrix']='claim-matrix.json'
-        report['qualified']=not readiness_only and complete and all(row['verdict']=='pass' for row in claim_report['claims'])
+        report['qualified']=not readiness_only and complete and (required_claims_confirmed(claim_report) if schedule==COMPLETION_V2 else all(row['verdict']=='pass' for row in claim_report['claims']))
     if readiness_report is not None:
         report['readiness']=readiness_report
     if verification is not None:

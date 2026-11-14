@@ -7,7 +7,7 @@ import shutil
 import time
 import traceback
 from pathlib import Path
-from .models import canonical_sha, read, sha, write, COMPLETION, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
+from .models import canonical_sha, read, sha, write, COMPLETION, COMPLETION_V2, COMPLETION_SCHEDULES, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
 
 
 class SafetyFailure(RuntimeError):
@@ -62,11 +62,11 @@ def validate_launch(ctx):
     validate_cost(ctx)
     from .models import validate_v2_inputs
     validate_v2_inputs(ctx.manifest,ctx.run_id)
-    if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION):
+    if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,*COMPLETION_SCHEDULES):
         from .repair import validate_budget
         validate_budget(ctx.manifest)
-    if ctx.manifest.get('schedule')==COMPLETION and ctx.config.get('execution_segment','all')!='all':
-        raise ValueError('completion requires all ten windows')
+    if ctx.manifest.get('schedule') in COMPLETION_SCHEDULES and ctx.config.get('execution_segment','all')!='all':
+        raise ValueError('completion requires the entire frozen matrix')
     study=ctx.manifest.get('study_budget',{})
     if ctx.config.get('execution_segment','all')!='all':
         allocations=study.get('launch_allocations_usd',{})
@@ -445,7 +445,7 @@ def execute(ctx,driver):
     for spec in matrix:
         if spec['id'] not in accounted:records.append({'id':spec['id'],'state':'unattempted','execution':'unattempted','evidence_valid':False,'reason':failure or ('deferred to explicit diagnostic continuation' if ctx.config.get('execution_segment')=='thesis' and spec['phase'] not in ('smoke','baseline') else 'dependent work unavailable'),'attempts':[]})
     export.render_matrix(ctx.result,matrix,records)
-    from .thesis import claim_matrix
+    from .thesis import claim_matrix, required_claims_confirmed
     latest_readiness={}
     for item in readiness:latest_readiness[(item.get('repeat'),item.get('cell'))]=item
     readiness_report={'ready':bool(latest_readiness) and all(r.get('usable') for r in latest_readiness.values()),'cells':readiness,'mode':'per-cell-read-only'}
@@ -457,7 +457,7 @@ def execute(ctx,driver):
     report={'protocol':ctx.manifest.get('schedule','thesis-qualification-v4'),'state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
             'planned_windows':len(matrix),'attempted_windows':sum(bool(r.get('attempts')) for r in records),'attempts':sum(len(r.get('attempts',[])) for r in records),
             'records':records,'windows':records,'history':history,'readiness':readiness_report,'failure':failure,'cleanup':cleanup,
-            'qualified':not failure and all(r['state'] not in ('unattempted','blocked') for r in records) and all(r['verdict'] in ('pass','not-applicable') for r in claims['claims']),
+            'qualified':study_complete and required_claims_confirmed(claims) if ctx.manifest.get('schedule')==COMPLETION_V2 else not failure and all(r['state'] not in ('unattempted','blocked') for r in records) and all(r['verdict'] in ('pass','not-applicable') for r in claims['claims']),
             'numerical_disagreement_is_result':True,'temporary_removal_confirmed':False,'claim_matrix':'claim-matrix.json'}
     ctx.write(ctx.result/'run-report.json',report);return report
 

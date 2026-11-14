@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[2]
 class CLITests(unittest.TestCase):
  def test_cli_only_exposes_experiment_operations(self):
   p=parser();commands=next(action for action in p._actions if hasattr(action,'choices') and isinstance(action.choices,dict)).choices
-  self.assertEqual(set(commands),{'prepare','provision','run','runtime','status','export','teardown','analyse','download','compare-deployments'})
+  self.assertEqual(set(commands),{'prepare','provision','run','runtime','status','export','teardown','analyse','download','compare-deployments','build'})
   a=p.parse_args(['provision','--manifest','prepared/manifest.json','--run-id','fixture']);self.assertEqual(a.manifest,'prepared/manifest.json')
  def test_context_uses_manifest_without_an_approval_file(self):
   from evaluation.gke.context import LiveContext

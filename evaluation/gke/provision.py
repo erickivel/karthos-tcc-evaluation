@@ -747,7 +747,9 @@ def create_cluster(ctx,repeat,*,credentials=True):
     else:
         if existing:
             from .teardown import destroy_cluster
-            destroy_cluster(ctx)
+            removed=destroy_cluster(ctx)
+            if removed.get('residual') or removed.get('errors') or removed.get('unresolved_creation_intents'):
+                raise RuntimeError('cluster rebuild blocked: previous cleanup is unresolved')
         elif repeat==2 and not ctx.state.get('cluster_generation'):
             raise ValueError('second generation requires recorded first generation')
         variables=cluster_variables(ctx)
