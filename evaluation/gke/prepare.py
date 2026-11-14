@@ -90,7 +90,7 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COM
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
     root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path),schedule=schedule)
     if schedule in (COMPLETION,COMPLETION_V2) and config.get('execution_segment','all')!='all':
-        raise ValueError('completion requires all ten windows, not an inherited split segment')
+        raise ValueError('completion requires its entire frozen matrix, not an inherited split segment')
     protocol=read(root/'protocols'/schedule/'protocol.yaml');matrix=build_matrix(protocol,schedule=schedule)
     dest=root/'build/gke/prepared'/preparation_id
     if dest.exists():raise FileExistsError('prepared experiment already exists; choose a new ID')
