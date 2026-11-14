@@ -216,9 +216,21 @@ class KindCapture:
         manifest=stage/'protocol-prelude.yaml';manifest.write_text(rendered)
         self.run([*self.kube,'create','-f',str(manifest)],str(stage.relative_to(self.out)/'protocol-prelude-create.log'))
         try:
-            logs=self.run([*self.kube,'logs','-f','-n','karthos-demo','job/mesh-protocol-client',
-                '-c','mesh-protocol-client','--pod-running-timeout=90s'],
-                str(stage.relative_to(self.out)/'protocol-prelude-logs.log'),timeout=120)
+            deadline=time.monotonic()+120;attempt=0
+            while True:
+                attempt+=1;remaining=deadline-time.monotonic()
+                if remaining<=0:raise TimeoutError('protocol setup log deadline reached')
+                relative=stage.relative_to(self.out)/f'protocol-prelude-logs-{attempt:03d}.log'
+                try:
+                    logs=self.run([*self.kube,'logs','-f','-n','karthos-demo','job/mesh-protocol-client',
+                        '-c','mesh-protocol-client','--pod-running-timeout=5s'],str(relative),timeout=remaining)
+                    break
+                except RuntimeError:
+                    failed=self.out/relative
+                    message=failed.read_text() if failed.is_file() else ''
+                    if not ('waiting to start' in message and any(x in message for x in ('PodInitializing','ContainerCreating'))):raise
+                    time.sleep(min(2,max(0,deadline-time.monotonic())))
+            shutil.copy2(logs,stage/'protocol-prelude-logs.log')
             if 'MEASURED_TRAFFIC_COMPLETE' not in logs.read_text():
                 raise ValueError('protocol setup traffic did not complete')
         finally:

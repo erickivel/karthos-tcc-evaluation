@@ -6,6 +6,27 @@ from unittest.mock import patch
 from evaluation.gke import local_kind_qualification as q
 
 class LocalKindTests(unittest.TestCase):
+    def test_protocol_prelude_waits_for_initializing_container_logs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            capture=self.capture(Path(folder));capture.out.mkdir();stage=capture.out/'mesh';stage.mkdir()
+            fixture=capture.product/'test/e2e/apps/with-istio/mesh-protocol-client-job.yaml'
+            fixture.parent.mkdir(parents=True);fixture.write_text('image: localhost:5001/mesh-protocol-go:latest')
+            capture.kube=['kubectl'];attempts=[]
+            def run(args,log,**kwargs):
+                path=capture.out/log;path.write_text('')
+                if 'logs' in args:
+                    attempts.append(log)
+                    if len(attempts)==1:
+                        path.write_text('container is waiting to start: PodInitializing')
+                        raise RuntimeError('log command failed')
+                    path.write_text('MEASURED_TRAFFIC_COMPLETE\n')
+                return path
+            with patch.object(capture,'run',side_effect=run),patch.object(q.time,'sleep'):
+                capture.protocol_prelude(stage)
+            self.assertEqual(len(attempts),2)
+            self.assertIn('PodInitializing',(capture.out/attempts[0]).read_text())
+            self.assertIn('MEASURED_TRAFFIC_COMPLETE',(stage/'protocol-prelude-logs.log').read_text())
+
     def test_protocol_prelude_uses_pinned_fixture_and_retains_completed_logs(self):
         with tempfile.TemporaryDirectory() as folder:
             capture=self.capture(Path(folder));capture.out.mkdir();stage=capture.out/'mesh';stage.mkdir()
