@@ -51,24 +51,10 @@ def definition():
 
 
 def validate_launch(ctx):
-    from .models import THESIS, build_matrix
     if ctx.manifest.get('schedule') not in RECOVERABLE_SCHEDULES:
         raise ValueError('new launches require the active k6-only thesis protocol; legacy schedules are analysis-only')
-    if ctx.manifest.get('schedule') in RECOVERABLE_SCHEDULES:
-        from .recoverable_run import validate_launch as validate_v4
-        return validate_v4(ctx)
-    expected = build_matrix(ctx.manifest['protocol_definition'], schedule=THESIS)
-    if ctx.manifest.get('matrix') != expected:
-        raise ValueError('active launch requires the exact k6-only measured matrix')
-    if ctx.manifest.get('readiness_check') != definition():
-        raise ValueError('mandatory readiness definition missing or changed; prepare a new launch')
-    from .benchmark import validated_receipt
-    validated_receipt(ctx.manifest.get('readiness_benchmark'))
-    from .models import THESIS
-    if ctx.manifest.get('schedule')==THESIS:
-        from .thesis import local_contract
-        local_contract(ctx.manifest.get('local_contract_evidence'),ctx.manifest['product_pins'])
-    validate_cost(ctx)
+    from .recoverable_run import validate_launch as validate_v4
+    return validate_v4(ctx)
 
 
 def cutoff(ctx):

@@ -130,6 +130,7 @@ class KindCapture:
         existing=subprocess.check_output(['kind','get','clusters'],text=True).splitlines()
         if self.name in existing:raise ValueError('refusing to reuse an existing kind cluster')
         self.out.mkdir(parents=True,exist_ok=False)
+        self.output_created=True
         write(self.out/'product-pin.json',self.pins)
         # Product fixture image and chart scripts may change their working tree.
         # Preserve the immutable build source used by later preparation.
@@ -245,6 +246,8 @@ class KindCapture:
         return {'reference_calls':len(ledger),'observed_calls':account_delta(before,after,source),'before':before,'after':after,'metric_contributions':assigned}
 
     def execute(self):
+        # Ownership belongs to this invocation, including when an object is reused.
+        self.output_created=False
         stages=[];report={'state':'incomplete','scope':'verified business namespace; not default cluster-wide mesh detection'}
         try:
             self.setup()
@@ -298,7 +301,7 @@ class KindCapture:
         except Exception as exc:
             report['error']=str(exc)
         finally:
-            if self.out.exists():
+            if self.output_created:
                 cleanup={'removed':False,'shared_registry_retained':True}
                 try:
                     if self.created:
