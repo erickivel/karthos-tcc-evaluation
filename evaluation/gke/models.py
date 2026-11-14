@@ -44,7 +44,7 @@ def validate_config(c,*,schedule=None):
     if g['region']!='us-central1' or g['zone'] not in ('us-central1-a','us-central1-b'):raise ValueError('frozen region/zone changed')
     expected_gross=200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
     expected_seconds=64800 if schedule==COMPLETION_V2 else 43200
-    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=80 or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
+    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=(90 if schedule==COMPLETION_V2 else 80) or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
         if not re.fullmatch(r'[^\s]+@sha256:[a-f0-9]{64}',str(image)):raise ValueError('extra image lock must contain immutable digests: '+key)
     return c

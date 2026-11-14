@@ -107,7 +107,7 @@ Do not copy another run's `verified` flags without performing those checks. Pres
   --local-evidence /absolute/new/local-contract-evidence/local-contract.json
 ```
 
-Preparation is offline and lists unresolved inputs. Its output is `build/gke/prepared/YOUR_UNIQUE_RUN_ID/manifest.json`. Review the exact pins, 14-window schedule, claim coverage, permissions and full forecast. The approved budget is US$200 combined gross cost, with a US$80 projected launch threshold and 18-hour infrastructure limit. Credits do not reduce gross cost. The two-cluster forecast must fit before launch; a previous one-cluster estimate is insufficient.
+Preparation is offline and lists unresolved inputs. Its output is `build/gke/prepared/YOUR_UNIQUE_RUN_ID/manifest.json`. Review the exact pins, 14-window schedule, claim coverage, permissions and full forecast. The approved budget is US$200 combined gross cost, with a US$90 projected launch threshold and 18-hour infrastructure limit. Credits do not reduce gross cost. The two-cluster forecast must fit before launch; a previous one-cluster estimate is insufficient.
 
 ### 4. Launch and inspect
 

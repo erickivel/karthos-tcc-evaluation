@@ -33,7 +33,7 @@
     "diagnostic_hold_seconds": 1800,
     "gross_limit_usd": 200,
     "infrastructure_seconds": 64800,
-    "launch_ceiling_usd": 80,
+    "launch_ceiling_usd": 90,
     "max_evidence_bytes": 107374182400,
     "optional_local_download_bytes": 5368709120,
     "raw_evidence_retention_days": 90

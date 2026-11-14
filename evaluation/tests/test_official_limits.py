@@ -10,6 +10,16 @@ class OfficialLimitsTests(unittest.TestCase):
   with self.assertRaises(ValueError):models.validate_config(config,schedule=models.COMPLETION)
   config['limits']['infrastructure_seconds']=64801
   with self.assertRaises(ValueError):models.validate_config(config,schedule=models.COMPLETION_V2)
+ def test_official_launch_threshold_is_ninety_only(self):
+  config=models.read(ROOT/'config/gke.completion-v2.example.yaml')
+  self.assertEqual(config['limits']['launch_ceiling_usd'],90)
+  models.validate_config(config,schedule=models.COMPLETION_V2)
+  for invalid in (80,91):
+   candidate=copy.deepcopy(config);candidate['limits']['launch_ceiling_usd']=invalid
+   with self.assertRaises(ValueError):models.validate_config(candidate,schedule=models.COMPLETION_V2)
+  legacy=models.read(ROOT/'config/gke.example.yaml')
+  self.assertEqual(legacy['limits']['launch_ceiling_usd'],80)
+  models.validate_config(legacy)
  def test_combined_budget_and_context_accept_approved_bounds_only(self):
   config={'limits':{'gross_limit_usd':200,'infrastructure_seconds':64800},'readiness':{'study_budget':{'gross_limit_usd':200,'combined_estimate_usd':160,'prior_runtime_allowance_usd':72,'shared_allowances_cumulative':True,'basis':'reviewed'}}}
   manifest={'schedule':models.COMPLETION_V2,'config':config,'study_budget':config['readiness']['study_budget'],'cost_preview':{'gross_estimate':80}}
