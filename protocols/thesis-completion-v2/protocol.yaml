@@ -25,7 +25,7 @@
       "boutique-trace"
     ]
   ],
-  "combined_gross_limit_usd": 150,
+  "combined_gross_limit_usd": 200,
   "comparison_scope": "same-run fresh-cluster comparison with bound workload and scientific inputs",
   "demos": [
     "boutique",

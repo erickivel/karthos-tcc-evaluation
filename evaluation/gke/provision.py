@@ -4,7 +4,7 @@ All state/plan/tfvars bytes stay in private ctx.work. Events contain only phase
 and coarse counts. This module never creates a project or billing account.
 """
 from __future__ import annotations
-from .models import CAPTURE_V2_SCHEDULES, RECOVERABLE_SCHEDULES
+from .models import CAPTURE_V2_SCHEDULES, RECOVERABLE_SCHEDULES, COMPLETION_V2
 import hashlib,json,os,re,shutil,time,uuid
 from pathlib import Path
 from datetime import datetime,timezone
@@ -29,8 +29,8 @@ def require_context(ctx,*,cleanup=False):
         raise ValueError('unexpected evaluation ownership')
     if ctx.state.get('run_id') != ctx.run_id:
         raise ValueError('run identity mismatch')
-    if not getattr(ctx,'cleanup_only',False) and not 0 < ctx.state['deadline']-ctx.state['started_at'] <= 43200:
-        raise ValueError('invalid twelve-hour infrastructure deadline')
+    if not getattr(ctx,'cleanup_only',False) and not 0 < ctx.state['deadline']-ctx.state['started_at'] <= min(64800,ctx.config.get('limits',{}).get('infrastructure_seconds',43200)):
+        raise ValueError('invalid approved infrastructure deadline')
 
 
 def doc(ctx,args,**kwargs):
@@ -427,6 +427,8 @@ def _inventory_record(ctx,resources,intents):
     record = {'project_id':ctx.config['gcp']['project_id'],'owner_id':OWNER,'run_id':ctx.run_id,
               'started_at':ctx.state['started_at'],'deadline':ctx.deadline,'resources':resources,
               'creation_intents':intents,'lease':ctx.state.get('lease')}
+    if getattr(ctx,'manifest',{}).get('schedule')==COMPLETION_V2:
+        record['infrastructure_seconds']=ctx.config['limits']['infrastructure_seconds']
     if readiness:
         from .readiness import cutoff
         record['deadline'] = cutoff(ctx)

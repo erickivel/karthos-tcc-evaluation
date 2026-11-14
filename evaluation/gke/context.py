@@ -37,7 +37,7 @@ class LiveContext:
         if bootstrap and not state.exists():
             data=read(bootstrap)
             if data.get('run_id')!=self.run_id or data.get('project_id')!=self.config['gcp']['project_id'] or data.get('owner_id')!='gke-qualification-v1':raise ValueError('controller bootstrap target mismatch')
-            if data.get('deadline',0)>data.get('started_at',0)+43200:raise ValueError('bootstrap extends infrastructure deadline')
+            if data.get('deadline',0)>data.get('started_at',0)+min(64800,self.config['limits']['infrastructure_seconds']):raise ValueError('bootstrap extends infrastructure deadline')
             self.state.update({k:data[k] for k in ['owner_id','started_at','deadline','terraform','resources','inventory','watchdog_armed','phase','manifest_object','scheduler_name','cluster_generation','ever_watchdog_armed','project_number','cleanup_config','cleanup_config_sha256','cleanup_target','cleanup_target_sha256','lease'] if k in data})
         if not state.exists():write(state,self.state)
         self.kubeconfig=self.work/'kubeconfig';self.deadline=self.state['deadline'];self._lock=None

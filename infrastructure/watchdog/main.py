@@ -17,6 +17,13 @@ from urllib.parse import quote
 MAX_SECONDS = 12 * 3600
 
 
+def deadline_limit(record):
+    limit=record.get("infrastructure_seconds",MAX_SECONDS)
+    if type(limit) is not int or limit not in (MAX_SECONDS,18*3600):
+        raise ValueError("invalid approved infrastructure deadline limit")
+    return limit
+
+
 def _error(name, exc):
     result={'name':name,'type':type(exc).__name__}
     response=getattr(exc,'response',None)
@@ -40,7 +47,7 @@ def effective_deadline(record, cloud, inventory_generation, now, *, inventory_ob
         long = handoff['study_deadline']
         latest = handoff['commit_before']
         started = record['started_at']
-        if not started < latest < short <= long <= started + MAX_SECONDS:
+        if not started < latest < short <= long <= started + deadline_limit(record):
             return short
         expected = {'run_id': record['run_id'], 'lease_token': record['lease']['token'],
                     'inventory_generation': handoff.get('inventory_generation', inventory_generation),
@@ -93,8 +100,8 @@ def enforce(record, cloud, *, now, dry_run=True, inventory_generation=None, inve
     if not re.fullmatch(r'[a-z][a-z0-9-]{4,28}[a-z0-9]', project):
         raise ValueError('invalid dedicated project')
     started, deadline = record['started_at'], record['deadline']
-    if not 0 < deadline - started <= MAX_SECONDS:
-        raise ValueError('deadline must be within 12 hours of start')
+    if not 0 < deadline - started <= deadline_limit(record):
+        raise ValueError('deadline exceeds approved infrastructure limit')
     if not record['resources'] and not record.get('creation_intents'):
         raise ValueError('nonempty immutable inventory or creation intent required')
     segments = {'cluster':('(?:zones|locations)/[a-z0-9-]+','clusters'),

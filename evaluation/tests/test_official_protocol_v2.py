@@ -50,7 +50,7 @@ class OfficialProtocolTests(unittest.TestCase):
         self.assertEqual(forecast['launch_windows'],14)
         self.assertGreater(forecast['rebuild_seconds'],0)
         self.assertGreater(forecast['seconds'],43200)
-        self.assertFalse(forecast['fits'])
+        self.assertTrue(forecast['fits'])
 
     def test_catalog_classification_covers_exactly_43_with_18_selected(self):
         coverage=models.read(ROOT/'protocols'/V2/'coverage.yaml')['entries']

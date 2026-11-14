@@ -42,8 +42,9 @@ def validate_config(c,*,schedule=None):
     if type(reader_cpu) is not int or not 100 <= reader_cpu <= 1000:
         raise ValueError('gateway_reader_cpu_limit_m must be an integer between 100 and 1000')
     if g['region']!='us-central1' or g['zone'] not in ('us-central1-a','us-central1-b'):raise ValueError('frozen region/zone changed')
-    expected_gross=150 if schedule in COMPLETION_SCHEDULES else 100
-    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=80 or l['infrastructure_seconds']!=43200 or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
+    expected_gross=200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
+    expected_seconds=64800 if schedule==COMPLETION_V2 else 43200
+    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=80 or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
         if not re.fullmatch(r'[^\s]+@sha256:[a-f0-9]{64}',str(image)):raise ValueError('extra image lock must contain immutable digests: '+key)
     return c
@@ -53,9 +54,9 @@ def build_matrix(p, *, schedule=QUALIFICATION):
         groups=[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh'],['boutique-mesh','boutique-trace']]
         if (p.get('id')!=COMPLETION_V2 or type(p.get('repetitions')) is not int or p['repetitions']!=2
                 or p.get('rebuild_cluster') is not True or p.get('cluster_cell_order')!=groups
-                or p.get('origin_run_id') or p.get('origin_protocol')):
+                or p.get('combined_gross_limit_usd')!=200 or p.get('origin_run_id') or p.get('origin_protocol')):
             raise ValueError('official completion requires two fresh clusters without historical prerequisites')
-        original=dict(p,id=COMPLETION,repetitions=1,rebuild_cluster=False,cluster_cell_order=groups[:1])
+        original=dict(p,id=COMPLETION,combined_gross_limit_usd=150,repetitions=1,rebuild_cluster=False,cluster_cell_order=groups[:1])
         rows=[dict(row,id='official-'+row['id']) for row in build_matrix(original,schedule=COMPLETION)]
         for cell in groups[1]:
             demo,source=cell.split('-',1)

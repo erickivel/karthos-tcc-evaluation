@@ -57,7 +57,7 @@ def legacy_context(ctx):
     product=Path(os.environ.get('GKE_EVAL_PRODUCT_ROOT',ctx.manifest.get('product_snapshot') or ''))
     if not product.exists():raise ValueError('reviewed product snapshot unavailable')
     r.ROOT=ctx.root;r.REPO=product;r.OUT=ctx.result;r.CACHE=Path(os.environ.get('GKE_EVAL_CACHE_ROOT',str(ctx.root/'cache')))
-    r.CONFIG=dict(ctx.manifest['baseline_config'],expected_nodes=3,study_deadline_seconds=43200,artifact_recovery_seconds=1800,artifact_recovery_deadline_policy='within reserved cloud deadline',validated_product_revision=ctx.manifest['product_pins']['karthos_revision'])
+    r.CONFIG=dict(ctx.manifest['baseline_config'],expected_nodes=3,study_deadline_seconds=ctx.config.get('limits',{}).get('infrastructure_seconds',43200),artifact_recovery_seconds=1800,artifact_recovery_deadline_policy='within reserved cloud deadline',validated_product_revision=ctx.manifest['product_pins']['karthos_revision'])
     from .models import THESIS_SCHEDULES
     r.CONFIG['thesis_metric_contract']=ctx.manifest.get('schedule') in THESIS_SCHEDULES
     if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES:

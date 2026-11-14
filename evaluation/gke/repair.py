@@ -27,10 +27,10 @@ def validate_budget(manifest):
     budget=manifest.get('study_budget',{})
     if budget!=manifest['config'].get('readiness',{}).get('study_budget'):
         raise ValueError('repair combined budget differs from reviewed configuration')
-    from .models import COMPLETION_SCHEDULES
-    limit=150 if manifest.get('schedule') in COMPLETION_SCHEDULES else 100
+    from .models import COMPLETION_SCHEDULES,COMPLETION_V2
+    limit=200 if manifest.get('schedule')==COMPLETION_V2 else 150 if manifest.get('schedule') in COMPLETION_SCHEDULES else 100
     if manifest.get('schedule') in COMPLETION_SCHEDULES and manifest['config'].get('limits',{}).get('gross_limit_usd')!=limit:
-        raise ValueError('completion requires the approved USD150 combined ceiling')
+        raise ValueError('completion requires the approved USD'+str(limit)+' combined ceiling')
     previous=budget.get('prior_runtime_allowance_usd');combined=budget.get('combined_estimate_usd')
     if (any(type(value) not in (int,float) or not math.isfinite(value) or value<0 for value in (previous,combined))
             or budget.get('gross_limit_usd')!=limit or combined>limit

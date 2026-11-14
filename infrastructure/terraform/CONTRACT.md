@@ -391,3 +391,5 @@ TMPDIR=/data/tmp, so temporary export archives use that boot disk rather than th
 RAM-backed /tmp mount. Reviewed source/product remain read-only. Live startup must
 still measure at least 220 GiB free before accepting the full bounded run; nominal
 disk size is not a free-space or quota measurement.
+
+Official thesis-completion-v2 inventories explicitly set `infrastructure_seconds: 64800` for the approved 18-hour limit. Legacy inventories without that field retain the 43,200-second cap. The pinned watchdog validates the declared limit and never extends the immutable recorded deadline.
