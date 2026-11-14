@@ -717,14 +717,14 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2','thesis-completion-v1':'thesis-completion-v1.0'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2','thesis-completion-v1':'thesis-completion-v1.0','thesis-completion-v2':'thesis-completion-v2.0'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     horizon_receipts={name:_read(path/relative) for name,relative in (
         ('ordinary','vm-export-coverage.json'),('extended','extended/vm-export-coverage.json'))}
     report['evidence_horizon']={'state':'pass' if all(row.get('state')=='pass' for row in horizon_receipts.values()) else 'insufficient',
         'receipts':horizon_receipts,'scope':'raw export evidence only; fixed workload queries and numerical tolerances unchanged'}
-    if ctx.manifest.get('schedule')=='thesis-completion-v1':
+    if ctx.manifest.get('schedule') in ('thesis-completion-v1','thesis-completion-v2'):
         from .accuracy_reanalysis import settled_mesh_duration
         names=[name for name in ('istio-samples.ndjson','istio-samples.ndjson.gz','vm-raw.ndjson','vm-raw.ndjson.gz') if (path/name).is_file()]
         report['settled_duration_diagnostics']=settled_mesh_duration(traffic,verification,names,
@@ -753,6 +753,12 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     report['families']=family_summaries(report)
     from .coverage_report import build as build_coverage
     report['metric_window_coverage']=build_coverage(coverage,traffic,start=start,end=end,checks=all_checks,resources=resource_report)
+    if ctx.manifest.get('schedule')=='thesis-completion-v2':
+        from .thesis_comparison import bind_comparison_inputs,service_graph_evidence
+        from .boundary_summary import summarize
+        bind_comparison_inputs(report,ctx.manifest)
+        report['service_graph_evidence']=service_graph_evidence(path,manifest.get('namespace'),spec.get('demo'))
+        report['boundary_summary']=summarize(report,verification)
     report['state']='diagnostic' if executed else 'incomplete'
     ctx.write(path/'gke-evaluation.json',report)
     return report

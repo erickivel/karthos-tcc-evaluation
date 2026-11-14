@@ -28,6 +28,7 @@ def save_summary(path,report):
             'source_selection':report.get('source_selection',{}),
             'arbitration_transition':report.get('arbitration_transition') or (read(path/'setup-arbitration-transition.json') if (path/'setup-arbitration-transition.json').is_file() else None),
             'evidence_horizon':report.get('evidence_horizon',{}),
+            **{key:report[key] for key in ('comparison_inputs','service_graph_evidence','boundary_summary') if key in report},
             'families':report.get('families') or family_summaries(report),
             'numerical_agreement':{'state':report.get('numerical_agreement',{}).get('state')},
             'coverage':{'contract':{'valid':(report.get('coverage',{}).get('contract') or {}).get('valid')}},
@@ -41,6 +42,9 @@ def save_summary(path,report):
     payload=json.dumps(result,indent=2,sort_keys=True)+'\n'
     if len(payload.encode())>LIMIT:raise ValueError('orchestration summary exceeds explicit size bound')
     write(path/'orchestration-summary.json',payload)
+    if 'boundary_summary' in result:
+        from .boundary_summary import render
+        write(path/'boundary-summary.html',render(result['boundary_summary']))
     return result
 
 

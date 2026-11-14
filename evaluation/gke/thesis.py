@@ -6,7 +6,7 @@ import math
 import re
 from pathlib import Path
 
-from .models import THESIS,THESIS_SCHEDULES,REPAIR,REPAIR_SCHEDULES,COMPLETION,sha
+from .models import THESIS,THESIS_SCHEDULES,REPAIR,REPAIR_SCHEDULES,COMPLETION,COMPLETION_V2,sha
 
 START_REVISION='f37f408dea46abfcfdfbdc6a32c06ac2a353d9ef'
 PRODUCT_NAMES=('karthos-backend','karthos-frontend')
@@ -341,7 +341,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
                 by_window[row['id']]=(row['export'].get('uri'),evidence)
     rows=[]
-    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION) else 6
+    required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION,COMPLETION_V2) else 6
     def add(claim,verdict,reference,artifacts):
         rows.append(dict(claim=claim,verdict=verdict,reference=reference,artifacts=artifacts))
     local=(ctx.manifest.get('local_contract_evidence') or {}).get('checks',{})
@@ -376,7 +376,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
         ('catalog-contract', '43 pinned names, units, sources and aggregation contracts',
          lambda d: 'pass' if (d.get('coverage',{}).get('contract') or {}).get('valid') else 'insufficient'),
         ('representative-numerical-agreement', 'aligned source and independent measurements; exact API/storage checks reported separately',
-         lambda d: representative_state(d) if ctx.manifest.get('schedule')==COMPLETION else d.get('numerical_agreement',{}).get('state')),
+         lambda d: representative_state(d) if ctx.manifest.get('schedule') in (COMPLETION,COMPLETION_V2) else d.get('numerical_agreement',{}).get('state')),
     ):
         states=[extract(data) for _,data in baselines]
         verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
@@ -386,7 +386,8 @@ def claim_matrix(ctx,windows,history,readiness_report):
             if row['claim']=='retained-replicas-and-health':
                 row.update(verdict='not-applicable',reference='deferred: no new cloud historical observation in repair validation',artifacts=[])
     from .thesis_comparison import compare_pairs
-    comparisons=compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds'))
+    comparisons=compare_pairs(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds'),
+                              strict=ctx.manifest.get('schedule')==COMPLETION_V2)
     if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
         for row in comparisons:
             if row['claim']=='source-independence-astronomy':
@@ -402,7 +403,28 @@ def claim_matrix(ctx,windows,history,readiness_report):
         add('host-lifecycle-exact-alignment','insufficient',
             'exact kernel read/cache-version alignment unavailable; catalog visibility and bounded lifecycle/history observation lag are separate descriptive evidence',
             [uri for uri,_ in baselines if uri])
+    if ctx.manifest.get('schedule')==COMPLETION_V2:
+        from .thesis_comparison import arbitration_claim
+        rows.append(arbitration_claim(ctx.manifest['matrix'],by_window,strict=True))
+        add('host-lifecycle-exact-alignment','not-applicable',
+            'excluded: telemetry does not expose exact kernel/cache alignment; bounded observations remain separately reported',[])
+        rows[-1]['required']=False
+        instances=getattr(ctx,'state',{}).get('evaluation_cluster_instances',[])
+        identities={repeat:{r.get('uid') for cluster in instances if cluster.get('repeat')==repeat
+                            for r in cluster.get('resources',[]) if r.get('kind')=='cluster' and r.get('uid')}
+                    for repeat in (1,2)}
+        available=all(len(value)==1 for value in identities.values())
+        verdict=('pass' if identities[1]!=identities[2] else 'fail') if available else 'insufficient'
+        add('fresh-cluster-identities',verdict,'provider UIDs from independently established cluster lifetimes',
+            ['state.json#/evaluation_cluster_instances'])
+        rows[-1]['observed']={str(k):sorted(v) for k,v in identities.items()}
     rows.extend(comparisons)
     return dict(protocol=ctx.manifest.get('schedule',THESIS),
                 local_contract_protocol=(ctx.manifest.get('local_contract_evidence') or {}).get('protocol'),
                 product_revision=ctx.manifest['product_pins']['karthos_revision'],claims=rows)
+
+
+def required_claims_confirmed(report):
+    """Execution completion is separate; excluded observations earn no credit."""
+    required=[row for row in report.get('claims',[]) if row.get('required',True)]
+    return bool(required) and all(row.get('verdict')=='pass' for row in required)

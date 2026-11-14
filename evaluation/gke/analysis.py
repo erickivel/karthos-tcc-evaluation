@@ -21,7 +21,7 @@ def analyse(root,run_id,analysis_id):
         path=candidates[0] if candidates else None
         if path:
             evidence=read(path);inputs[str(path.relative_to(root))]=sha(path)
-            windows.append({'id':row['id'],'execution':evidence.get('execution'),'required_evidence':evidence.get('evidence'),'numerical_agreement':evidence.get('numerical_agreement'),'families':evidence.get('families',{}),'coverage':evidence.get('coverage'),'consumer':evidence.get('consumer'),'protocol':evidence.get('protocol'),'evidence_directory':str(path.parent.relative_to(root)),'metric_window_coverage':evidence.get('metric_window_coverage') or build_coverage(evidence.get('coverage') or {},(evidence.get('traffic') or {}).get('report') or {},start=(evidence.get('manifest') or {}).get('start'),end=(evidence.get('manifest') or {}).get('end'),checks=(evidence.get('numerical_agreement') or {}).get('checks',[]),resources=evidence.get('resources')),'original_report_sha256':sha(path)})
+            windows.append({'id':row['id'],'execution':evidence.get('execution'),'required_evidence':evidence.get('evidence'),'numerical_agreement':evidence.get('numerical_agreement'),'families':evidence.get('families',{}),'boundary_summary':evidence.get('boundary_summary'),'coverage':evidence.get('coverage'),'consumer':evidence.get('consumer'),'protocol':evidence.get('protocol'),'evidence_directory':str(path.parent.relative_to(root)),'metric_window_coverage':evidence.get('metric_window_coverage') or build_coverage(evidence.get('coverage') or {},(evidence.get('traffic') or {}).get('report') or {},start=(evidence.get('manifest') or {}).get('start'),end=(evidence.get('manifest') or {}).get('end'),checks=(evidence.get('numerical_agreement') or {}).get('checks',[]),resources=evidence.get('resources')),'original_report_sha256':sha(path)})
         else:windows.append({'id':row['id'],'execution':row.get('execution'),'required_evidence':{'valid':False,'reason':'raw window report not available in this export'},'numerical_agreement':{'state':'insufficient'}})
     result={'schema_version':1,'analysis_id':analysis_id,'run_id':run_id,'verifier_version':'gke-qualification-v1-analysis-1','implementation_sha256':implementation_fingerprint(root),'original_inputs':inputs,'run_state':run.get('state'),'logical_windows':run.get('records',[]),'history':run.get('history'),'readiness':run.get('readiness'),'windows':windows,'execution_verdict_counts':dict(Counter(str(w.get('execution')) for w in windows)),'original_results_modified':False,'note':'Interpretation of available exported reports; absent raw evidence is insufficient. No numeric disagreement is converted to missing execution.'}
     claims=source/'claim-matrix.json'
@@ -33,7 +33,7 @@ def analyse(root,run_id,analysis_id):
         result['verifier_version']='thesis-qualification-v3-analysis-1'
     if any(w.get('protocol')=='thesis-qualification-v4' for w in windows):
         result['verifier_version']='thesis-qualification-v4-analysis-1'
-    if run.get('protocol') in ('thesis-repair-validation-v1','thesis-repair-validation-v2','thesis-completion-v1'):result['verifier_version']=run['protocol']+'-analysis-1'
+    if run.get('protocol') in ('thesis-repair-validation-v1','thesis-repair-validation-v2','thesis-completion-v1','thesis-completion-v2'):result['verifier_version']=run['protocol']+'-analysis-1'
     result['coverage_schema_version']='metric-window-coverage-v1'
     coverage_rows=[]
     for window in windows:
@@ -49,5 +49,19 @@ def analyse(root,run_id,analysis_id):
     coverage_csv,coverage_html=render_coverage(coverage_rows)
     write(destination/'metric-window-coverage.csv',coverage_csv)
     write(destination/'metric-window-coverage.html',coverage_html)
+    from .boundary_summary import render as render_boundary
+    import html
+    links=[]
+    for window in windows:
+        if window.get('boundary_summary'):
+            if Path(window['id']).name!=window['id'] or window['id'] in ('.','..'):raise ValueError('unsafe boundary window ID')
+            name='boundaries/'+window['id']+'.html'
+            write(destination/name,render_boundary(window['boundary_summary'],title=window['id']))
+            links.append('<li><a href="'+html.escape(name,quote=True)+'">'+html.escape(window['id'])+'</a></li>')
+    write(destination/'index.html','<!doctype html><meta charset="utf-8"><title>Thesis analysis</title>'
+          '<h1>Thesis analysis</h1><p>Versioned interpretation; original execution evidence is unchanged.</p>'
+          '<p><a href="metric-window-coverage.html">Metric populations and coverage</a> · '
+          '<a href="analysis.json">Complete analysis and input checksums</a></p><h2>Boundary explanations</h2><ul>'
+          +''.join(links)+'</ul>')
     write(destination/'README.md','# Offline analysis '+analysis_id+'\n\nOriginal execution: '+run_id+'. This version references original input checksums in analysis.json. It does not replace historical results.\n')
     return {'analysis':str(destination),'windows':len(windows),'original_results_modified':False}

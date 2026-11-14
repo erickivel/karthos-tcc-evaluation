@@ -71,7 +71,7 @@ def _structure(path,namespace):
     return (structural,edges,placements) if structural and edges and placements and all(k[1] for k in placements) else None
 
 
-def compare_pairs(matrix,exported,thresholds=None):
+def compare_pairs(matrix,exported,thresholds=None,*,strict=False):
     thresholds={**DEFAULTS,**(thresholds or {})}
     baselines={(s['repeat'],s['cell']):exported.get(s['id']) for s in matrix if s['phase']=='baseline'}
     output=[]
@@ -125,6 +125,8 @@ def compare_pairs(matrix,exported,thresholds=None):
                 sources=[data.get('source_selection',{}).get('expected_source') for data in (left,right)]
                 details['source_reproducibility']={'state':'pass' if all(sources) and sources[0]==sources[1]
                                                    else 'fail' if all(sources) else 'insufficient'}
+        if strict and all(records):
+            details.update(_strict_details(left,right,cross_source=claim.startswith('source-independence')))
         states=[detail.get('state') for detail in details.values() if isinstance(detail,dict)]
         if 'accounting' not in details:
             states.append('insufficient')
@@ -152,7 +154,7 @@ def representative_state(data):
     return _verdict(list(states.values()))
 
 
-def arbitration_claim(matrix,exported):
+def arbitration_claim(matrix,exported,*,strict=False):
     """Both availability/selection and explicit transition need captured evidence."""
     expected={'both-sources':'mesh.istio','replanned-trace':'traces.servicegraph'}
     stages={}
@@ -174,6 +176,15 @@ def arbitration_claim(matrix,exported):
                     and transition.get('runtime_failover_claim') is False
                     and [event.get('step') for event in transition.get('events',[])]==['istio-unavailable','rediscovered','redeployed']):
                 state='insufficient'
+        if strict:
+            # Selection alone cannot prove that overlapping sources did not
+            # contribute twice. Require independently scored selected counts.
+            observation=_observation(data)
+            accounting=(compare(observation['reference_calls'],observation['settled_calls'],
+                        DEFAULTS['request_relative_tolerance'],DEFAULTS['request_absolute_tolerance'])
+                        if observation else {'state':'insufficient'})
+            state=_verdict([state,data.get('families',{}).get('traffic_count',{}).get('state','insufficient'),
+                            accounting['state']])
         stages[scenario]=state
     return {'claim':'source-arbitration','verdict':_verdict([stages.get(key,'insufficient') for key in expected]),
             'reference':'captured both-available selection followed by explicit rediscovery and redeployment; no runtime failover claim',
@@ -251,3 +262,108 @@ def compare_deployments(left_manifest,right_manifest,*,left_sha256,right_sha256)
     return {'version':'cross-deployment-v1','runs':[first['run_id'],second['run_id']],
             'input_sha256':[left_sha256,right_sha256],'historical_passes_imported':False,
             'claims':claims,'scope':'common independently validated baseline populations; newly captured evidence stays separate'}
+
+
+def bind_comparison_inputs(report, manifest):
+    """Bind experiment content, not merely generator/rate labels.
+
+    Source and repetition are deliberately excluded: the source is the treatment
+    in a source comparison. All source settings are still bound by the complete
+    protocol/configuration. Account names and observed identities are not inputs.
+    """
+    from .models import canonical_sha
+    files=manifest.get('implementation_hashes',{})
+    workloads={k:v for k,v in files.items() if k.startswith('evaluation/workloads/')}
+    spec=report.get('spec',{})
+    definition={'product':manifest.get('product_pins'), 'images':manifest.get('image_lock'),
+                'workloads':workloads,'implementation_sha256':manifest.get('implementation_sha256'),
+                'protocol':manifest.get('protocol_definition'), 'thresholds':manifest.get('thresholds'),
+                'collection':manifest.get('baseline_config'),
+                'infrastructure':manifest.get('config',{}).get('infrastructure'),
+                'workload':{k:spec.get(k) for k in ('demo','generator','rate','duration_seconds','scenario')}}
+    complete=bool({'evaluation/workloads/run.js','evaluation/workloads/workload.json'}<=set(workloads) and all(definition.get(k) for k in ('product','images','protocol','thresholds','collection','infrastructure'))
+                  and all(value is not None for value in definition['workload'].values()))
+    report['comparison_inputs']={'version':'comparable-inputs-v1','state':'available' if complete else 'insufficient',
+                                 'definition':definition,'sha256':canonical_sha(definition)}
+    return report
+
+
+def input_agreement(left, right):
+    from .models import canonical_sha
+    inputs=[d.get('comparison_inputs',{}) for d in (left,right)]
+    if any(row.get('state')!='available' or not row.get('definition') or not row.get('sha256') for row in inputs):
+        return {'state':'insufficient','reason':'content-bound experiment inputs unavailable'}
+    if any(canonical_sha(row['definition'])!=row['sha256'] for row in inputs):
+        return {'state':'fail','reason':'comparison input digest differs from retained definition'}
+    return {'state':'pass' if inputs[0]['sha256']==inputs[1]['sha256'] else 'fail',
+            'sha256':[row['sha256'] for row in inputs],
+            'scope':'product, images, workload content, protocol, collection, scoring and infrastructure inputs'}
+
+
+def duration_evidence(data):
+    families=data.get('families',{})
+    state=families.get('traffic_duration',{}).get('state','insufficient')
+    method='fixed-window matched population'
+    if state not in ('pass','fail') and all(families.get(k,{}).get('state')=='pass' for k in
+                                          ('settled_traffic_duration','evidence_horizon','exact_api_storage_parity')):
+        state='pass';method='separately matched settled population with covered export and exact API/storage parity'
+    return {'state':state if state in ('pass','fail') else 'insufficient','method':method,
+            'limitation':'agreement with each source timing population; raw service latency across separate runs is not assumed equal'}
+
+
+def service_graph_evidence(path,namespace,demo):
+    """Service inventory oracle plus declared observed checkout relationship.
+
+    The full observed service-call graph is retained for set differences. Only
+    the exercised checkout edge has a declared behavioral expectation; other
+    edges are not silently treated as equally exercised in separate executions.
+    """
+    path=Path(path)
+    try:
+        inventory=read(path/'k8s-services.json')['items']
+        expected={s['metadata']['name'] for s in inventory if s['metadata'].get('namespace')==namespace}
+        nodes=read(path/'api-nodes.json')['data']['nodes']
+        edges=read(path/'api-edges.json')['data']['edges']
+        services=[n for n in nodes if n.get('namespace')==namespace and n.get('kind')=='service']
+        identities={n['name']:n['id'] for n in services}
+        if not expected or len(identities)!=len(services) or len(set(identities.values()))!=len(identities):
+            return {'state':'insufficient','reason':'missing or ambiguous independent service inventory/identities'}
+        by_id={value:name for name,value in identities.items()}
+        calls=sorted({(by_id[e['source']],by_id[e['target']]) for e in edges if e.get('relation')=='calls'
+                      and e.get('source') in by_id and e.get('target') in by_id})
+        target='checkout' if demo=='astronomy' else 'checkoutservice'
+        missing=sorted(expected-set(identities));extra=sorted(set(identities)-expected)
+        return {'state':'pass' if not missing and ('frontend',target) in calls else 'fail',
+                'expected_services':sorted(expected),'service_identities':identities,'missing_services':missing,'extra_services':extra,
+                'observed_calls':[list(edge) for edge in calls],'required_calls':[['frontend',target]],
+                'reference':'k8s-services.json and declared exercised frontend-checkout path',
+                'artifacts':['k8s-services.json','api-nodes.json','api-edges.json']}
+    except (OSError,ValueError,KeyError,TypeError) as exc:
+        return {'state':'insufficient','reason':'service graph reference unavailable: '+str(exc)}
+
+
+def _strict_details(left,right,*,cross_source):
+    graphs=[d.get('service_graph_evidence',{}) for d in (left,right)]
+    result={'comparable_inputs':input_agreement(left,right)}
+    result['independent_graph']={'state':_verdict([g.get('state','insufficient') for g in graphs]),
+                                 'reference':'independent Kubernetes service inventories and exercised checkout edge'}
+    if all(g.get('state')=='pass' for g in graphs):
+        names=[g['expected_services'] for g in graphs]
+        # Same cluster/source comparison expects the same canonical identity;
+        # clean cluster comparison expects stable logical service names instead.
+        equal=names[0]==names[1]
+        if cross_source:
+            equal=equal and all(graphs[0]['service_identities'].get(name)==graphs[1]['service_identities'].get(name) for name in names[0])
+        sets=[{tuple(e) for e in g['observed_calls']} for g in graphs]
+        result['service_graph_comparability']={'state':'pass' if equal else 'fail',
+            'common_calls':[list(e) for e in sorted(sets[0]&sets[1])],
+            'only_left':[list(e) for e in sorted(sets[0]-sets[1])],
+            'only_right':[list(e) for e in sorted(sets[1]-sets[0])],
+            'scope':'all declared service identities; exercised checkout edge required; additional telemetry services and other observed edge differences descriptive'}
+    result['duration_populations']={'state':_verdict([duration_evidence(d)['state'] for d in (left,right)]),
+                                    'per_run':[duration_evidence(d) for d in (left,right)]}
+    result['source_owned_errors']={'state':_verdict([d.get('families',{}).get('traffic_error',{}).get('state','insufficient') for d in (left,right)]),
+        'scope':'each run against its documented source-owned policy; native trace errors need not equal Istio errors'}
+    if not cross_source:
+        result['representative_accuracy']={'state':_verdict([representative_state(d) for d in (left,right)])}
+    return result
