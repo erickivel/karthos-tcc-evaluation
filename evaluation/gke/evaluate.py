@@ -609,10 +609,19 @@ def _references_by_uid(rows, field):
 def _extra_resource_checks(path,agents,references,traffic,verification,start,end,*,thesis=False):
     inputs,volumes=_volume_references(path,agents);snapshots=_lifecycle_snapshots(path);checks=[]
     volumes_by_pod = _references_by_uid(volumes, 'pod_uid')
-    for observation in _kubernetes_observations(path,agents,thesis=thesis):
+    from .volume_provenance import source_index,attribute
+    observations=_kubernetes_observations(path,agents,thesis=thesis)
+    producer_keys={(a.get('collector_uid'),a.get('node')) for a in agents.get('agents',[])}
+    producer_index=source_index(observations,producer_keys)
+    for observation in observations:
         if start is None or end is None or not _time(start)<=observation['recorded_timestamp']<=_time(end):continue
         if observation['metric'].startswith(('k8s.volume.','k8s.pod.volume.')):
+            attribution=None
+            if observation.get('source')=='kubelet' and (observation.get('collector_uid'),observation.get('node')) not in producer_keys:
+                attribution=attribute(observation,producer_index)
+                if attribution['state']=='matched':observation=attribution['observed']
             result = compare_volume(observation, inputs, volumes_by_pod.get(observation.get('pod_uid'), ()), snapshots=snapshots)
+            if attribution and attribution['state']!='matched':result.update(state=attribution['state'],reason=attribution['reason'],producer_attribution=attribution)
             result['reference_records_available'] = len(volumes)
             checks.append(result)
         else:checks.append(compare_lifecycle(observation,snapshots))

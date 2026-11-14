@@ -19,7 +19,7 @@ from .models import sha,write
 from .report_summary import family_summaries
 from ..references.kubelet import read_summary
 
-VERSION='accuracy-evidence-v2.4.0'
+VERSION='accuracy-evidence-v3.0.0'
 
 
 def _counts(checks):
@@ -185,12 +185,21 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
             for pod in snapshot.get('items',[]):
                 uid=pod.get('metadata',{}).get('uid')
                 if uid:snapshots_by_uid[uid].append(dict(snapshot,items=[pod]))
+        from .volume_provenance import source_index,attribute
+        producers=set(inputs)
+        producer_index=source_index([c.get('observed',{}) for c in original],producers)
+        forwarded=Counter()
         revised=[];changes=[]
         for index,check in enumerate(original):
             observed=check.get('observed',{});metric=observed.get('metric','')
             if metric.startswith(('k8s.pod.volume.','k8s.volume.')):
+                attribution=None
+                if observed.get('source')=='kubelet' and (observed.get('collector_uid'),observed.get('node')) not in producers:
+                    attribution=attribute(observed,producer_index);forwarded[attribution['state']]+=1
+                    if attribution['state']=='matched':observed=attribution['observed']
                 field='fs.availableBytes' if metric.endswith('.available') else 'fs.capacityBytes'
                 result=e.compare_volume(observed,inputs[(observed.get('collector_uid'),observed.get('node'))],references[(observed.get('pod_uid'),observed.get('dimensions',{}).get('volume'),field)],snapshots=snapshots_by_uid[observed.get('pod_uid')])
+                if attribution and attribution['state']!='matched':result=dict(result,state=attribution['state'],reason=attribution['reason'],producer_attribution=attribution)
             elif metric in ('k8s.container.ready','k8s.container.restarts','k8s.container.restart.count','k8s.pod.phase','k8s.pod.status.phase'):
                 result=e.compare_lifecycle(observed,snapshots_by_uid[observed.get('pod_uid')])
             else:result=check
@@ -221,7 +230,7 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
         reasons=Counter((c.get('observed',{}).get('metric',c.get('metric')),c.get('state'),c.get('reason')) for c in revised)
         summary={'analysis_version':VERSION,'spec':old.get('spec'),
             'original_families':old.get('families',{}),'families':families,
-            'recovery_inventory':recovery_inventory,'settled_duration':settled,
+            'recovery_inventory':dict(recovery_inventory,forwarded_volume_attribution=dict(forwarded)),'settled_duration':settled,
             'resources':{'original_counts':_counts(original),'revised_counts':_counts(revised),
                 'by_metric_reason':[dict(metric=k[0],state=k[1],reason=k[2],comparisons=n) for k,n in reasons.items()],
                 'container_checks':len(old.get('resources',{}).get('checks',[]))},
@@ -235,7 +244,7 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
     destination.mkdir(parents=True,exist_ok=False)
     write(destination/'summary.json',summary);write(destination/'comparison-changes.json',changes)
     write(destination/'analysis-manifest.json',{'analysis_version':VERSION,'archive':str(archive),'archive_sha256':expected_sha256,'used_members':used,
-        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py')},
+        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','volume_provenance.py')},
         'historical_results_modified':False})
     write(destination/'SHA256SUMS',''.join(sha(p)+'  '+p.name+'\n' for p in sorted(destination.iterdir()) if p.is_file()))
     return summary

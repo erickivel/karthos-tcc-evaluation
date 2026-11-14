@@ -88,3 +88,22 @@ class AccuracyReanalysisTests(unittest.TestCase):
             summary=r.reanalyse_archive(archive,root/'analysis',expected_sha256=sha)
             self.assertEqual(summary['families']['volume_accuracy']['state'],'pass')
             self.assertEqual(summary['recovery_inventory']['receiver_pod_snapshots'],1)
+
+    def test_sealed_forwarded_volume_uses_agent_input_and_preserves_gateway_hop(self):
+        from evaluation.tests import test_accuracy_evidence_repairs as fixtures
+        obs,inputs,refs,snapshots=fixtures.AccuracyEvidenceRepairs().volume()
+        obs.update(raw_point={'timeUnixNano':'5000000000','asInt':'30'},raw_attributes={'karthos_source':'kubelet'},raw_resource={'k8s.pod.uid':'uid'})
+        gateway=dict(obs,collector_uid='gateway')
+        original={'spec':{},'resources':{},'selected_accuracy':[], 'numerical_agreement':{'checks':[{'state':'insufficient','observed':obs},{'state':'insufficient','observed':gateway}]},'traffic':{}}
+        independent={'node_name':'n','node_uid':'nid','summary':inputs[0]['body'],'requested_at_ns':4800000000,'received_at_ns':5100000000}
+        extras={'extended/kubernetes-inventory.json':json.dumps({'snapshots':snapshots}).encode(),
+                'structured/agent/n/raw/receiver-input.ndjson':(json.dumps(inputs[0])+'\n').encode(),
+                'kubelet-n.ndjson':(json.dumps(independent)+'\n').encode()}
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);archive,sha=self.archive(root,report=original,extras=extras)
+            summary=r.reanalyse_archive(archive,root/'analysis',expected_sha256=sha)
+            self.assertEqual(summary['resources']['revised_counts']['pass'],2)
+            self.assertEqual(summary['recovery_inventory']['forwarded_volume_attribution'],{'matched':1})
+            changed=json.loads((root/'analysis/comparison-changes.json').read_text())
+            mapped=changed[1]['observed']
+            self.assertEqual(mapped['collector_uid'],obs['collector_uid']);self.assertEqual(mapped['capture_collector_uid'],'gateway')

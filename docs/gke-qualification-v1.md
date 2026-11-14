@@ -527,7 +527,7 @@ paths/duplicates, and writes compact `summary.json`, `comparison-changes.json`,
 scope retain their original results. Missing historical inputs stay missing.
 
 
-### Complete offline recovery (`accuracy-evidence-v2.4.0`)
+### Complete offline recovery (`accuracy-evidence-v3.0.0`)
 
 The recovery reads sealed archives only. It recovers the demo from the explicit
 frozen window specification when the legacy workload manifest omitted it; a
@@ -591,3 +591,14 @@ bracket and independent Node UID. These are labelled exact source-input
 references, not independent API-history observations. Mutable lifecycle checks
 still require the original source version/time; no version is copied into an OTLP
 observation merely because a matching Pod was found.
+
+
+Forwarded kubelet datapoints retain two identities: the Agent producer and the
+Gateway capture hop. Recovery joins the **entire raw semantic datapoint**,
+including source, resource/dimensions, Pod/Node identity, unit and exact OTLP
+timestamp, to a unique receiver-owning Agent counterpart. Value preservation is
+checked separately; changed values are failures, multiple producers remain
+ambiguous, and no nearest-time or maximum-value candidate is selected. The
+Gateway UID remains recorded as `capture_collector_uid`. Agent/Gateway copies are
+boundary observations of one datapoint, not independent trials. The original
+comparison denominator is retained and attribution indices/hashes are exported.
