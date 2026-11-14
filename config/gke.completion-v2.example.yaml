@@ -49,12 +49,15 @@
     "capacity_verified": false,
     "phase_estimates_seconds": {
       "capture_setup_restore": null,
-      "export": null,
+      "checkpoint_export": null,
+      "final_export": null,
       "history": null,
       "provision": null,
+      "readiness_export": null,
       "rebuild": null,
       "retry_reserve": null,
-      "setup": null
+      "setup": null,
+      "window_export": null
     },
     "pricing_verified": false,
     "quotas_verified": false,

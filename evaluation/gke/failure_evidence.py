@@ -52,6 +52,31 @@ def _write(ctx, path, value, errors):
         return False
 
 
+def verified_report_reference(receipt, filename, path):
+    """Only reuse content bound to a successful immutable archive publication.
+
+    Old receipts lack these descriptors and keep the previous copy behavior.
+    A later changed controller file is retained separately, never attributed to
+    an earlier archive. Absence locally is acceptable only with a bound member.
+    """
+    if not isinstance(receipt,dict) or receipt.get('verified') is not True:
+        return None
+    if not re.fullmatch(r'gs://[a-z0-9][a-z0-9._-]+/[^\s]+/',str(receipt.get('uri',''))):
+        return None
+    objects=receipt.get('objects',{});members=receipt.get('retained_members',{})
+    if (not isinstance(objects,dict) or 'window-index.json' not in objects
+            or not any(re.fullmatch(r'window(?:-\d{3})?\.tar\.gz',name) for name in objects)):
+        return None
+    for record in [*objects.values(),members.get(filename,{})]:
+        if (not isinstance(record,dict) or not re.fullmatch('[a-f0-9]{64}',str(record.get('sha256','')))
+                or type(record.get('bytes')) is not int or record['bytes']<0):return None
+    member=members[filename]
+    if not re.fullmatch('[a-f0-9]{64}',str(member.get('source_sha256',''))):return None
+    if path.is_symlink() or path.parent.is_symlink():return None
+    if path.exists() and sha(path)!=member['source_sha256']:return None
+    return member
+
+
 def retain_attempt_reports(ctx, records, destination):
     """Retain allowlisted finalized JSON without changing source record paths.
 
@@ -73,6 +98,15 @@ def retain_attempt_reports(ctx, records, destination):
                 if Path(source).is_symlink():
                     raise ValueError('symlink attempt directory refused')
                 path = Path(source)/filename
+                receipt=attempt.get('export',{})
+                member=verified_report_reference(receipt,filename,path)
+                if member is not None:
+                    target=Path(destination)/'attempt-reports'/name/'export-reference.json'
+                    if not _write(ctx,target,{'attempt_id':name,'export':receipt,
+                            'scope':'finalized reports preserved in verified immutable window archives'},result['errors']):
+                        raise ValueError('export reference could not be retained')
+                    row.update(state='export-reference',member=member,reference=str(target.relative_to(destination)))
+                    continue
                 value = _json(path)
                 if filename=='structured/status.json' and not (
                         value.get('workers_stopped') is True and value.get('proxy_stopped') is True):

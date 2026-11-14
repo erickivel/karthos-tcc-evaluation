@@ -1,7 +1,7 @@
 """Immutable evidence sealing and verified GCS export; operational state is excluded."""
 from __future__ import annotations
 import base64,copy,csv,hashlib,html,json,re,subprocess,tempfile,shutil,tarfile,gzip,io
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from concurrent.futures import ThreadPoolExecutor
 from .models import sha,write,read
 from .timing import timed
@@ -79,7 +79,8 @@ def _upload(ctx,path,*,bucket,prefix):
                     bytes=sum(p.stat().st_size for p in files))
         with ThreadPoolExecutor(max_workers=MAX_UPLOAD_WORKERS) as pool:
             list(pool.map(transfer,files))
-    return {'verified':True,'uri':uri,'files':status['checked']+1,'retention_days':90,'secondary_export_verified':False}
+    return {'verified':True,'uri':uri,'files':status['checked']+1,'retention_days':90,'secondary_export_verified':False,
+            'objects':{str(p.relative_to(path)):{'sha256':sha(p),'bytes':p.stat().st_size} for p in files}}
 
 def render_matrix(root,matrix,records,*,unattempted_reason=None):
     root=Path(root);by_id={r['id']:r for r in records};rows=[]
@@ -654,6 +655,74 @@ def pack_window_archives(projection, destination):
     write(destination / 'window-index.json',
           {'schema_version': 1, 'parts': parts, 'window_seal_sha256': sha(projection / 'GKE-SHA256SUMS')})
     return parts
+
+
+def unpack_metadata_bundle(directory, destination):
+    """Restore an indexed metadata download without overwriting or trusting tar paths.
+
+    load_continuation additionally binds the restored checkpoint to its reviewed
+    publication receipt and protocol hashes. This helper alone is not approval.
+    """
+    directory=Path(directory).resolve();destination=Path(destination)
+    if destination.exists():raise FileExistsError(destination)
+    if not verify(directory)['valid']:raise ValueError('metadata download seal invalid')
+    index=read(directory/'window-index.json');parts=index.get('parts',[])
+    names=[part.get('name') for part in parts]
+    if not names or len(set(names))!=len(names) or any(not isinstance(name,str) or not re.fullmatch(r'window(?:-\d{3})?\.tar\.gz',name) for name in names):
+        raise ValueError('invalid metadata archive index')
+    expected=set(names)|{'window-index.json','EXPORT-PROJECTION.json','GKE-SHA256SUMS'}
+    if {str(p.relative_to(directory)) for p in evidence_files(directory)}!=expected:
+        raise ValueError('metadata archive population differs')
+    destination.mkdir(parents=True,exist_ok=False)
+    try:
+        seen=set()
+        for part in parts:
+            archive=directory/part['name']
+            if archive.stat().st_size!=part['bytes'] or sha(archive)!=part['sha256']:
+                raise ValueError('metadata archive checksum mismatch')
+            verify_archive_privacy(archive)
+            with tarfile.open(archive) as bundle:
+                for member in bundle:
+                    name=PurePosixPath(member.name)
+                    if (not member.isfile() or _unsafe_archive_path(name,member.name)
+                            or str(name)!=member.name or member.name in seen):
+                        raise ValueError('unsafe or duplicate metadata member')
+                    seen.add(member.name);target=destination/member.name
+                    target.parent.mkdir(parents=True,exist_ok=True)
+                    with target.open('xb') as output:shutil.copyfileobj(bundle.extractfile(member),output)
+        if sha(destination/'GKE-SHA256SUMS')!=index.get('window_seal_sha256') or not verify(destination)['valid']:
+            raise ValueError('restored metadata seal invalid')
+        return {'valid':True,'members':len(seen),'path':str(destination)}
+    except BaseException:
+        shutil.rmtree(destination)
+        raise
+
+
+def upload_bundle(ctx, path, *, bucket, prefix, category, quarantine=None):
+    """Publish bounded indexed metadata archives through the normal privacy/readback path.
+
+    The returned member hashes refer to the projected inner population. A
+    checkpoint can still be extracted and validated by load_continuation.
+    """
+    if category not in ('readiness', 'checkpoint'):
+        raise ValueError('unsupported metadata export category')
+    with timed(ctx, category+'-export', prefix) as timing:
+        with tempfile.TemporaryDirectory(prefix='gke-metadata-') as temporary:
+            root=Path(temporary).resolve();projection=root/'projection';archives=root/'archives';archives.mkdir()
+            export_projection(path,projection,quarantine=quarantine)
+            members={str(p.relative_to(projection)):{'sha256':sha(p),'bytes':p.stat().st_size}
+                     for p in evidence_files(projection)}
+            parts=pack_window_archives(projection,archives)
+            # Preserve archive path/size/privacy inspection as well as the
+            # immutable PUT and complete readback for every published object.
+            publication=root/'publication';export_projection(archives,publication)
+            receipt=_upload(ctx,publication,bucket=bucket,prefix=prefix)
+            if receipt.get('verified') is not True:
+                raise ValueError('metadata bundle readback did not verify')
+            timing.update(member_count=len(members),archive_parts=len(parts),
+                          archive_bytes=sum(p['bytes'] for p in parts))
+            return dict(receipt,format='indexed-bundle-v1',archive_index='window-index.json',
+                        parts=parts,members=members,export_timing=timing)
 
 
 def upload(ctx,path,*,bucket,prefix):

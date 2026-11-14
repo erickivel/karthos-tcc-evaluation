@@ -215,7 +215,7 @@ def check_cell(ctx, driver, spec, attempt_id):
               'accuracy_scored': False, 'traffic_generated': False}
     ctx.write(path / 'receipt.json', report)
     try:
-        receipt = export.upload(ctx, path, bucket=ctx.state['terraform']['foundation']['evidence_bucket'],
+        receipt = export.upload_bundle(ctx, path, category='readiness', bucket=ctx.state['terraform']['foundation']['evidence_bucket'],
                                 prefix='gke-qualification-v1/runs/' + ctx.run_id + '/readiness/' + attempt_id)
         if receipt.get('verified') is not True:
             raise ValueError('minimal readiness export readback did not verify')

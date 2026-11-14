@@ -38,7 +38,7 @@ class MinimalReadinessTests(unittest.TestCase):
     def mocks(self, responder):
         with patch('evaluation.runner.forward', return_value=contextlib.nullcontext('http://fixture')), \
              patch.object(m, '_json', side_effect=responder), \
-             patch.object(m.export, 'upload', return_value={'verified': True}) as upload:
+             patch.object(m.export, 'upload_bundle', return_value={'verified': True}) as upload:
             yield upload
 
     def test_empty_traffic_free_metric_read_does_not_block_core_readiness(self):

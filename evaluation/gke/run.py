@@ -650,11 +650,15 @@ class LiveDriver:
             exports.seal(projection)
             with timed(self.ctx,'archive-packing',spec['id']) as info:
                 parts = exports.pack_window_archives(projection, archives)
+                from .failure_evidence import NAMES
+                retained_members={name:{'sha256':sha(projection/name),'source_sha256':sha(path/name),
+                                         'bytes':(projection/name).stat().st_size}
+                                  for name in NAMES if (projection/name).is_file() and (path/name).is_file()}
                 info['archive_bytes']=sum(part['bytes'] for part in parts)
         prefix = evidence_prefix or window_evidence_prefix(spec,schedule=self.ctx.manifest.get('schedule',QUALIFICATION))
         receipt=exports.upload(self.ctx,archives,bucket=bucket,prefix='gke-qualification-v1/runs/'+self.ctx.run_id+'/'+prefix)
         archive_bytes = sum(part['bytes'] for part in parts)
-        receipt.update(archive_index='window-index.json', archive_parts=len(parts), archive_bytes=archive_bytes,
+        receipt.update(archive_index='window-index.json', archive_parts=len(parts), archive_bytes=archive_bytes, retained_members=retained_members,
                        original_window_seal_sha256=sha(path/'GKE-SHA256SUMS'),redacted_projection=True)
         if len(parts) == 1:
             receipt.update(archive=parts[0]['name'], archive_sha256=parts[0]['sha256'])
@@ -757,7 +761,9 @@ def run(ctx):
     for name in ('readiness-scope-contract.json','controller-headroom.json','node-inventory.json','kubernetes-version.json','progress.ndjson','phase-timings.ndjson'):
         if (ctx.result/name).is_file():shutil.copy2(ctx.result/name,summary/name)
 
-    receipt=exports.upload(ctx,summary,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/final-summary')
+    with timed(ctx,'final-export',ctx.run_id) as export_timing:
+        receipt=exports.upload(ctx,summary,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/final-summary')
+    receipt['export_timing']=dict(export_timing)
     ctx.write(ctx.result/'final-summary-export.json',receipt)
     from .provision import request_final_cleanup
     try:

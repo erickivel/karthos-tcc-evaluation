@@ -31,7 +31,9 @@ def planning_forecast(config, matrix, continuation=None):
     """Explicit conservative estimates, never invented from a successful readiness receipt."""
     matrix=scheduled_matrix(config,matrix,continuation)
     estimates=config.get('readiness',{}).get('phase_estimates_seconds',{})
-    required=('provision','rebuild','setup','capture_setup_restore','export','history','retry_reserve')
+    split=any(key in estimates for key in ('readiness_export','window_export','checkpoint_export','final_export'))
+    required=('provision','rebuild','setup','capture_setup_restore','history','retry_reserve')+(
+        ('readiness_export','window_export','checkpoint_export','final_export') if split else ('export',))
     missing=[key for key in required if type(estimates.get(key)) not in (int,float)
              or not math.isfinite(estimates[key]) or estimates[key]<=0]
     if missing:return {'fits':False,'seconds':None,'missing':missing,'reason':'reviewed phase timing estimates required; no local benchmark required'}
@@ -41,11 +43,19 @@ def planning_forecast(config, matrix, continuation=None):
     resource_preparation=estimates.get('resource_prepare',0)
     if type(resource_preparation) not in (int,float) or not math.isfinite(resource_preparation) or resource_preparation<0:raise ValueError('invalid resource preparation allowance')
     resource_preparation*=sum(row['phase']=='resource' for row in matrix)
-    seconds=(estimates['provision']+rebuild+resource_preparation+groups*(estimates['setup']+120+estimates['export'])
-             +sum(row['duration_seconds']+60+90+180+estimates['capture_setup_restore']+estimates['export'] for row in matrix)
-             +history+estimates['retry_reserve']+config['limits']['cleanup_reserve_seconds'])
+    readiness_export=estimates['readiness_export'] if split else estimates['export']
+    window_export=estimates['window_export'] if split else estimates['export']
+    checkpoints=len(matrix)+(1 if history else 0)+1
+    checkpoint_seconds=checkpoints*estimates['checkpoint_export'] if split else 0
+    final_export=estimates['final_export'] if split else 0
+    seconds=(estimates['provision']+rebuild+resource_preparation+groups*(estimates['setup']+120+readiness_export)
+             +sum(row['duration_seconds']+60+90+180+estimates['capture_setup_restore']+window_export for row in matrix)
+             +history+estimates['retry_reserve']+config['limits']['cleanup_reserve_seconds']+checkpoint_seconds+final_export)
     return {'fits':seconds<=config['limits']['infrastructure_seconds'],'seconds':seconds,
-            'estimates':estimates,'setup_groups':groups,'launch_segment':config.get('execution_segment','all'),'launch_windows':len(matrix),'rebuild_seconds':rebuild,'history_seconds':history,'resource_preparation_seconds':resource_preparation,'retry_reserve_policy':'bounded; deadline may leave retries or windows unattempted',
+            'export_model':'split-v1' if split else 'legacy-combined',
+            'checkpoint_count':checkpoints if split else None,'checkpoint_export_seconds':checkpoint_seconds,
+            'final_export_seconds':final_export,'readiness_export_seconds':groups*readiness_export,
+            'window_export_seconds':len(matrix)*window_export,'estimates':estimates,'setup_groups':groups,'launch_segment':config.get('execution_segment','all'),'launch_windows':len(matrix),'rebuild_seconds':rebuild,'history_seconds':history,'resource_preparation_seconds':resource_preparation,'retry_reserve_policy':'bounded; deadline may leave retries or windows unattempted',
             'basis':'reviewed archived phase estimates plus frozen pre-roll/drain and quiet-counter allowance'}
 
 
@@ -221,13 +231,13 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     from .failure_evidence import retain_attempt_reports
     document['attempt_report_retention']=retain_attempt_reports(ctx,records,directory)
     ctx.write(directory/'checkpoint.json',document)
-    projection=ctx.result/'checkpoint-projections'/directory.name
     from .quarantine import from_context
-    export.export_projection(directory,projection,quarantine=from_context(ctx))
-    receipt=export._upload(ctx,projection,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/checkpoints/'+directory.name)
+    receipt=export.upload_bundle(ctx,directory,category='checkpoint',quarantine=from_context(ctx),
+        bucket=ctx.state['terraform']['foundation']['evidence_bucket'],
+        prefix='gke-qualification-v1/runs/'+ctx.run_id+'/checkpoints/'+directory.name)
     if receipt.get('verified') is not True:raise SafetyFailure('phase checkpoint readback failed')
-    receipt['checkpoint_sha256']=sha(projection/'checkpoint.json')
-    receipt['seal_sha256']=sha(projection/'GKE-SHA256SUMS')
+    receipt['checkpoint_sha256']=receipt['members']['checkpoint.json']['sha256']
+    receipt['seal_sha256']=receipt['members']['GKE-SHA256SUMS']['sha256']
     ctx.write(ctx.result/'checkpoint-receipts'/f'phase-{sequence:04d}.json',receipt)
     return receipt
 
@@ -376,7 +386,10 @@ def execute(ctx,driver):
                     # final-summary. Do not archive mutable capture streams.
                     ctx.write(ctx.result/'failure-traces'/(attempt['id']+'.json'),{'barrier':barrier,'report':report,'diagnostics':str(path)})
                     raise SafetyFailure('attempt completion barrier failed: '+str(barrier.get('error')))
-                receipt=driver.upload(attempt,report)
+                from .timing import timed
+                with timed(ctx,'window-export',attempt['id']) as export_timing:
+                    receipt=driver.upload(attempt,report)
+                receipt['export_timing']=dict(export_timing)
                 if receipt.get('verified') is not True:raise SafetyFailure('attempt evidence export did not verify')
                 generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
                 unexpected=generator.get('unexpected_outcomes')

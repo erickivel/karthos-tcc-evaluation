@@ -9,6 +9,7 @@ Standalone code and configuration for evaluating Karthos. Product code lives in 
 - [Metric/reference definitions](protocols/thesis-completion-v2/metrics.yaml)
 - [Catalog coverage](protocols/thesis-completion-v2/coverage.yaml)
 - [Environment configuration](config/gke.completion-v2.example.yaml)
+- [Compact exports, restoration and timing estimates](docs/export-efficiency.md)
 - [Harness modules and verification](evaluation/README.md)
 - [Terraform, permissions and cleanup contract](infrastructure/terraform/CONTRACT.md)
 
