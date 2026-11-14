@@ -27,9 +27,13 @@ def validate_budget(manifest):
     budget=manifest.get('study_budget',{})
     if budget!=manifest['config'].get('readiness',{}).get('study_budget'):
         raise ValueError('repair combined budget differs from reviewed configuration')
+    from .models import COMPLETION
+    limit=150 if manifest.get('schedule')==COMPLETION else 100
+    if manifest.get('schedule')==COMPLETION and manifest['config'].get('limits',{}).get('gross_limit_usd')!=limit:
+        raise ValueError('completion requires the approved USD150 combined ceiling')
     previous=budget.get('prior_runtime_allowance_usd');combined=budget.get('combined_estimate_usd')
     if (any(type(value) not in (int,float) or not math.isfinite(value) or value<0 for value in (previous,combined))
-            or budget.get('gross_limit_usd')!=100 or combined>100
+            or budget.get('gross_limit_usd')!=limit or combined>limit
             or combined+0.005<previous+manifest['cost_preview']['gross_estimate']
             or budget.get('shared_allowances_cumulative') is not True or not budget.get('basis')):
-        raise ValueError('repair requires prior-runtime allowance plus cumulative shared costs within USD100')
+        raise ValueError('study requires prior-runtime allowance plus cumulative shared costs within USD'+str(limit))

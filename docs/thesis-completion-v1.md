@@ -68,7 +68,7 @@ Keep original sealed evidence in `results/` and new, versioned interpretations i
 
 ## Launch and completion
 
-Before provisioning, verify immutable digests and refresh billing, IAM, quota, GKE version availability and the complete time/cost forecast. Preserve the **12-hour infrastructure limit**, **US$80 projected launch threshold** and **US$100 combined gross ceiling**, including earlier spending. Credits do not reduce gross charges. A forecast conflict blocks provisioning and is presented for review.
+Before provisioning, verify immutable digests and refresh billing, IAM, quota, GKE version availability and the complete time/cost forecast. Preserve the **12-hour infrastructure limit**, **US$80 projected launch threshold** and **US$150 combined gross ceiling**, explicitly approved November 14, 2026, including earlier spending. Credits do not reduce gross charges. A forecast conflict blocks provisioning and is presented for review.
 
 Preparation and passing tests do not authorize cloud execution. Present the concrete launch package and obtain explicit chat approval. No approval-receipt command is needed.
 

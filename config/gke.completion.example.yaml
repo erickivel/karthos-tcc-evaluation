@@ -34,7 +34,7 @@
   "limits": {
     "cleanup_reserve_seconds": 1800,
     "diagnostic_hold_seconds": 1800,
-    "gross_limit_usd": 100,
+    "gross_limit_usd": 150,
     "infrastructure_seconds": 43200,
     "launch_ceiling_usd": 80,
     "max_evidence_bytes": 107374182400,
@@ -67,7 +67,7 @@
     "study_budget": {
       "basis": null,
       "combined_estimate_usd": null,
-      "gross_limit_usd": 100,
+      "gross_limit_usd": 150,
       "prior_runtime_allowance_usd": null,
       "shared_allowances_cumulative": true
     },

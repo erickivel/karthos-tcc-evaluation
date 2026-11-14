@@ -21,6 +21,7 @@
       "boutique-mesh"
     ]
   ],
+  "combined_gross_limit_usd": 150,
   "comparison_scope": "shared validated checks only; no historical passes imported",
   "demos": [
     "boutique",

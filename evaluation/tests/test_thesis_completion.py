@@ -48,3 +48,19 @@ class CompletionScheduleTests(unittest.TestCase):
             path=Path(directory)/'config.json';path.write_text(json.dumps(config))
             with self.assertRaisesRegex(ValueError,'all ten windows'):
                 prepare(ROOT,path,'never-created',schedule=SCHEDULE)
+
+    def test_completion_budget_amendment_is_scoped_and_enforced(self):
+        from evaluation.gke.repair import validate_budget
+        c=models.read(ROOT/'config/gke.completion.example.yaml')
+        self.assertEqual(c['limits']['gross_limit_usd'],150)
+        models.validate_config(c,schedule=SCHEDULE)
+        with self.assertRaises(ValueError):models.validate_config(c,schedule=models.REPAIR_V2)
+        budget={'gross_limit_usd':150,'prior_runtime_allowance_usd':73,'combined_estimate_usd':149,
+                'shared_allowances_cumulative':True,'basis':'conservative gross reporting reserve'}
+        manifest={'schedule':SCHEDULE,'config':{'limits':{'gross_limit_usd':150},'readiness':{'study_budget':budget}},
+                  'study_budget':budget,'cost_preview':{'gross_estimate':76}}
+        validate_budget(manifest)
+        for cap,total in [(100,149),(150,151),(200,149)]:
+            changed=copy.deepcopy(manifest);changed['study_budget'].update(gross_limit_usd=cap,combined_estimate_usd=total)
+            changed['config']['readiness']['study_budget']=changed['study_budget']
+            with self.subTest(cap=cap,total=total),self.assertRaises(ValueError):validate_budget(changed)

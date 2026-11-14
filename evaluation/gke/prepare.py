@@ -23,7 +23,7 @@ def cost_preview(config):
     # Conservative allowances are assumptions, NOT a live quote or billing cap.
     hours=config['limits']['infrastructure_seconds']/3600
     items={'compute_four_e2_standard_4':4*hours*0.13402284,'gke_management_without_free_credit':hours*.10,'disks_allowance':3.,'network_nat_allowance':5.,'logging_allowance':10.,'registry_and_watchdog_allowance':5.,'gcs_100_GiB_90_days_allowance':10.,'secondary_export_and_transfer_allowance':15.}
-    return {'currency':'USD','gross_estimate':round(sum(items.values()),2),'items':items,'credits_assumed':0,'launch_ceiling':80,'gross_limit':100,'kind':'offline estimate with explicit allowances; current SKU verification required before launch','references':['https://cloud.google.com/products/compute/pricing/general-purpose','https://cloud.google.com/kubernetes-engine/pricing','https://cloud.google.com/storage/pricing'],'alerts_are_not_enforcement':True}
+    return {'currency':'USD','gross_estimate':round(sum(items.values()),2),'items':items,'credits_assumed':0,'launch_ceiling':80,'gross_limit':config['limits']['gross_limit_usd'],'kind':'offline estimate with explicit allowances; current SKU verification required before launch','references':['https://cloud.google.com/products/compute/pricing/general-purpose','https://cloud.google.com/kubernetes-engine/pricing','https://cloud.google.com/storage/pricing'],'alerts_are_not_enforcement':True}
 
 
 def foundation_checkpoint_check(root, config):
@@ -74,7 +74,7 @@ def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COM
     """Build experiment inputs offline. Human confirmation stays in the conversation."""
     if schedule not in RECOVERABLE_SCHEDULES:
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
-    root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path))
+    root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path),schedule=schedule)
     if schedule==COMPLETION and config.get('execution_segment','all')!='all':
         raise ValueError('completion requires all ten windows, not an inherited split segment')
     protocol=read(root/'protocols'/schedule/'protocol.yaml');matrix=build_matrix(protocol,schedule=schedule)

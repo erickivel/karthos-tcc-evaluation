@@ -30,7 +30,7 @@ def identifier(value):
     if not re.fullmatch(r'[a-z][a-z0-9-]{0,47}',value):raise ValueError('identifier must be lowercase letters/digits/hyphens, starting with a letter, <=48 characters')
     return value
 
-def validate_config(c):
+def validate_config(c,*,schedule=None):
     if c.get('schema_version')!=1 or c.get('protocol')!=PROTOCOL:raise ValueError('unsupported configuration version/protocol')
     if c.get('execution_scope','qualification') not in ('qualification','readiness-only'):
         raise ValueError('unsupported execution scope')
@@ -40,14 +40,15 @@ def validate_config(c):
     if type(reader_cpu) is not int or not 100 <= reader_cpu <= 1000:
         raise ValueError('gateway_reader_cpu_limit_m must be an integer between 100 and 1000')
     if g['region']!='us-central1' or g['zone'] not in ('us-central1-a','us-central1-b'):raise ValueError('frozen region/zone changed')
-    if l['gross_limit_usd']!=100 or l['launch_ceiling_usd']!=80 or l['infrastructure_seconds']!=43200 or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
+    expected_gross=150 if schedule==COMPLETION else 100
+    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=80 or l['infrastructure_seconds']!=43200 or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
         if not re.fullmatch(r'[^\s]+@sha256:[a-f0-9]{64}',str(image)):raise ValueError('extra image lock must contain immutable digests: '+key)
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
     if schedule==COMPLETION:
-        expected={'id':COMPLETION,'repetitions':1,'rebuild_cluster':False,
+        expected={'id':COMPLETION,'combined_gross_limit_usd':150,'repetitions':1,'rebuild_cluster':False,
                   'cluster_cell_order':[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh']],
                   'history_observation_seconds':720,'arbitration_seconds':60,'export_horizon_version':'recorded-horizon-v1',
                   'baseline_rate':2,'smoke_seconds':60,'baseline_seconds':300,'diagnostic_seconds':300,
