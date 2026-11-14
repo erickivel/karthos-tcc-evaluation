@@ -6,6 +6,41 @@ from unittest.mock import patch
 from evaluation.gke import local_kind_qualification as q
 
 class LocalKindTests(unittest.TestCase):
+    def test_protocol_prelude_uses_pinned_fixture_and_retains_completed_logs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            capture=self.capture(Path(folder));capture.out.mkdir();stage=capture.out/'mesh';stage.mkdir()
+            fixture=capture.product/'test/e2e/apps/with-istio/mesh-protocol-client-job.yaml'
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text('image: localhost:5001/mesh-protocol-go:latest\nargs: [--warmup-wait=180s, --linger=180s]\n')
+            capture.kube=['kubectl','--context=owned'];calls=[]
+            def run(args,log,**kwargs):
+                calls.append(args);path=capture.out/log
+                path.write_text('MEASURED_TRAFFIC_COMPLETE\n' if 'logs' in args else '')
+                return path
+            with patch.object(capture,'run',side_effect=run):
+                capture.protocol_prelude(stage)
+            rendered=(stage/'protocol-prelude.yaml').read_text()
+            self.assertIn('mesh-protocol-go:'+capture.tag,rendered)
+            self.assertIn('--warmup-wait=0s',rendered)
+            self.assertIn('--linger=0s',rendered)
+            self.assertIn('MEASURED_TRAFFIC_COMPLETE',(stage/'protocol-prelude-logs.log').read_text())
+            self.assertTrue(any('delete' in args and 'mesh-protocol-client' in args for args in calls))
+
+    def test_protocol_prelude_failure_cleans_up_and_cannot_qualify(self):
+        with tempfile.TemporaryDirectory() as folder:
+            capture=self.capture(Path(folder));capture.out.mkdir();stage=capture.out/'mesh';stage.mkdir()
+            fixture=capture.product/'test/e2e/apps/with-istio/mesh-protocol-client-job.yaml'
+            fixture.parent.mkdir(parents=True);fixture.write_text('image: localhost:5001/mesh-protocol-go:latest')
+            capture.kube=['kubectl'];calls=[]
+            def run(args,log,**kwargs):
+                calls.append(args)
+                if 'logs' in args:raise RuntimeError('protocol client failed')
+                path=capture.out/log;path.write_text('');return path
+            with patch.object(capture,'run',side_effect=run):
+                with self.assertRaisesRegex(RuntimeError,'protocol client failed'):
+                    capture.protocol_prelude(stage)
+            self.assertTrue(any('delete' in args for args in calls))
+
     def capture(self, root):
         product=root/'product';product.mkdir()
         lock=root/'lock.json';lock.write_text(json.dumps({'karthos_revision':'a'*40}))

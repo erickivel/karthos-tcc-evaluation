@@ -29,6 +29,7 @@ The helper verifies and copies the product into its new evidence directory befor
 - An explicitly supplied **business-namespace** mesh profile, with provisional trace availability accepted only after positive actual receiver span observations.
 - Generated and mounted source plans, collector configuration and API source provenance.
 - Forty parsed actual calls per source (30 normal, 10 intentional errors), stable pre-load counters and observed post-load deltas; other-source increases prevent a single-contribution pass.
+- Before mesh validation, run the pinned protocol-client Job, require its measured-traffic completion log, and delete it. This supplies request counters for the protocol-only server that gateway journeys do not call. It is setup traffic outside the later gateway-to-service accounting population.
 - Eleven entity kinds/seven directed relationships, same-name/different-UID replacement across nodes and a retained read of the original snapshot.
 - Actual removal of owned Istio, fresh public discovery and explicit trace redeployment.
 - Cluster node UID identities and owned-cluster cleanup status.

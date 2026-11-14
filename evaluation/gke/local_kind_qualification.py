@@ -207,6 +207,24 @@ class KindCapture:
             checks.append({'pod':pod['metadata']['name'],'uid':pod['metadata']['uid'],'app':app,'proxy_ready':ready,'counter_series':count})
         write(stage/'business-mesh-checks.json',checks);return checks
 
+    def protocol_prelude(self,stage):
+        """Exercise the protocol-only fixture before requiring its mesh counters."""
+        template=self.product/'test/e2e/apps/with-istio/mesh-protocol-client-job.yaml'
+        rendered=template.read_text().replace('localhost:5001/mesh-protocol-go:latest',
+            'localhost:5001/mesh-protocol-go:'+self.tag)
+        rendered=rendered.replace('--warmup-wait=180s','--warmup-wait=0s').replace('--linger=180s','--linger=0s')
+        manifest=stage/'protocol-prelude.yaml';manifest.write_text(rendered)
+        self.run([*self.kube,'create','-f',str(manifest)],str(stage.relative_to(self.out)/'protocol-prelude-create.log'))
+        try:
+            logs=self.run([*self.kube,'logs','-f','-n','karthos-demo','job/mesh-protocol-client',
+                '-c','mesh-protocol-client','--pod-running-timeout=90s'],
+                str(stage.relative_to(self.out)/'protocol-prelude-logs.log'),timeout=120)
+            if 'MEASURED_TRAFFIC_COMPLETE' not in logs.read_text():
+                raise ValueError('protocol setup traffic did not complete')
+        finally:
+            self.run([*self.kube,'delete','job','mesh-protocol-client','-n','karthos-demo','--wait=true','--timeout=60s'],
+                str(stage.relative_to(self.out)/'protocol-prelude-cleanup.log'),timeout=70)
+
     def accounting(self,stage,source,plan):
         assigned={metric:[plan['metric_assignments'][metric]] for metric in METRICS}
         if any(value!=[source] for value in assigned.values()):raise ValueError('source plan differs from stage')
@@ -255,6 +273,7 @@ class KindCapture:
             self.run(['bash','test/e2e/apps/deploy.sh','with-istio'],'mesh-fixtures.log',timeout=1800)
             stage=self.out/'mesh';profile=self.discover(stage)
             self.traffic(stage,1,1,'preprofile-traffic')
+            self.protocol_prelude(stage)
             profile=business_profile(profile,self.mesh_checks(stage));plan=self.deploy(stage,profile)
             self.traffic(stage,1,1,'trace-intake-traffic')
             with forward(self.kube,'deployment/karthos-gateway',8888,stage,'gateway-selfmetrics') as endpoint:
