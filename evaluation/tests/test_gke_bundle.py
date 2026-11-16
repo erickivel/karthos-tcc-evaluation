@@ -157,3 +157,29 @@ class ArchivedSnapshotTests(BundleTests):
         original=self.build();archive=Path(original['path'])/'product'
         (archive/'tracked.txt').write_text('changed')
         with self.assertRaises(ValueError):_product(archive,self.pins)
+
+    def test_repacked_materialized_alias_preserves_exact_manifest(self):
+        (self.product/'AGENTS.md').write_text('validated guide')
+        (self.product/'CLAUDE.md').symlink_to('AGENTS.md')
+        self.pins['karthos_source_hash']=repository_fingerprint(self.product)
+        first=self.build('alias-original');archive=Path(first['path'])
+        second=build_bundle(self.root,'alias-repacked',archive/'product',self.pins,implementation_hashes(self.root))
+        self.assertEqual((archive/'product-manifest.json').read_bytes(),
+                         (Path(second['path'])/'product-manifest.json').read_bytes())
+        self.assertEqual(first['manifest_hashes'],second['manifest_hashes'])
+
+    def test_archive_rejects_unsupported_or_unequal_alias_provenance(self):
+        from evaluation.gke.bundle import _product
+        # Both files belong to the validated closure, but are not aliases.
+        (self.product/'AGENTS.md').write_text('guide')
+        (self.product/'CLAUDE.md').write_text('different guide')
+        self.pins['karthos_source_hash']=repository_fingerprint(self.product)
+        original=self.build();archive=Path(original['path'])
+        manifest=archive/'product-manifest.json';record=json.loads(manifest.read_text())
+        for aliases in ({'CLAUDE.md':'AGENTS.md'},{'tracked.txt':'AGENTS.md'},
+                        {'CLAUDE.md':'../AGENTS.md'},[],None):
+            with self.subTest(aliases=aliases):
+                record['materialized_documentation_aliases']=aliases
+                manifest.write_text(json.dumps(record))
+                with self.assertRaisesRegex(ValueError,'documentation alias'):
+                    _product(archive/'product',self.pins)

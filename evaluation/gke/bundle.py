@@ -129,10 +129,24 @@ def _git(root,*args):
     return result.stdout
 
 
+def _documentation_aliases(files,aliases):
+    if not isinstance(aliases,dict) or aliases not in ({},{'CLAUDE.md':'AGENTS.md'}):
+        raise ValueError('unsupported materialized documentation alias provenance')
+    for name,target in aliases.items():
+        if name not in files or target not in files or files[name]!=files[target]:
+            raise ValueError('materialized documentation alias bytes differ or are missing')
+    return dict(aliases)
+
+
 def _product(snapshot,pins):
+    # Preserve the existing four-value interface for snapshot validation callers.
+    return _product_details(snapshot,pins)[:4]
+
+
+def _product_details(snapshot,pins):
     """Use the original repository_fingerprint listing/byte algorithm exactly."""
     if snapshot is None or not Path(snapshot).exists():
-        return {},[],None,['validated product snapshot is pending']
+        return {},[],None,['validated product snapshot is pending'],{}
     root=Path(snapshot)
     if root.is_symlink(): raise ValueError('symlink product snapshot forbidden')
     archived=root.parent/'product-manifest.json'
@@ -150,7 +164,8 @@ def _product(snapshot,pins):
             digest.update(b'\0')
         if digest.hexdigest()!=pins.get('karthos_source_hash') or record.get('original_source_hash')!=pins.get('karthos_source_hash'):
             raise ValueError('archive original fingerprint differs from validated snapshot')
-        return files,missing,record['original_revision'],[]
+        aliases=_documentation_aliases(files,record.get('materialized_documentation_aliases',{}))
+        return files,missing,record['original_revision'],[],aliases
     names=sorted(set(_git(root,'ls-files','-z','--cached','--others','--exclude-standard').split('\0'))-{''})
     files={};missing=[];digest=hashlib.sha256()
     for name in names:
@@ -168,7 +183,8 @@ def _product(snapshot,pins):
     revision=_git(root,'rev-parse','HEAD').strip()
     if not pins.get('karthos_revision') or revision!=pins['karthos_revision']:
         raise ValueError('product snapshot revision differs from validated original revision')
-    return dict(sorted(files.items())),missing,revision,[]
+    aliases={'CLAUDE.md':'AGENTS.md'} if 'CLAUDE.md' in files and (root/'CLAUDE.md').is_symlink() else {}
+    return dict(sorted(files.items())),missing,revision,[],_documentation_aliases(files,aliases)
 
 
 def build_bundle(root,bundle_id,product_snapshot,pins,source_hashes,*,toolchain=None,chart_snapshot=None):
@@ -190,7 +206,7 @@ def build_bundle(root,bundle_id,product_snapshot,pins,source_hashes,*,toolchain=
     for prefix in SOURCE_ROOTS:
         if (root/prefix).exists(): _scan(root/prefix,exclude=EXCLUDED)
     for name in source_hashes: _source_path(root,name)
-    product_files,removed,revision,pending=_product(product_snapshot,pins)
+    product_files,removed,revision,pending,product_aliases=_product_details(product_snapshot,pins)
     if not product_files and not any('product' in item for item in pending):
         pending.append('validated product has no source bytes')
     caches={};cache_trees={};cache_paths={}
@@ -232,7 +248,7 @@ def build_bundle(root,bundle_id,product_snapshot,pins,source_hashes,*,toolchain=
         write(stage/'source-manifest.json',{'files':dict(sorted(source_hashes.items()))})
         write(stage/'product-manifest.json',{'files':product_files,'original_source_hash':pins.get('karthos_source_hash'),
               'original_revision':revision,'expected_original_revision':pins.get('karthos_revision'),
-              'missing_tracked_paths':removed,'materialized_documentation_aliases':({'CLAUDE.md':'AGENTS.md'} if product_snapshot and (Path(product_snapshot)/'CLAUDE.md').is_symlink() and 'CLAUDE.md' in product_files else {}),'state':'verified' if product_files else 'pending'})
+              'missing_tracked_paths':removed,'materialized_documentation_aliases':product_aliases,'state':'verified' if product_files else 'pending'})
         write(stage/'cache-manifest.json',{'files':dict(sorted(cache_files.items())),'baseline_tree_digests':cache_trees,
               'state':'verified' if len(caches)==len(CACHES) else 'pending'})
         write(stage/'toolchain/manifest.json',{'platform':'linux/amd64','files':{},'versions':{},'state':'pending',
