@@ -52,6 +52,20 @@ class OfficialClaimTests(unittest.TestCase):
             models.write(p/'api-edges.json',{'data':{'edges':[]}})
             self.assertEqual(tc.service_graph_evidence(p,'app','boutique')['state'],'fail')
 
+    def test_interval_graph_survives_idle_snapshot_but_rejects_wrong_producer(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)
+            models.write(p/'k8s-services.json',{'items':[{'metadata':{'namespace':'app','name':n}} for n in ('frontend','checkoutservice')]})
+            models.write(p/'api-nodes.json',{'data':{'nodes':[{'id':n,'name':n,'namespace':'app','kind':'service'} for n in ('frontend','checkoutservice')]}})
+            models.write(p/'api-edges.json',{'data':{'edges':[]}})
+            ledger={'scope':{'namespace':'app','service':'checkoutservice','metric_source':'mesh.istio','calls_source':'mesh.istio','from':'2026-01-01T00:00:00Z','to':'2026-01-01T00:01:00Z'},
+                    'edge_history':{'state':'observed','edges':[{'source':'frontend','target':'checkoutservice','relation':'calls','provenance':['mesh.istio'],'first_seen':'2026-01-01T00:00:10Z','last_seen':'2026-01-01T00:00:20Z'}]}}
+            models.write(p/'consumer/ledger.json',ledger)
+            self.assertEqual(tc.service_graph_evidence(p,'app','boutique')['state'],'pass')
+            ledger['edge_history']['edges'][0]['provenance']=['traces.otlp']
+            models.write(p/'consumer/ledger.json',ledger)
+            self.assertEqual(tc.service_graph_evidence(p,'app','boutique')['state'],'fail')
+
     def test_duration_requires_source_matched_population_not_just_parity(self):
         report={'families':{'traffic_duration':{'state':'insufficient'},'exact_api_storage_parity':{'state':'pass'}}}
         self.assertEqual(tc.duration_evidence(report)['state'],'insufficient')
@@ -139,7 +153,11 @@ class CompleteClaimMatrixTests(unittest.TestCase):
                 namespace='app-'+spec['demo'];target='checkout' if spec['demo']=='astronomy' else 'checkoutservice'
                 source='mesh.istio' if spec['source']=='mesh' else 'traces.servicegraph'
                 nodes=[{'id':name,'kind':'service','name':name,'namespace':namespace} for name in ('frontend',target)]
-                models.write(path/'consumer/ledger.json',{'openapi_validated':True,'after':{'nodes':nodes}})
+                models.write(path/'consumer/ledger.json',{'openapi_validated':True,'after':{'nodes':nodes},
+                    'scope':{'namespace':namespace,'service':target,'metric_source':source,'calls_source':source,
+                             'from':'2026-01-01T00:00:00Z','to':'2026-01-01T00:01:00Z'},
+                    'edge_history':{'state':'observed','edges':[{'source':'frontend','target':target,'relation':'calls',
+                        'provenance':[source],'first_seen':'2026-01-01T00:00:10Z','last_seen':'2026-01-01T00:00:20Z'}]}})
                 models.write(path/'k8s-services.json',{'items':[{'metadata':{'name':n['name'],'namespace':namespace}} for n in nodes]})
                 models.write(path/'api-nodes.json',{'data':{'nodes':nodes}})
                 models.write(path/'api-edges.json',{'data':{'edges':[{'source':'frontend','target':target,'relation':'calls'}]}})

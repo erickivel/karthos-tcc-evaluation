@@ -21,3 +21,20 @@ def classify(snapshot,seen=()):
             'seen_failures':sorted(current|set(map(tuple,seen))),
             'keep_observing':not (snapshot.get('final_seal_verified') is True and snapshot.get('temporary_removal_confirmed') is True),
             'terminal_state':'verified' if snapshot.get('final_seal_verified') is True else 'unknown'}
+
+
+def controller_health(provider, process, serial):
+    """Keep current observations distinct from retained serial history."""
+    import re
+    oom = bool(re.search(r'Out of memory: Killed process \d+ \(python[^)]*\)', serial))
+    running = (process or {}).get('Running')
+    cause = 'current process liveness not established'
+    if running is True:
+        cause = 'historical OOM evidence; current process running' if oom else 'container running'
+    elif running is False:
+        cause = 'container OOM kill' if process.get('OOMKilled') else 'container stopped; exact cause unknown'
+    return {'provider_state': (provider or {}).get('status', 'unknown'),
+            'process_state': 'running' if running is True else 'stopped' if running is False else 'unknown',
+            'container_exit_code': (process or {}).get('ExitCode'),
+            'serial_python_oom': oom, 'logging_permission_denied': 'logging.logEntries.create' in serial,
+            'cause': cause, 'serial_scope': 'retained history; not proof of current process state'}

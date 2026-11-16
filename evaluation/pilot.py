@@ -124,6 +124,31 @@ def observer_targets(cell, *, include_agent=False):
     return targets
 
 
+def observer_prior_uids(namespace, deployment):
+    uid=deployment.get('metadata',{}).get('uid')
+    if not uid:raise ValueError('observer deployment UID unavailable')
+    replicas=r.kube_json('get','replicasets','-n',namespace).get('items',[])
+    owned={row['metadata']['uid'] for row in replicas if any(o.get('kind')=='Deployment' and o.get('uid')==uid for o in row.get('metadata',{}).get('ownerReferences',[]))}
+    pods=r.kube_json('get','pods','-n',namespace).get('items',[])
+    result={pod['metadata']['uid'] for pod in pods if any(o.get('kind')=='ReplicaSet' and o.get('uid') in owned for o in pod.get('metadata',{}).get('ownerReferences',[]))}
+    if not result:raise ValueError('observer prior Pod UID ownership unavailable')
+    return result
+
+
+def wait_observer_termination(namespace, prior_uids, receipt, *, timeout=240):
+    start=time.monotonic();observations=[]
+    while True:
+        pods=r.kube_json('get','pods','-n',namespace).get('items',[])
+        outstanding=[pod for pod in pods if pod.get('metadata',{}).get('uid') in prior_uids]
+        observations.append({'at':time.time(),'pods':[{'uid':p['metadata']['uid'],'name':p['metadata'].get('name'),'deletion_timestamp':p['metadata'].get('deletionTimestamp'),'phase':p.get('status',{}).get('phase')} for p in outstanding]})
+        value={'complete':not outstanding,'prior_uids':sorted(prior_uids),'outstanding_uids':sorted(p['metadata']['uid'] for p in outstanding),'elapsed_seconds':time.monotonic()-start,'observations':observations}
+        from .gke.models import write
+        write(receipt,value)
+        if not outstanding:return
+        if time.monotonic()-start>=timeout:raise TimeoutError('observer prior Pod UIDs remain; see '+str(receipt))
+        time.sleep(min(1,max(0,timeout-(time.monotonic()-start))))
+
+
 def install_observers(cell, path: Path, *, include_agent=False, setup_no_surge=False) -> None:
     for boundary, name, grpc in observer_targets(cell,include_agent=include_agent):
         service = r.kube_json('get', 'service', name, '-n', cell.namespace)
@@ -137,6 +162,7 @@ def install_observers(cell, path: Path, *, include_agent=False, setup_no_surge=F
         r.apply({'apiVersion': 'v1', 'kind': 'ConfigMap', 'metadata': {
             'name': f'eval-observer-{boundary}', 'namespace': cell.namespace,
             'labels': {r.OWNER_LABEL: r.OWNER_VALUE}}, 'data': {'nginx.conf': config}})
+        prior_uids=observer_prior_uids(cell.namespace,deployment) if setup_no_surge else set()
         patch = observer_patch(boundary, r.CONFIG['observer_image'])
         strategy = deployment['spec'].get('strategy') if setup_no_surge else None
         replace_during_setup = strategy is not None and strategy.get('type') == 'RollingUpdate'
@@ -148,6 +174,8 @@ def install_observers(cell, path: Path, *, include_agent=False, setup_no_surge=F
         r.kube('patch', 'deployment', name, '-n', cell.namespace, '--type=strategic',
                '-p', json.dumps(patch))
         r.kube('rollout', 'status', f'deployment/{name}', '-n', cell.namespace, '--timeout=240s')
+        if setup_no_surge:
+            wait_observer_termination(cell.namespace,prior_uids,path/f'observer-termination-{name}.json')
         if replace_during_setup:
             r.kube('patch', 'deployment', name, '-n', cell.namespace, '--type=json',
                    '-p', json.dumps([{'op': 'replace', 'path': '/spec/strategy', 'value': strategy}]))

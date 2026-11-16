@@ -43,10 +43,12 @@ class ObserverTests(unittest.TestCase):
         deployment = {'spec': {'strategy': strategy}}
         with (patch.object(pilot, 'observer_targets', return_value=[('frontend', 'frontend-proxy', False)]),
               patch.object(pilot.r, 'kube_json', side_effect=[service, deployment, service, deployment]),
+              patch.object(pilot,'observer_prior_uids',return_value={'old'}), patch.object(pilot,'wait_observer_termination') as barrier,
               patch.object(pilot.r, 'kube') as kube, patch.object(pilot.r, 'write'),
               patch.object(pilot.r, 'apply'), patch.dict(pilot.r.CONFIG, {'observer_image': 'fixture'})):
             pilot.install_observers(cell, Path('.'), setup_no_surge=True)
 
+        barrier.assert_called_once_with('fixture',{'old'},Path('observer-termination-frontend-proxy.json'))
         patch_observer, rollout, restore, patch_service = [c.args for c in kube.call_args_list]
         self.assertEqual(json.loads(patch_observer[-1])['spec']['strategy']['rollingUpdate'],
                          {'maxSurge': 0, 'maxUnavailable': 1})

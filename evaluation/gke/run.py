@@ -342,6 +342,8 @@ class LiveDriver:
             kind=obj['kind'];meta=obj['metadata'];args=['get',kind,meta['name']]+(['-n',meta['namespace']] if meta.get('namespace') else [])
             existing=self.ctx.kube(*args,'--ignore-not-found','-o','json',check=False)
             if existing.returncode or existing.stdout.strip():raise ValueError('diagnostic name already exists or cannot be checked: '+meta['name'])
+        from .scheduling_capacity import verify_additions
+        verify_additions(self.ctx,objects)
         return self.ctx.kube('create','-f','-',input_text=json.dumps({'apiVersion':'v1','kind':'List','items':objects}))
 
     def _reference_start(self,namespace,token,path):
@@ -546,6 +548,12 @@ class LiveDriver:
                 prepare(self.ctx,self,spec,token,scratch,objects)
             if spec['phase'] in ('resource','restart'):
                 thread=threading.Thread(target=self._stimulus,args=(spec,path,token,stop,state,objects),name='stimulus-'+token,daemon=True);thread.start()
+            from .evidence_first import enabled
+            if enabled(self.ctx):
+                from .traffic_population import verify as verify_population
+                # The timing runner reserves path itself; preflight lives in
+                # scratch until copied into the finalized window evidence.
+                verify_population(self.ctx,self.cell,scratch)
             try:traffic=timing_pilot.run_window(self.cell,parent,timing_spec,self.ctx.run_id+':'+spec['id'],
                                                 measure=lambda phase: timed(self.ctx,phase,spec['id']))
             except Exception as exc:
@@ -581,6 +589,19 @@ class LiveDriver:
                 self.ctx.write(path/'consumer-status.json',consumer)
                 selection=self._selection(path,spec)
             else:consumer={'state':'incomplete','reason':'generator bounds unavailable'};selection={'state':'insufficient','reason':'public sample bounds unavailable'}
+            from .evidence_first import enabled
+            if enabled(self.ctx):
+                reference=_read(path/'reference-status.json')
+                consumer_ok=consumer.get('state') in ('complete','observed','available') and consumer.get('valid',True) is True
+                preliminary={'path':str(path),'spec':spec,'execution':{'state':'complete' if not timing_error and manifest.get('generator_artifacts_complete') is True else 'incomplete'},
+                    'evidence':{'valid':False,'state':'pending-analysis'},'numerical_agreement':{'state':'insufficient'},
+                    'analysis':{'state':'pending'},'consumer':consumer,'source_selection':selection,'timing_error':timing_error}
+                self.ctx.write(path/'scoring-context.json',{'protocol':self.ctx.manifest['schedule'],'evidence_pipeline':self.ctx.config['evidence_pipeline'],'manifest_sha256':hashlib.sha256(json.dumps(self.ctx.manifest,sort_keys=True,separators=(',',':')).encode()).hexdigest(),'spec':spec,'consumer':consumer,'source_selection':selection,
+                    'timing_error':timing_error,'diagnostic_state':state,'reference_valid':reference.get('valid') is True,
+                    'consumer_valid':consumer_ok,'execution':preliminary['execution']})
+                self.ctx.write(path/'versions-after.json',verify_versions(self.ctx))
+                self.ctx.write(path/'measurement-checkpoint.json',preliminary)
+                return preliminary
             with timed(self.ctx,'scoring',spec['id']):
                 report=evaluate(self.ctx,spec,path,traffic_report=traffic)
             report['path']=str(path);report['consumer']=consumer;report['source_selection']=selection;report['timing_error']=timing_error
@@ -617,10 +638,9 @@ class LiveDriver:
             if path.exists():self.ctx.write(path/'diagnostic-cleanup.json',{'valid':not cleanup_errors,'errors':cleanup_errors})
             self._pending_reference=None
             if cleanup_errors:
-                saved=_read(path/'gke-evaluation.json')
-                if saved:
-                    saved.setdefault('evidence',{}).update(state='incomplete',valid=False,diagnostic_cleanup_errors=cleanup_errors)
-                    self.ctx.write(path/'gke-evaluation.json',saved)
+                # diagnostic-cleanup.json is the authoritative failed safety
+                # record. Do not re-decode/overwrite a potentially huge detailed
+                # measurement report while handling another failure.
                 raise RuntimeError('ownership-safe diagnostic cleanup incomplete: '+str(cleanup_errors))
 
     def upload(self,spec,report,*,evidence_prefix=None):
@@ -664,6 +684,50 @@ class LiveDriver:
             receipt.update(archive=parts[0]['name'], archive_sha256=parts[0]['sha256'])
         self.ctx.state['cumulative_raw_evidence_bytes']=self.ctx.state.get('cumulative_raw_evidence_bytes',0)+original_bytes
         self.ctx.state['uploaded_evidence_bytes']=self.ctx.state.get('uploaded_evidence_bytes',0)+archive_bytes
+        return receipt
+
+    def analyse(self,spec,raw_receipt):
+        from .evidence_first import after_export,run_process,AnalysisSafetyError
+        from .report_summary import load_summary
+        import sys
+        path=self.paths[spec['id']]
+        analysis=path/'analysis';analysis.mkdir(exist_ok=False)
+        self.ctx.write(analysis/'input-binding.json',{'raw_evidence_export':raw_receipt,'manifest':self.ctx.manifest,
+            'source_root':str(self.ctx.root),'window':str(path),'input_population':'original-local','verifier_implementation_hashes':self.ctx.manifest['implementation_hashes']})
+        def score():
+            remaining=self.ctx.deadline-time.time()-self.ctx.config['limits']['cleanup_reserve_seconds']
+            if remaining<=0:raise TimeoutError('no analysis time remains before cleanup reserve')
+            status=run_process([sys.executable,'-m','evaluation.gke.scoring_worker',str(analysis/'input-binding.json')],analysis,timeout=remaining)
+            if not status.get('workers_stopped'):raise AnalysisSafetyError(status.get('reason','analysis worker termination unverified'))
+            if status['state']!='complete':raise RuntimeError(status['reason'])
+            result=load_summary(analysis)
+            if result.get('state')=='unavailable':raise RuntimeError(result['reason'])
+            return result
+        result=after_export(raw_receipt,score)
+        result['path']=str(path);result['spec']=spec
+        checkpoint=_read(path/'measurement-checkpoint.json')
+        if result['analysis']['state']=='failed':result['execution']=checkpoint.get('execution',{'state':'incomplete'})
+        self.ctx.write(analysis/'analysis-status.json',result)
+        return result
+
+    def upload_analysis(self,spec,report):
+        from .quarantine import from_context
+        path=self.paths[spec['id']]
+        analysis=path/'analysis'
+        # Raw bytes are already immutable in the first bundle. Only late safety
+        # and analysis records enter this second publication.
+        for name in ('transition.json','diagnostic-cleanup.json'):
+            if (path/name).is_file():shutil.copy2(path/name,analysis/name)
+        prefix=window_evidence_prefix(spec,schedule=self.ctx.manifest.get('schedule',QUALIFICATION))+'/analysis'
+        original_bytes=sum(member.stat().st_size for member in exports.evidence_files(analysis))
+        maximum=self.ctx.config['limits'].get('max_evidence_bytes',100*1024**3)
+        if original_bytes+self.ctx.state.get('cumulative_raw_evidence_bytes',0)>maximum:raise ValueError('analysis exceeds total evidence budget')
+        if shutil.disk_usage(analysis).free<original_bytes+512*1024**2:raise ValueError('insufficient analysis archive headroom')
+        receipt=exports.upload_bundle(self.ctx,analysis,category='analysis',quarantine=from_context(self.ctx),
+            bucket=self.ctx.state['terraform']['foundation']['evidence_bucket'],
+            prefix='gke-qualification-v1/runs/'+self.ctx.run_id+'/'+prefix)
+        self.ctx.state['cumulative_raw_evidence_bytes']=self.ctx.state.get('cumulative_raw_evidence_bytes',0)+original_bytes
+        self.ctx.state['uploaded_evidence_bytes']=self.ctx.state.get('uploaded_evidence_bytes',0)+sum(part['bytes'] for part in receipt.get('parts',[]))
         return receipt
 
     def failure_hold(self,spec,report):

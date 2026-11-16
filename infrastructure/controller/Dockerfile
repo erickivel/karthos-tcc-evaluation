@@ -35,7 +35,7 @@ ENV PATH="/opt/toolchain/bin:/opt/toolchain/go/bin:/opt/toolchain/google-cloud-s
     KUBECONFIG=/data/kubeconfig PYTHONDONTWRITEBYTECODE=1
 # Detect missing runtime dependencies without network or cloud authentication.
 RUN bash --version && git --version && curl --version \
- && gke-gcloud-auth-plugin --version && python -c "import yaml; assert yaml.__version__ == '6.0.3'" \
+ && gke-gcloud-auth-plugin --version && python -c "import yaml, ijson; assert ijson.__version__ == '3.4.0.post0'; assert yaml.__version__ == '6.0.3'" \
  && kubectl version --client=true && helm version --short && istioctl version --remote=false \
  && terraform version && gcloud version && go version && task --version
 WORKDIR /opt/evaluation

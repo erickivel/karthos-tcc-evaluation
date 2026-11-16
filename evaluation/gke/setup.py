@@ -87,7 +87,11 @@ def legacy_context(ctx):
     def apply_legacy(obj):
         objects=obj if isinstance(obj,list) else [obj]
         mode='karthos' if all(x.get('metadata',{}).get('namespace')=='karthos-system' for x in objects) else 'demo'
-        return apply(ctx,transform(objects,deployment_lock(ctx),run_id=ctx.run_id,mode=mode))
+        rendered=transform(objects,deployment_lock(ctx),run_id=ctx.run_id,mode=mode)
+        if any(obj.get('kind')=='Job' for obj in rendered):
+            from .scheduling_capacity import verify_additions
+            verify_additions(ctx,rendered)
+        return apply(ctx,rendered)
     r.apply=apply_legacy
     r.prepare_source=lambda source:prepare_source(ctx,source)
     r.deploy_karthos=lambda cell,path:deploy_karthos(ctx,cell,path)
@@ -178,6 +182,22 @@ def deploy_karthos(ctx,cell,path):
             'connector_policy':'explicit reviewed v2 override' if ctx.manifest.get('schedule') in CAPTURE_V2_SCHEDULES else 'product-generated defaults','values_sha256':sha(values),
             'source_plan_sha256':sha(resolved)})
     if selected_source(read(resolved))!=source_id(cell.source):raise ValueError('discovery selected wrong source')
+    # Admission check before Helm's rollout wait: reserve the missing Agent
+    # using live assigned Pod requests, including GKE system Pods and sidecars.
+    from .scheduling_capacity import capacity_report, milli
+    from .render import KARTHOS_REQUESTS
+    capacity_nodes=ctx.json('get','nodes');capacity_pods=ctx.json('get','pods','-A')
+    capacity=capacity_report(capacity_nodes,capacity_pods)
+    for row in capacity['nodes']:
+        present=any(p.get('spec',{}).get('nodeName')==row['node']
+                    and p.get('metadata',{}).get('namespace')=='karthos-system'
+                    and any(o.get('kind')=='DaemonSet' and o.get('name')=='karthos-agent' for o in p.get('metadata',{}).get('ownerReferences',[]))
+                    and p.get('status',{}).get('phase') not in ('Succeeded','Failed') for p in capacity_pods.get('items',[]))
+        reserve=0 if present else float(milli(KARTHOS_REQUESTS['karthos-agent']['cpu']))
+        row['additional_reserve_cpu_m']=reserve;row['remaining_cpu_m']-=reserve
+    capacity['ready']=bool(capacity['nodes']) and all(row['remaining_cpu_m']>=0 for row in capacity['nodes'])
+    write(path/'pre-agent-capacity.json',capacity)
+    if not capacity['ready']:raise ValueError('CPU reservation capacity cannot admit required Karthos Agent; see pre-agent-capacity.json')
     # Post-renderer maps the generated default product repository/tag to the frozen product digest.
     ctx.command(['helm','upgrade','--install','karthos',str(r.CACHE/'karthos-chart'),'-n','karthos-system','--create-namespace','--kubeconfig',str(ctx.kubeconfig),'-f',str(values),'--post-renderer',str(post_renderer(ctx,'karthos')),'--wait','--timeout','12m'],timeout=900)
     for resource in ['deployment/karthos-backend','daemonset/karthos-agent','deployment/karthos-gateway']:ctx.kube('rollout','status',resource,'-n','karthos-system','--timeout=300s',timeout=330)
@@ -312,6 +332,10 @@ def setup_cell(ctx,cell,parent):
     sc='eval-'+hashlib.sha256(ctx.run_id.encode()).hexdigest()[:16]
     apply(ctx,{'apiVersion':'storage.k8s.io/v1','kind':'StorageClass','metadata':{'name':sc,'labels':{'evaluation.karthos.dev/owner':'gke-qualification-v1','evaluation.karthos.dev/run-id':ctx.run_id}},'provisioner':'pd.csi.storage.gke.io','reclaimPolicy':'Delete','volumeBindingMode':'WaitForFirstConsumer','parameters':{'type':'pd-balanced','labels':'evaluation-owner=gke-qualification-v1,evaluation-run='+ctx.run_id}})
     r.reset_cell(False);r.prepare_source(cell.source);r.create_namespace(cell);r.install_demo(cell,path);pilot.install_observers(cell,path,include_agent=False,setup_no_surge=True);deploy_karthos(ctx,cell,path);pilot.install_scripts(cell)
+    from .evidence_first import enabled
+    if enabled(ctx):
+        from .traffic_population import verify as verify_population
+        verify_population(ctx,cell,path)
     # The independent consumer and collectors must not be silently co-located with every app.
     pods=ctx.json('get','pods','-n',cell.namespace)['items'];nodes={n['name']:n['node_slot'] for n in validate_nodes(ctx.json('get','nodes'))}
     for term,slot in [('frontend','app-a'),('checkout','app-b')]:

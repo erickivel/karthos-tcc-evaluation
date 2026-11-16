@@ -382,6 +382,30 @@ def _cpu_reference(observed,references,result):
     return _numeric(result,observed['value'],factor*delta[target]/total,cpu_interval=interval,delta_ticks=delta,guest_states_excluded=True,comparison='v0.156 per-state delta / eight-state total; guest time not counted twice')
 
 
+def _host_reference_index(references):
+    """Index candidate populations without dropping duplicates or conflicts."""
+    index=defaultdict(list)
+    for row in references:
+        key=(row.get('node_uid'),row.get('source'),row.get('metric'))
+        index[key].append(row)
+        if row.get('source')=='statvfs':
+            index[(row.get('node_uid'),'statvfs',None)].append(row)
+    return index
+
+
+def _host_reference_candidates(observed,index):
+    # Exact dimensions, units, lifecycle and timestamps remain checked by the
+    # existing comparator. This only avoids scanning unrelated metric families.
+    name=observed.get('metric','')
+    if name in ('system.filesystem.usage','system.filesystem.utilization'):kind=('statvfs',None)
+    elif name=='system.cpu.utilization':kind=('linux-proc','cpu.time')
+    elif name=='system.memory.usage':kind=('linux-proc','memory.'+MEMORY_FIELDS.get(observed.get('dimensions',{}).get('state'),''))
+    elif name in ('system.disk.io.read','system.disk.io.write'):kind=('linux-proc','disk.sectors')
+    elif name in ('system.network.io.receive','system.network.io.transmit'):kind=('linux-proc','network.bytes')
+    else:return ()
+    return index.get((observed.get('node_uid'),*kind),())
+
+
 def compare_reference(observed,references):
     result=_comparison(observed,references);name=observed.get('metric');dims=observed.get('dimensions',{})
     if observed.get('source')!='host-os' or not observed.get('node') or not observed.get('node_uid'):
@@ -450,6 +474,8 @@ def compare_lifecycle(observed,snapshots):
                 elif name in ('k8s.container.restarts','k8s.container.restart.count'):value=container.get('restartCount')
                 else:return _blocked(result,'unsupported lifecycle metric','ready/restart/phase metric contract')
             if value is not None:candidates.append((snapshot,pod,value))
+    from .observation_contracts import lifecycle_observations
+    result['bounded_observation']=lifecycle_observations(candidates)
     result['matching_reference_count']=len(candidates)
     if not candidates:return _blocked(result,'matching Pod/container lifecycle unavailable','timestamped Kubernetes Pod inventory with immutable UID, Node UID and container status')
     exact=[item for item in candidates if (observed.get('resource_version') and item[1]['metadata'].get('resourceVersion')==observed['resource_version']) or (observed.get('measurement_timestamp') is not None and _same_time(observed['measurement_timestamp'],item[0].get('measurement_timestamp')))]
@@ -460,7 +486,17 @@ def compare_lifecycle(observed,snapshots):
     return _blocked(result,'Kubernetes object version/source-time alignment unavailable','collector cached Pod resourceVersion or exact underlying source timestamp; restarts is an upstream gauge that can reset')
 
 
-def compare_volume(observed,inputs,references,*,snapshots=()):
+def _volume_reference_index(references):
+    """Keep every candidate for the exact source measurement, including conflicts."""
+    index=defaultdict(list)
+    for row in references:
+        try:at=evidence_v4.measurement_time_ns(row.get('measurement_timestamp'))
+        except (ValueError,TypeError):continue
+        index[(row.get('pod_uid'),row.get('metric'),row.get('dimensions',{}).get('volume'),at)].append(row)
+    return index
+
+
+def compare_volume(observed,inputs,references,*,snapshots=(),reference_index=None):
     result=_comparison(observed,references);field={'k8s.volume.available':'availableBytes','k8s.volume.capacity':'capacityBytes','k8s.pod.volume.available':'availableBytes','k8s.pod.volume.capacity':'capacityBytes'}.get(observed.get('metric'));dims=observed.get('dimensions',{})
     if field is None or observed.get('source')!='kubelet' or not observed.get('collector_uid') or not observed.get('pod_uid') or not observed.get('node_uid') or observed.get('unit') not in ('bytes','By','B') or not dims.get('volume') or set(dims)-{'volume','pvc_name','pvc_namespace','volume_type'}:
         return _blocked(result,'volume source/UID/unit/dimensions unavailable','collector UID, Pod/Node UID, exact volume/PVC dimensions and native byte unit')
@@ -499,7 +535,12 @@ def compare_volume(observed,inputs,references,*,snapshots=()):
     measurement_time,receiver_value=next(iter(measurements))
     brackets=sorted({(row['requested_at_ns']/1e9,row['received_at_ns']/1e9) for row,_ in matches})
     result.update(receiver_observation_count=len(matches),receiver_acquisition_brackets=brackets)
-    selected=[row for row in references if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else declared_type))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),measurement_time) and _valid_bracket(row)]
+    candidates=references
+    if reference_index is not None:
+        try:at=evidence_v4.measurement_time_ns(measurement_time)
+        except (ValueError,TypeError):candidates=()
+        else:candidates=reference_index.get((observed['pod_uid'],'fs.'+field,dims['volume'],at),())
+    selected=[row for row in candidates if row.get('source')=='kubelet-summary' and row.get('scope')=='volume' and row.get('node')==observed['node'] and row.get('node_uid')==observed['node_uid'] and row.get('pod_uid')==observed['pod_uid'] and row.get('pod')==observed.get('pod') and row.get('namespace')==observed.get('namespace') and row.get('metric')=='fs.'+field and row.get('unit')=='bytes' and all((row.get('dimensions',{}).get(key) if key!='volume_type' else ('persistentVolumeClaim' if row.get('dimensions',{}).get('pvc_name') else declared_type))==value for key,value in dims.items()) and not (set(row.get('dimensions',{}))-set(dims)) and _same_time(row.get('measurement_timestamp'),measurement_time) and _valid_bracket(row)]
     values={row['value'] for row in selected}
     result.update(receiver_value=receiver_value,measurement_timestamp=measurement_time)
     if len(values)!=1:return _blocked(result,'missing or conflicting same-measurement independent volume reference','independent kubelet sample with exact fs.time, Pod UID/node/volume/PVC identity')
@@ -596,9 +637,27 @@ def _volume_references(path,agents):
     return inputs,result
 
 
-def _lifecycle_snapshots(path):
+def _lifecycle_snapshots(path, *, agents=None, inputs=()):
     snapshots=list(_read(Path(path)/'extended/kubernetes-inventory.json').get('snapshots',[]))
     snapshots.extend(iter_records(Path(path)/'references/kubernetes-inventory.ndjson'))
+    from .reference_inventory import inventory_declarations,lifecycle_snapshots
+    nodes={a['node']:a['node_uid'] for a in (agents or {}).get('agents',[]) if a.get('node') and a.get('node_uid')}
+    path=Path(path)
+    names=[path/n for n in ('k8s-pods.json','karthos-pods.json','generator-pods.json')]
+    names+=list(path.glob('pods-before-*.json'))+list((path/'structured').rglob('inventory-*.json'))
+    for member in names:
+        document=inventory_declarations(_read(member),nodes,str(member.relative_to(path)))
+        if document['items']:snapshots.append(document)
+    for row in inputs:
+        if row.get('path','').split('?')[0]!='/pods' or row.get('status')!=200 or row.get('error') or not row.get('collector_uid') or not nodes.get(row.get('node_name')):continue
+        begin,finish=row.get('requested_at_ns'),row.get('received_at_ns')
+        if type(begin) is not int or type(finish) is not int or finish<begin:continue
+        declaration=inventory_declarations(row.get('body',{}),nodes,'exact receiver /pods')
+        declaration['items']=[p for p in declaration['items'] if p.get('spec',{}).get('nodeName')==row['node_name']]
+        if declaration['items']:
+            declaration.update(acquisition_started_at=begin/1e9,acquisition_ended_at=finish/1e9,reference_origin='exact receiver /pods; not independent lifecycle history',receiver_collector_uid=row['collector_uid'])
+            snapshots.append(declaration)
+    snapshots.extend(lifecycle_snapshots(list(iter_records(path/'execution-diagnostics/lifecycle.ndjson')),list(iter_records(path/'execution-diagnostics/cadence.ndjson')),nodes))
     return snapshots
 
 
@@ -612,8 +671,9 @@ def _references_by_uid(rows, field):
 
 
 def _extra_resource_checks(path,agents,references,traffic,verification,start,end,*,thesis=False):
-    inputs,volumes=_volume_references(path,agents);snapshots=_lifecycle_snapshots(path);checks=[]
+    inputs,volumes=_volume_references(path,agents);snapshots=_lifecycle_snapshots(path,agents=agents,inputs=inputs);checks=[]
     volumes_by_pod = _references_by_uid(volumes, 'pod_uid')
+    volume_index = _volume_reference_index(volumes)
     from .volume_provenance import source_index,attribute
     observations=_kubernetes_observations(path,agents,thesis=thesis)
     producer_keys={(a.get('collector_uid'),a.get('node')) for a in agents.get('agents',[])}
@@ -625,7 +685,7 @@ def _extra_resource_checks(path,agents,references,traffic,verification,start,end
             if observation.get('source')=='kubelet' and (observation.get('collector_uid'),observation.get('node')) not in producer_keys:
                 attribution=attribute(observation,producer_index)
                 if attribution['state']=='matched':observation=attribution['observed']
-            result = compare_volume(observation, inputs, volumes_by_pod.get(observation.get('pod_uid'), ()), snapshots=snapshots)
+            result = compare_volume(observation, inputs, volumes_by_pod.get(observation.get('pod_uid'), ()), snapshots=snapshots,reference_index=volume_index)
             if attribution and attribution['state']!='matched':result.update(state=attribution['state'],reason=attribution['reason'],producer_attribution=attribution)
             result['reference_records_available'] = len(volumes)
             checks.append(result)
@@ -683,11 +743,11 @@ def _evaluate(ctx,spec,path,traffic_report=None):
         try:references.extend(iter_records(file))
         except (ValueError,TypeError,OSError) as exc:reference_errors.append(str(file)+': '+str(exc))
     checks=[]
-    references_by_node = _references_by_uid(references, 'node_uid')
+    host_references = _host_reference_index(references)
     try:
         for observation in _host_observations(path,agents,thesis=thesis):
             if start is not None and end is not None and _time(start)<=observation['recorded_timestamp']<=_time(end):
-                result = compare_reference(observation, references_by_node.get(observation.get('node_uid'), ()))
+                result = compare_reference(observation, _host_reference_candidates(observation,host_references))
                 result['reference_records_available'] = len(references)
                 checks.append(result)
     except (ValueError,TypeError,KeyError,OSError) as exc:reference_errors.append('host observation read: '+str(exc))
@@ -717,7 +777,7 @@ def _evaluate(ctx,spec,path,traffic_report=None):
                 resources=resource_report,reference_inventory=reference_inventory,coverage=coverage,references={'files':[str(file.relative_to(path)) for file in reference_files],'records':len(references),'errors':reference_errors},
                 limitations=['configured resource stimulus is not measured reference truth','acquisition timestamps do not establish aligned gauge measurement times','disk sectors use verified512-byte conversion; CPU/filesystem/disk/network still require aligned source-read identity','fixtures and preparation are not live proof'])
     if thesis:
-        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2','thesis-completion-v1':'thesis-completion-v1.0','thesis-completion-v2':'thesis-completion-v2.0'}[ctx.manifest['schedule']],
+        report.update(protocol=ctx.manifest['schedule'],verifier_version={'thesis-qualification-v2':'thesis-qualification-v2.1','thesis-qualification-v3':'thesis-qualification-v3.0','thesis-qualification-v4':'thesis-qualification-v4.1','thesis-repair-validation-v1':'thesis-repair-validation-v1.0','thesis-repair-validation-v2':'thesis-repair-validation-v2.2','thesis-completion-v1':'thesis-completion-v1.0','thesis-completion-v2':'thesis-completion-v2.1'}[ctx.manifest['schedule']],
                       product_revision=ctx.manifest['product_pins']['karthos_revision'],
                       thresholds=ctx.manifest.get('thresholds',{}))
     horizon_receipts={name:_read(path/relative) for name,relative in (
@@ -749,6 +809,8 @@ def _evaluate(ctx,spec,path,traffic_report=None):
     for row in accuracy:row['storage_api_parity']=storage_api.get(row['name'],{'state':'insufficient','reason':'selected product-rendered API/storage parity export unavailable'})
     report['storage_api_parity']={'metrics':storage_api,'independent_accuracy_claimed':False}
     report['selected_accuracy']=accuracy
+    from .observation_contracts import summarize
+    report['bounded_observations']=summarize(all_checks)
     from .report_summary import family_summaries
     report['families']=family_summaries(report)
     from .coverage_report import build as build_coverage
@@ -769,7 +831,7 @@ def evaluate(ctx,spec,path,traffic_report=None):
     try:return _evaluate(ctx,spec,path,traffic_report)
     except (ValueError,TypeError,KeyError,OSError,EOFError) as exc:
         coverage=catalog_coverage(_definitions(ctx,'coverage.yaml'),{},{},{},[],0,0,{})
-        report={'schema_version':1,'spec':spec,'state':'incomplete',
+        report={'schema_version':1,'spec':spec,'state':'incomplete','analysis_error':{'type':type(exc).__name__,'message':str(exc)},
                 'execution':{'state':'incomplete'},'evidence':{'state':'incomplete','valid':False,'errors':[str(exc)]},
                 'numerical_agreement':{'state':'insufficient','checks':[]},
                 'coverage':coverage,'references':{'errors':[str(exc)]},

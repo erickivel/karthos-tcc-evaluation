@@ -71,6 +71,12 @@ class ThesisScoringTests(unittest.TestCase):
         self.assertEqual(result['checkout_trace_ids'],['sent','actual'])
         self.assertEqual(result['checkout_request_ids'],['1','2'])
 
+    def test_connector_graph_source_is_not_direct_otlp(self):
+        from evaluation.consumers.api_only import graph_calls_source
+        self.assertEqual(graph_calls_source('traces.servicegraph'), 'traces.servicegraph')
+        self.assertEqual(graph_calls_source('traces.otlp'), 'traces.otlp')
+        self.assertIsNone(graph_calls_source('unknown'))
+
     def test_consumer_queries_selected_source_and_uses_exact_scoped_service_ids(self):
         client=API()
         doc=thesis_answers(client,START,END,namespace='demo',service='checkout',source=SOURCE,container='server')
@@ -137,6 +143,12 @@ class ThesisScoringTests(unittest.TestCase):
         scored=score_window_answers(doc,[],[],report)
         self.assertEqual(scored['request-error-numerical-agreement']['state'],'insufficient')
         self.assertEqual(scored['request-error-numerical-agreement']['storage_api_parity']['state'],'correct')
+        sample['timestamp']='2026-10-01T00:00:59.99999996Z'
+        scored=score_window_answers(doc,[],[],report)
+        self.assertEqual(scored['request-error-numerical-agreement']['storage_api_parity']['state'],'correct')
+        sample['timestamp']='2026-10-01T00:00:59.999Z'
+        scored=score_window_answers(doc,[],[],report)
+        self.assertEqual(scored['request-error-numerical-agreement']['storage_api_parity']['state'],'insufficient')
 
     def test_trace_error_reference_requires_same_independently_observed_fixed_window(self):
         from evaluation.timing_analysis import fixed_window_error_reference

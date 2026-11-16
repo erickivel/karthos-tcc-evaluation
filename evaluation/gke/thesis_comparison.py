@@ -45,6 +45,20 @@ def _structure(path,namespace):
             return None
         documents[key]=read(file).get('data',{}).get(key,[])
     nodes={n['id']:n for n in documents['nodes'] if n.get('namespace')==namespace}
+    # Exclusions require retained Kubernetes objects, never a name-prefix guess.
+    helpers=set()
+    for member,kind in (('generator-job-status.json','Job'),('reference-setup/reference-daemonset.json','DaemonSet')):
+        file=Path(path)/member
+        if not file.is_file():continue
+        obj=read(file);meta=obj.get('metadata',{})
+        if (obj.get('kind')==kind and meta.get('namespace')==namespace
+                and meta.get('labels',{}).get('evaluation.karthos.dev/owner')=='gke-qualification-v1'):
+            helpers.update(i for i,n in nodes.items() if n.get('kind')=='workload' and n.get('name')==meta.get('name'))
+    while True:
+        descendants={edge['target'] for edge in documents['edges'] if edge.get('relation')=='contains' and edge.get('source') in helpers and edge.get('target') in nodes}
+        if descendants<=helpers:break
+        helpers.update(descendants)
+    nodes={i:n for i,n in nodes.items() if i not in helpers}
     # Workload and Pod generations have generated names. Follow their recorded
     # owner chain to the stable workload name instead of stripping suffixes.
     parent={e['target']:e['source'] for e in documents['edges']
@@ -324,6 +338,22 @@ def service_graph_evidence(path,namespace,demo):
         expected={s['metadata']['name'] for s in inventory if s['metadata'].get('namespace')==namespace}
         nodes=read(path/'api-nodes.json')['data']['nodes']
         edges=read(path/'api-edges.json')['data']['edges']
+        current_edges=edges
+        temporal_scope='current snapshot (legacy evidence)'
+        ledger_path=path/'consumer/ledger.json'
+        if ledger_path.is_file():
+            from ..consumers.api_only import graph_calls_source, observation_intersects
+            ledger=read(ledger_path);scope=ledger.get('scope',{});history=ledger.get('edge_history',{})
+            expected_source=graph_calls_source(scope.get('metric_source'))
+            target_name='checkout' if demo=='astronomy' else 'checkoutservice'
+            if (scope.get('namespace')!=namespace or scope.get('service')!=target_name
+                    or not expected_source or scope.get('calls_source')!=expected_source
+                    or history.get('state')!='observed'):
+                return {'state':'insufficient','reason':'retained interval query has unavailable or incompatible source/scope'}
+            edges=[edge for edge in history.get('edges',[])
+                   if expected_source in edge.get('provenance',[])
+                   and observation_intersects(edge,scope.get('from'),scope.get('to'))]
+            temporal_scope='retained interval history'
         services=[n for n in nodes if n.get('namespace')==namespace and n.get('kind')=='service']
         identities={n['name']:n['id'] for n in services}
         if not expected or len(identities)!=len(services) or len(set(identities.values()))!=len(identities):
@@ -335,6 +365,7 @@ def service_graph_evidence(path,namespace,demo):
         missing=sorted(expected-set(identities));extra=sorted(set(identities)-expected)
         return {'state':'pass' if not missing and ('frontend',target) in calls else 'fail',
                 'expected_services':sorted(expected),'service_identities':identities,'missing_services':missing,'extra_services':extra,
+                'temporal_scope':temporal_scope,'current_snapshot_call_count':sum(e.get('relation')=='calls' for e in current_edges),
                 'observed_calls':[list(edge) for edge in calls],'required_calls':[['frontend',target]],
                 'reference':'k8s-services.json and declared exercised frontend-checkout path',
                 'artifacts':['k8s-services.json','api-nodes.json','api-edges.json']}

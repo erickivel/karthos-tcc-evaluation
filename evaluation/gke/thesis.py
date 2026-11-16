@@ -200,6 +200,10 @@ def _caller_scores(document, report):
 
 
 def _error_scores(document,report):
+    from ..evidence_v4 import vm_time_identity
+    def query_time(value):
+        return vm_time_identity(value)["timestamp_ms"]
+
     from ..consumers.api_only import scoped_service
     from ..scoring import DEFAULTS, compare, derivation_contract, stamp
     from ..series_identity import partition_key
@@ -240,7 +244,7 @@ def _error_scores(document,report):
         window=re.fullmatch(r'(?:(\d+)m)?(?:(\d+)s)?',query.get('window',''))
         duration=sum(int(part or 0)*scale for part,scale in zip(window.groups(),(60,1))) if window else 0
         fixed=(query.get('aggregation')=='increase' and query.get('source')==source
-               and stamp(query['from'])==stamp(query['to'])==end and duration==end-start>0)
+               and query_time(query['from'])==query_time(query['to'])==query_time(end) and duration==end-start>0)
     except (KeyError,TypeError,ValueError,OverflowError):
         fixed=False
     if scoped and samples and fixed and all(same_series(row) for row in samples):
@@ -250,7 +254,7 @@ def _error_scores(document,report):
         def value(number):
             return type(number) in (int,float) and math.isfinite(number)
         for sample in samples:
-            if stamp(sample['timestamp'])!=end or sample.get('unit')!='count' or not value(sample.get('value')):
+            if query_time(sample['timestamp'])!=query_time(end) or sample.get('unit')!='count' or not value(sample.get('value')):
                 conflicts=True;continue
             partition=partition_key(sample['labels'])
             if partition in measured:
@@ -258,7 +262,7 @@ def _error_scores(document,report):
             measured[partition]=sample['value']
         for row in checks:
             labels=row.get('labels',{})
-            if row.get('timestamp')==end and same_edge(labels) and value(row.get('reference')):
+            if row.get('timestamp') is not None and query_time(row['timestamp'])==query_time(end) and same_edge(labels) and value(row.get('reference')):
                 partition=partition_key(labels)
                 if partition in reference:
                     conflicts=True
@@ -339,7 +343,9 @@ def claim_matrix(ctx,windows,history,readiness_report):
                 and row.get('evidence_valid') is True and row.get('execution')=='complete'):
             evidence=load_summary(path.parent)
             if evidence.get('evidence',{}).get('valid') is True and evidence.get('execution',{}).get('state')=='complete':
-                by_window[row['id']]=(row['export'].get('uri'),evidence)
+                analysis_export=row['export'].get('analysis_export')
+                if analysis_export is not None and analysis_export.get('verified') is not True:continue
+                by_window[row['id']]=((analysis_export or row['export']).get('uri'),evidence)
     rows=[]
     required_baselines=sum(row['phase']=='baseline' for row in ctx.manifest['matrix']) if ctx.manifest.get('schedule') in (*REPAIR_SCHEDULES,COMPLETION,COMPLETION_V2) else 6
     def add(claim,verdict,reference,artifacts):
@@ -381,6 +387,8 @@ def claim_matrix(ctx,windows,history,readiness_report):
         states=[extract(data) for _,data in baselines]
         verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
         add(claim,verdict,reference,[uri for uri,_ in baselines if uri])
+        if claim=='representative-numerical-agreement' and ctx.manifest.get('schedule') in (COMPLETION,COMPLETION_V2):
+            rows[-1]['limitations']=['selected traffic count/error/duration, container resources and volumes only; host and lifecycle exact alignment is excluded from this claim, and bounded observations do not establish exact agreement']
     if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
         for row in rows:
             if row['claim']=='retained-replicas-and-health':

@@ -1,5 +1,6 @@
 {
   "capture_finalization_version": 2,
+  "evidence_pipeline": "sealed-before-analysis-v1",
   "execution_segment": "all",
   "export_horizon_version": "recorded-horizon-v1",
   "gcp": {

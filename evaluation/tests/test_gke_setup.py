@@ -14,6 +14,13 @@ class SetupTests(unittest.TestCase):
   rendered=m.transform([obj],lock,run_id='fixture',mode='demo')[0]
   self.assertEqual(rendered['spec']['template']['spec']['nodeSelector']['evaluation.karthos.dev/slot'],'app-b')
 
+ def test_currency_rebalance_preserves_requests(self):
+  m=self.module('render');image='repo/app:v1';requests={'cpu':'100m','memory':'20Mi'}
+  obj={'kind':'Deployment','metadata':{'name':'currency'},'spec':{'template':{'spec':{'containers':[{'name':'currency','image':image,'resources':{'requests':requests}}]}}}}
+  out=m.transform([obj],{image:'repo/app@sha256:'+'a'*64},run_id='fixture',mode='demo')[0]['spec']['template']['spec']
+  self.assertEqual(out['nodeSelector']['evaluation.karthos.dev/slot'],'app-a')
+  self.assertEqual(out['containers'][0]['resources']['requests'],requests)
+
  def test_unpinned_image_fails_instead_of_deploying_tag(self):
   m=self.module('render')
   with self.assertRaisesRegex(ValueError,'image'):m.transform([{'kind':'Pod','metadata':{'name':'bad'},'spec':{'containers':[{'image':'unreviewed:latest'}]}}],{},run_id='fixture',mode='demo')

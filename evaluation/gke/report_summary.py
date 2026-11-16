@@ -28,7 +28,7 @@ def save_summary(path,report):
             'source_selection':report.get('source_selection',{}),
             'arbitration_transition':report.get('arbitration_transition') or (read(path/'setup-arbitration-transition.json') if (path/'setup-arbitration-transition.json').is_file() else None),
             'evidence_horizon':report.get('evidence_horizon',{}),
-            **{key:report[key] for key in ('comparison_inputs','service_graph_evidence','boundary_summary') if key in report},
+            **{key:report[key] for key in ('comparison_inputs','service_graph_evidence','boundary_summary','bounded_observations','analysis','raw_evidence_export','input_population','projected_input_proof','verifier_implementation_hashes') if key in report},
             'families':report.get('families') or family_summaries(report),
             'numerical_agreement':{'state':report.get('numerical_agreement',{}).get('state')},
             'coverage':{'contract':{'valid':(report.get('coverage',{}).get('contract') or {}).get('valid')}},
@@ -38,7 +38,7 @@ def save_summary(path,report):
                 'windows':{'whole':{'checkout_place_order':{'evidence_present':calls.get('evidence_present'),'completion':{'requests':calls.get('completion',{}).get('requests')}}}},
                 'eventual_completeness':{k:eventual.get(k) for k in ('state','requests','numerical_differences')},
                 'whole_capture_source_identity_coverage':{'checkout_trace_ids':expected,'paired_trace_ids':[x for x in paired if isinstance(x,str) and x in expected_set]},
-                'generator_contract':{k:generator.get(k,[]) for k in ('checkout_request_ids','conflicting_request_ids')}}}}
+                'generator_contract':{**{k:generator.get(k,[]) for k in ('checkout_request_ids','conflicting_request_ids')},'retained_generator':{k:v for k,v in generator.get('retained_generator',{}).items() if k in ('unexpected_outcomes','requests','completed','errors')}}}}}
     payload=json.dumps(result,indent=2,sort_keys=True)+'\n'
     if len(payload.encode())>LIMIT:raise ValueError('orchestration summary exceeds explicit size bound')
     write(path/'orchestration-summary.json',payload)
@@ -93,7 +93,15 @@ def family_summaries(report):
     for family,metric in (('traffic_count_comparison','servicegraph.request.count'),('traffic_error_comparison','servicegraph.request.error.count'),('traffic_duration_comparison','servicegraph.request.duration')):
         families[family]=_family([check.get('independent_comparison',{}) for check in selected.get(metric,{}).get('checks',[])],'source/store numerical comparison under retained boundaries; no exact call-population claim')
     families['evidence_horizon']=_family([report.get('evidence_horizon',{})],'recorded evidence horizon and exact quiet endpoint coverage; fixed-window parity separate')
-    families['settled_traffic_duration']=_family([report.get('settled_duration_diagnostics',{}).get('native_settled_to_declared_drain_export',{})],'matched settled histogram population inside recorded export horizon')
+    settled=report.get('settled_duration_diagnostics',{})
+    families['settled_traffic_duration']=dict(state='not-applicable',reason=settled.get('reason'),checks=0,counts={},scope='native settled histogram diagnostic not applicable to this source') if settled.get('state')=='not-applicable' else _family([settled.get('native_settled_to_declared_drain_export',{})],'matched settled histogram population inside recorded export horizon')
+    families['fixed_window_traffic_duration']=dict(families['traffic_duration'],scope='original fixed-window duration accuracy; separate from settled population')
+    if report.get('manifest',{}).get('source_id',traffic.get('manifest',{}).get('source_id'))=='mesh.istio':
+        primary=dict(settled.get('native_settled_to_declared_drain_export',{}))
+        if primary.get('state')=='pass' and report.get('evidence_horizon',{}).get('state')!='pass':
+            primary.update(state='insufficient',reason='required export horizon evidence missing')
+        families['traffic_duration']=_family([primary],'primary mesh duration: matched settled population and recorded export horizon; fixed window separate')
+        families['settled_traffic_duration']=dict(families['traffic_duration'])
     timing=traffic.get('required_evidence',{})
     families['timing_validity']=_family([{'state':'pass' if timing.get('valid') is True else 'insufficient'}],
         'existing required recorder, identity, clock, availability, quiet partition and interval parity evidence')

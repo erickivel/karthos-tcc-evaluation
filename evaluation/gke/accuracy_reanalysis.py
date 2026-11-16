@@ -19,7 +19,7 @@ from .models import sha,write
 from .report_summary import family_summaries
 from ..references.kubelet import read_summary
 
-VERSION='accuracy-evidence-v3.0.0'
+VERSION='accuracy-evidence-v3.3.0'
 
 
 def _counts(checks):
@@ -32,29 +32,7 @@ def _state(checks):
     return 'fail' if 'fail' in states else 'pass' if states and all(x in ('pass','not-applicable') for x in states) and 'pass' in states else 'insufficient'
 
 
-def inventory_declarations(document,node_uids,member):
-    # A sealed Pod object can attest its immutable volume declaration without
-    # inventing an API acquisition time. Mutable lifecycle values stay separate.
-    items=[pod for pod in document.get('items',[]) if pod.get('metadata',{}).get('uid') and pod.get('metadata',{}).get('resourceVersion') and node_uids.get(pod.get('spec',{}).get('nodeName'))]
-    return {'items':items,'node_uids':node_uids,'immutable_spec_declaration':{'member':member,'scope':'Pod UID-bound immutable volume declarations only'}}
-
-
-def lifecycle_snapshots(rows,cadences,node_uids):
-    result=[]
-    for row in rows:
-        if row.get('event') or not row.get('uid') or not node_uids.get(row.get('node')):continue
-        at=row.get('observed_at')
-        candidates=[c for c in cadences if type(c.get('observed_at')) in (int,float) and type(c.get('iteration_seconds')) in (int,float) and c['iteration_seconds']>=0 and c['observed_at']-c['iteration_seconds']<=at<=c['observed_at']]
-        if len(candidates)!=1:continue
-        cadence=candidates[0];status={'phase':row.get('phase'),'containerStatuses':[],'initContainerStatuses':[]}
-        for container in row.get('containers',[]):
-            kind=container.get('status_kind')
-            if kind in ('containerStatuses','initContainerStatuses'):status[kind].append({k:v for k,v in container.items() if k!='status_kind'})
-        pod={'metadata':{'namespace':row.get('namespace'),'name':row.get('name'),'uid':row['uid']},'spec':{'nodeName':row.get('node')},'status':status}
-        result.append({'items':[pod],'node_uids':node_uids,'acquisition_started_at':cadence['observed_at']-cadence['iteration_seconds'],'acquisition_ended_at':cadence['observed_at'],
-                       'reference_timing':'conservative outer diagnostic iteration; not collector cache time','measurement_timestamp':None})
-    return result
-
+from .reference_inventory import inventory_declarations,lifecycle_snapshots
 
 
 def stored_export_counter(points,start,export_end,workload_end,alignment):
@@ -106,13 +84,14 @@ def settled_mesh_duration(traffic,verification,names,document,records,thresholds
 
 
 
-def reanalyse_archive(archive,destination,*,expected_sha256):
+def reanalyse_archive(archive,destination,*,expected_sha256,analysis_archive=None,analysis_sha256=None):
     archive=Path(archive).resolve();destination=Path(destination).resolve()
     if destination.exists():raise ValueError('analysis destination must be new')
     if archive in destination.parents or destination in archive.parents:raise ValueError('analysis destination overlaps source')
     if sha(archive)!=expected_sha256:raise ValueError('archive checksum differs from checkpoint')
     used={}
-    with tarfile.open(archive,'r:gz') as tar:
+    from .archive_inputs import open_archives
+    with open_archives(archive,expected_sha256,analysis_archive=analysis_archive,analysis_sha256=analysis_sha256) as tar:
         members=tar.getmembers();names=[m.name for m in members]
         if len(names)!=len(set(names)) or any(not (m.isfile() or m.isdir()) or m.name.startswith('/') or '..' in Path(m.name).parts for m in members):
             raise ValueError('unsafe or duplicate archive member')
@@ -129,6 +108,11 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
             used[name]={'sha256':digests[name],'bytes':member.size}
             return raw
         def document(name,default=None):
+            if name=='gke-evaluation.json' and name in names:
+                from .analysis_reader import read_analysis_report
+                value,size=read_analysis_report(tar.extractfile(name),digests[name],open_member=tar.extractfile,input_members=used)
+                used[name]={'sha256':digests[name],'bytes':size,'analysis_projection':'omit duplicated matched-reference payloads and availability bodies; originals retained'}
+                return value
             return json.loads(payload(name)) if name in names else ({} if default is None else default)
         def records(name):
             raw=payload(name)
@@ -136,7 +120,7 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
             with stream:
                 for line in stream:
                     if line.strip():yield json.loads(line)
-        old=document('gke-evaluation.json');verification=document('verification.json')
+        old=document('gke-evaluation.json');tar.validate_report(old);verification=document('verification.json')
         snapshots=document('extended/kubernetes-inventory.json').get('snapshots',[])
         for name in names:
             if name in ('references/kubernetes-inventory.ndjson','references/kubernetes-inventory.ndjson.gz'):snapshots.extend(records(name))
@@ -213,7 +197,8 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
                     'receiver_value':result.get('receiver_value'),'measurement_timestamp':result.get('measurement_timestamp'),
                     'volume_type_proof':result.get('volume_type_proof'),
                     'matching_reference_count':result.get('matching_reference_count'),
-                    'conversion':result.get('conversion')})
+                    'conversion':result.get('conversion'),
+                    **({'bounded_observation':result['bounded_observation']} if 'bounded_observation' in result else {})})
         from .population import resolve_scope
         traffic=resolve_scope(old.get('traffic',{}).get('report',{}),old.get('spec',{}))
         settled=settled_mesh_duration(traffic,verification,names,document,records,old.get('thresholds',{}))
@@ -225,12 +210,14 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
                 matches=[e.compare_traffic(name,traffic,verification)]
             if matches:row.update(state=_state(matches),checks=matches)
             selected.append(row)
-        view=dict(old,selected_accuracy=selected,numerical_agreement=dict(old.get('numerical_agreement',{}),state=_state(revised),checks=revised))
+        from .observation_contracts import summarize
+        view=dict(old,settled_duration_diagnostics=settled,selected_accuracy=selected,numerical_agreement=dict(old.get('numerical_agreement',{}),state=_state(revised),checks=revised))
         families=family_summaries(view)
         reasons=Counter((c.get('observed',{}).get('metric',c.get('metric')),c.get('state'),c.get('reason')) for c in revised)
         summary={'analysis_version':VERSION,'spec':old.get('spec'),
             'original_families':old.get('families',{}),'families':families,
             'recovery_inventory':dict(recovery_inventory,forwarded_volume_attribution=dict(forwarded)),'settled_duration':settled,
+            'bounded_observations':summarize(revised),
             'resources':{'original_counts':_counts(original),'revised_counts':_counts(revised),
                 'by_metric_reason':[dict(metric=k[0],state=k[1],reason=k[2],comparisons=n) for k,n in reasons.items()],
                 'container_checks':len(old.get('resources',{}).get('checks',[]))},
@@ -243,8 +230,8 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
     # Publish only after archive/member verification and all calculations finish.
     destination.mkdir(parents=True,exist_ok=False)
     write(destination/'summary.json',summary);write(destination/'comparison-changes.json',changes)
-    write(destination/'analysis-manifest.json',{'analysis_version':VERSION,'archive':str(archive),'archive_sha256':expected_sha256,'used_members':used,
-        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','volume_provenance.py')},
+    write(destination/'analysis-manifest.json',{'analysis_version':VERSION,'archive':str(archive),'archive_sha256':expected_sha256,'analysis_archive':str(analysis_archive) if analysis_archive else None,'analysis_archive_sha256':analysis_sha256,'used_members':used,'member_origins':{name:tar.origins[name] for name in used},
+        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','volume_provenance.py','reference_inventory.py')},
         'historical_results_modified':False})
     write(destination/'SHA256SUMS',''.join(sha(p)+'  '+p.name+'\n' for p in sorted(destination.iterdir()) if p.is_file()))
     return summary
@@ -252,7 +239,8 @@ def reanalyse_archive(archive,destination,*,expected_sha256):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('archive',type=Path);parser.add_argument('destination',type=Path);parser.add_argument('--sha256',required=True)
-    args=parser.parse_args();result=reanalyse_archive(args.archive,args.destination,expected_sha256=args.sha256)
+    parser.add_argument('--analysis-archive',type=Path);parser.add_argument('--analysis-sha256')
+    args=parser.parse_args();result=reanalyse_archive(args.archive,args.destination,expected_sha256=args.sha256,analysis_archive=args.analysis_archive,analysis_sha256=args.analysis_sha256)
     print(json.dumps({'analysis_version':VERSION,'output':str(args.destination),'families':result['families']}))
 
 

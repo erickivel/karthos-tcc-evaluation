@@ -45,6 +45,18 @@ class TimingCaptureTests(unittest.TestCase):
         stdout = f'3:{len(raw)}:{digest}\n'.encode()+base64.b64encode(raw)+b'\n'
         return SimpleNamespace(stdout=stdout, stderr=stderr, returncode=0)
 
+    def test_identity_timeout_retains_stage_and_does_not_read_tail(self):
+        with tempfile.TemporaryDirectory() as directory:
+            capture=self.capture(directory)
+            error=subprocess.TimeoutExpired(['kubectl','get','pod'],5)
+            with patch('evaluation.timing_capture.r.kube',side_effect=error), patch.object(capture,'_tail') as tail:
+                with self.assertRaises(subprocess.TimeoutExpired):capture._poll_collector('agent',pod())
+                tail.assert_not_called()
+            rows=list(iter_records(capture.writer.path))
+            self.assertEqual(rows[-1]['stage'],'kubectl-identity-command')
+            self.assertEqual(rows[-1]['timeout_seconds'],5)
+            self.assertIn('timed out',rows[-1]['error'])
+
     def test_binary_transport_keeps_stderr_out_of_valid_trace_payload(self):
         with tempfile.TemporaryDirectory() as directory:
             capture = self.capture(directory)

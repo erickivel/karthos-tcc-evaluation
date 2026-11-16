@@ -602,3 +602,63 @@ ambiguous, and no nearest-time or maximum-value candidate is selected. The
 Gateway UID remains recorded as `capture_collector_uid`. Agent/Gateway copies are
 boundary observations of one datapoint, not independent trials. The original
 comparison denominator is retained and attribution indices/hashes are exported.
+
+### External controller checks and temporary IAP recovery
+
+`status` remains saved local state. Use the supported external observer for fresh
+provider status, named controller container state, retained serial evidence and
+bounded execution progress:
+
+```sh
+python -m evaluation.gke monitor --project PROJECT --zone ZONE \
+  --controller VM --owner-id OWNER --run-id RUN --uid INSTANCE_ID
+```
+
+The default is one observation with `next_check_due` 15 minutes later; `--watch`
+repeats every 900 seconds (`--interval` overrides). The observer never marks a
+run complete, retries windows, or changes execution files. A RUNNING VM does
+not prove the Python controller is alive. SSH/provider failures leave process
+state unknown. Serial Python OOM evidence and logging permission denials are
+reported independently; serial history alone cannot establish current liveness
+or attach an old kill to a replacement process. Container inspect reports the
+named retained controller's running/exit/OOM state. A separate one-shot `docker exec` reads only `matrix.json`, `run-report.json`
+(up to 8 MiB each) and the final 64 KiB of `progress.ndjson`. It reports
+completed/remaining windows, failed attempts (including failed attempts before a
+successful retry), controller failure and the latest complete phase/timestamp.
+Missing, oversized or inaccessible files remain unknown. Run IDs are validated
+and shell-quoted; no detailed evaluation report or raw telemetry is loaded. This
+requires the updated observer helper in the controller image. Container state
+and progress files cannot prove scientific correctness. Final evidence sealing and infrastructure cleanup must
+still be verified separately.
+
+If a private controller lacks IAP ingress, the separately invoked command below
+opens a temporary rule, performs one observation, and removes the rule:
+
+```sh
+python -m evaluation.gke recover-iap --project PROJECT --zone ZONE \
+  --controller VM --owner-id OWNER --run-id RUN --uid INSTANCE_ID \
+  --receipt /private/tmp/controller-iap-recovery.json
+```
+
+This command mutates the firewall only. It verifies VM ownership and UID, refuses
+a service-account target shared with another VM in that network, permits only
+IAP `35.235.240.0/20` to TCP 22, and records a unique ownership description in the
+receipt before mutation. Cleanup rechecks the exact rule description and UID,
+then lists rules to prove absence. A denied/uncertain cleanup is explicitly
+`temporary_removal_confirmed: false`; do not interpret that as completed cleanup.
+A hard process kill may prevent `finally` from running: retain the receipt and
+inspect the exact named rule/description/UID before manual removal. The helper
+does not grant IAP, OS Login or service-account permissions and does not restart
+the controller. Concurrent changes to network membership remain outside this
+bounded recovery operation. References: [IAP TCP forwarding](https://docs.cloud.google.com/iap/docs/using-tcp-forwarding).
+
+The foundation declares `roles/logging.logWriter` for the controller service
+account. After image-integrity verification and before runtime, startup checks
+`logging.logEntries.create` via `testIamPermissions` using the actual VM metadata
+identity. The permission test then submits one bounded no-secret log entry with the same
+metadata identity, retaining its acceptance receipt in `data/logging-preflight.json`.
+It does not alter IAM or print tokens; failure blocks startup explicitly.
+API acceptance is recorded separately from log readback, which is not performed. Applying the
+Terraform declaration and publishing the updated controller image/startup are
+separate operations. A passing unit test does not prove deployed IAM. See
+[Cloud Logging access control](https://docs.cloud.google.com/logging/docs/access-control).

@@ -153,3 +153,37 @@ Acceptance requires both cluster lifetimes and all phases accounted for, inspect
 ## Boundaries of the conclusions
 
 Three workers exercise cross-node attribution, placement and multiple collector instances. Boutique and Astronomy provide production-like microservice architectures, not a production-scale capacity benchmark. Two deployments support bounded reproducibility, not a statistically robust variance estimate. This protocol excludes induced-throttling resilience, Gateway-outage resilience, GPU, automatic runtime source failover and causal overhead. Raw request/span evidence retained by the evaluation must not be described as universally retained by Karthos itself.
+
+
+## Bounded claims and traffic population preflight
+
+For Istio, the primary duration comparison uses the matched settled population
+inside the originally declared drain export, with the existing population,
+histogram synchronization, unit and numerical checks plus required export-horizon
+evidence. `fixed_window_traffic_duration` and exact API/storage parity remain
+separate. Missing settled evidence cannot be replaced by a fixed-window pass.
+Host and lifecycle observations do not establish exact kernel-read or collector
+cache alignment. Their descriptive coverage and conservative reference-state
+observation intervals do not upgrade insufficient exact accuracy evidence.
+First-API-observation detection lag remains unavailable without a paired,
+independently timestamped source transition and matching API acquisition.
+
+Before setup completes, and again before each traffic attempt including reused
+deployments, `traffic_population.verify` checks the pinned native generators:
+Boutique `loadgenerator` (`app=loadgenerator`) and Astronomy `load-generator`
+(`app.kubernetes.io/component=load-generator`). The identities come from the
+pinned cached upstream charts. A matching Deployment must have desired and
+observed replica counts zero and its generation reconciled; no matching active
+or terminating Pod may remain. Absence from complete inventories is acceptable.
+The guard is read-only and writes `traffic-population-preflight.json`; missing
+inventory or an active known generator blocks traffic without deleting workloads.
+
+HTTP health-probe routes are recorded from actual PodSpec declarations, with no
+inferred request count. They are outside declared business journeys, but no raw
+telemetry rows are suppressed. No background route list is invented: undeclared
+traffic remains unclassified and cannot be silently subtracted from the measured
+population. The guard does not prove all traffic belongs to the controlled load;
+existing population/identity checks still decide that. Existing request/journey
+IDs are retained without adding metric labels. The sequential inventory
+acquisition bracket is not an atomic cluster snapshot or a guarantee against
+later external changes.

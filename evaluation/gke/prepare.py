@@ -84,14 +84,19 @@ def preparation_inputs(root,config,schedule):
             read(directory/'frozen-thresholds.json'),read(directory/'locked-config.json'))
 
 
-def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COMPLETION_V2,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None,origin_report=None,origin_seal=None,origin_uri=None):
+def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COMPLETION_V2,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None,origin_report=None,origin_seal=None,origin_uri=None,matrix_profile=None):
     """Build experiment inputs offline. Human confirmation stays in the conversation."""
     if schedule not in RECOVERABLE_SCHEDULES:
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
     root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path),schedule=schedule)
     if schedule in (COMPLETION,COMPLETION_V2) and config.get('execution_segment','all')!='all':
         raise ValueError('completion requires its entire frozen matrix, not an inherited split segment')
-    protocol=read(root/'protocols'/schedule/'protocol.yaml');matrix=build_matrix(protocol,schedule=schedule)
+    if config.get('execution_profile') and config['execution_profile']!=matrix_profile:raise ValueError('explicit matrix profile must match configured execution profile')
+    protocol=read(root/'protocols'/schedule/'protocol.yaml')
+    if matrix_profile:
+        if schedule!=COMPLETION_V2:raise ValueError('matrix profile requires official completion schedule')
+        protocol=dict(protocol,execution_profile=matrix_profile,combined_gross_limit_usd=config['limits']['gross_limit_usd'])
+    matrix=build_matrix(protocol,schedule=schedule)
     dest=root/'build/gke/prepared'/preparation_id
     if dest.exists():raise FileExistsError('prepared experiment already exists; choose a new ID')
     baseline,summary,pins,lock,thresholds,baseline_config=preparation_inputs(root,config,schedule)

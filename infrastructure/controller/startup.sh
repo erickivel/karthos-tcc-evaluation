@@ -54,6 +54,9 @@ print('VERIFIED_CONTROLLER_IMAGE',flush=True)
 NATIVE_INTEGRITY
 )"
 [[ "$integrity" == VERIFIED_CONTROLLER_IMAGE ]] || { echo 'native image integrity not verified' >&2; exit 1; }
+# Test the attached identity and one bounded log write; never print its token.
+docker run --rm --platform linux/amd64 --network host --read-only --tmpfs /tmp:rw,nosuid,nodev \
+  --entrypoint python "$image" -m evaluation.gke.logging_preflight | tee data/logging-preflight.json
 echo 'Native controller image integrity verified; starting runtime.'
 gcloud storage cp "$(metadata bootstrap-context-uri)#$(metadata bootstrap-context-generation)" experiment/bootstrap-context.json
 common+=(-e GKE_EVAL_BOOTSTRAP_CONTEXT=/experiment/bootstrap-context.json)

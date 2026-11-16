@@ -65,6 +65,10 @@ def transform(objects,image_lock,*,run_id,mode):
                     # Approved payment move: app-a exceeded allocatable CPU with GKE system reservations.
                     # Keep frontend/checkout cross-node; requests and worker count are unchanged.
                     slot = 'app-b'
+                elif name == 'currency':
+                    # Astronomy rebalance: retain requests and checkout/frontend split.
+                    # Live node admission evidence still gates deployment.
+                    slot = 'app-a'
                 elif 'frontend' in name:
                     slot = 'app-a'
                 else:

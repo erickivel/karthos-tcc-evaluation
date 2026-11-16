@@ -21,6 +21,13 @@ TOOL_FILES=('bin/kubectl','bin/helm','bin/istioctl','bin/terraform','bin/task','
             'google-cloud-sdk/bin/gcloud','google-cloud-sdk/bin/gke-gcloud-auth-plugin','google-cloud-sdk/VERSION','requirements.lock','wheels/')
 
 
+def validate_runtime_lock(root,toolchain):
+    expected=Path(root)/'protocols/thesis-completion-v2/inputs/requirements.lock'
+    actual=Path(toolchain)/'requirements.lock'
+    if expected.is_file() and (not actual.is_file() or expected.read_bytes()!=actual.read_bytes()):
+        raise ValueError('toolchain Python dependency lock differs from reviewed source; rebuild dependencies')
+
+
 def _safe_name(name):
     p=PurePosixPath(name)
     if not name or p.is_absolute() or '..' in p.parts or '\\' in name or str(p)!=name:
@@ -206,6 +213,7 @@ def build_bundle(root,bundle_id,product_snapshot,pins,source_hashes,*,toolchain=
         import importlib.util
         toolchain=Path(toolchain).resolve();manifest=toolchain/'manifest.json'
         spec=importlib.util.spec_from_file_location('reviewed_tool_verifier',root/'infrastructure/controller/verify_bundle.py');verifier=importlib.util.module_from_spec(spec);spec.loader.exec_module(verifier)
+        validate_runtime_lock(root,toolchain)
         tools=verifier.verify_bundle(toolchain,manifest,sha(manifest),'toolchain')
         scan_toolchain(toolchain)
     else:pending.append('toolchain linux/amd64 reviewed binaries, SDK, hash-locked dependencies and offline wheels are pending')

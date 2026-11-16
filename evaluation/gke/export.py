@@ -704,12 +704,18 @@ def upload_bundle(ctx, path, *, bucket, prefix, category, quarantine=None):
     The returned member hashes refer to the projected inner population. A
     checkpoint can still be extracted and validated by load_continuation.
     """
-    if category not in ('readiness', 'checkpoint'):
+    if category not in ('readiness', 'checkpoint', 'analysis'):
         raise ValueError('unsupported metadata export category')
     with timed(ctx, category+'-export', prefix) as timing:
         with tempfile.TemporaryDirectory(prefix='gke-metadata-') as temporary:
             root=Path(temporary).resolve();projection=root/'projection';archives=root/'archives';archives.mkdir()
             export_projection(path,projection,quarantine=quarantine)
+            compact=projection/'gke-evaluation.json'
+            if category=='analysis' and compact.is_file():
+                from .compact_report import read_report
+                # Projection must not silently invalidate checksum-addressed
+                # sidecars. Fail before publication if redaction changed them.
+                read_report(compact,projection=True)
             members={str(p.relative_to(projection)):{'sha256':sha(p),'bytes':p.stat().st_size}
                      for p in evidence_files(projection)}
             parts=pack_window_archives(projection,archives)

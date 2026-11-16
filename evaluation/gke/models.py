@@ -1,6 +1,6 @@
 """Immutable experiment definitions; JSON-compatible YAML needs no runtime parser dependency."""
 from __future__ import annotations
-import hashlib,json,re
+import hashlib,json,re,os,stat,uuid
 from pathlib import Path
 
 PROTOCOL='gke-qualification-v1'
@@ -24,7 +24,24 @@ PHASES=('smoke','baseline','resource','arbitration','restart')
 def read(path):return json.loads(Path(path).read_text())
 def write(path,value):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
-    path.write_text(value if isinstance(value,str) else json.dumps(value,indent=2,sort_keys=True)+'\n')
+    if isinstance(value,str):
+        path.write_text(value)
+        return
+    # Stream large evidence reports: dumps() retains every encoder chunk plus
+    # the joined string. Publish only a fully encoded report, preserving old data.
+    temporary=path.with_name('.'+path.name+'.'+uuid.uuid4().hex+'.partial')
+    descriptor=None
+    try:
+        descriptor=os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o666)
+        if path.exists():os.fchmod(descriptor,stat.S_IMODE(path.stat().st_mode))
+        with os.fdopen(descriptor,'w',encoding='utf-8',buffering=1024*1024) as output:
+            descriptor=None
+            json.dump(value,output,indent=2,sort_keys=True)
+            output.write('\n')
+        os.replace(temporary,path)
+    finally:
+        if descriptor is not None:os.close(descriptor)
+        temporary.unlink(missing_ok=True)
 def sha(path):
     with Path(path).open('rb') as source:return hashlib.file_digest(source,'sha256').hexdigest()
 def canonical_sha(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -33,6 +50,8 @@ def identifier(value):
     return value
 
 def validate_config(c,*,schedule=None):
+    if c.get("evidence_pipeline") not in (None,"sealed-before-analysis-v1"):
+        raise ValueError("unsupported evidence pipeline")
     if c.get('schema_version')!=1 or c.get('protocol')!=PROTOCOL:raise ValueError('unsupported configuration version/protocol')
     if c.get('execution_scope','qualification') not in ('qualification','readiness-only'):
         raise ValueError('unsupported execution scope')
@@ -42,7 +61,10 @@ def validate_config(c,*,schedule=None):
     if type(reader_cpu) is not int or not 100 <= reader_cpu <= 1000:
         raise ValueError('gateway_reader_cpu_limit_m must be an integer between 100 and 1000')
     if g['region']!='us-central1' or g['zone'] not in ('us-central1-a','us-central1-b'):raise ValueError('frozen region/zone changed')
-    expected_gross=200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
+    expected_gross=240 if schedule==COMPLETION_V2 and c.get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1') else 200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
+    if (schedule==COMPLETION_V2 and c.get('execution_profile')=='astronomy-istio-repair-v1'
+            and c.get('evidence_pipeline')=='sealed-before-analysis-v1' and l['gross_limit_usd']==270):
+        expected_gross=270
     expected_seconds=64800 if schedule==COMPLETION_V2 else 43200
     if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=(90 if schedule==COMPLETION_V2 else 80) or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
@@ -50,6 +72,16 @@ def validate_config(c,*,schedule=None):
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
+    if schedule==COMPLETION_V2 and p.get('execution_profile'):
+        if p['execution_profile'] not in ('astronomy-recovery-v1','astronomy-istio-repair-v1'):raise ValueError('unknown completion execution profile')
+        allowed_ceilings=(200,240,270) if p['execution_profile']=='astronomy-istio-repair-v1' else (200,240)
+        if p.get('combined_gross_limit_usd') not in allowed_ceilings:raise ValueError('targeted combined ceiling changed')
+        full=dict(p);full.pop('execution_profile');full['combined_gross_limit_usd']=200
+        rows=build_matrix(full,schedule=schedule)
+        repair=p['execution_profile']=='astronomy-istio-repair-v1'
+        cells=('astronomy-mesh',) if repair else ('astronomy-trace','astronomy-mesh')
+        return [dict(row,id=('istio-repair-' if repair else 'targeted-')+row['phase']+'-'+row['cell'],predecessor_window=('targeted-'+row['phase']+'-'+row['cell']) if repair else row['id'],history_observation=False)
+                for row in rows if row['repeat']==1 and row['cell'] in cells and row['phase'] in ('smoke','baseline')]
     if schedule==COMPLETION_V2:
         groups=[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh'],['boutique-mesh','boutique-trace']]
         if (p.get('id')!=COMPLETION_V2 or type(p.get('repetitions')) is not int or p['repetitions']!=2

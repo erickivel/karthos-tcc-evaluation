@@ -766,6 +766,8 @@ def create_cluster(ctx,repeat,*,credentials=True):
     if credentials:
         name=ctx.state['terraform']['cluster']['cluster_name'];g=ctx.config['gcp']
         ctx.command(['env','KUBECONFIG='+str(ctx.kubeconfig),'gcloud','container','clusters','get-credentials',name,'--internal-ip','--zone='+g['zone'],'--project='+g['project_id']])
+        from .auth_timing import install as instrument_auth
+        instrument_auth(ctx.kubeconfig,ctx.result/'infrastructure/auth-timing.ndjson')
         ctx.event('cluster-credentials-resolved',repeat=repeat)
     return ctx.state['terraform']['cluster']
 

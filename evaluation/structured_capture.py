@@ -603,6 +603,13 @@ class RepairCapture:
                 plan['gateway_restart_token'] = self.gateway_restart_token
             self.plans.append(plan)
             r.write(self.root/kind/'snapshot.json',plan)
+        if self.settings.get('kubelet_transport')=='private-kubernetes-proxy':
+            from .gke.scheduling_capacity import rollout_capacity
+            capacity_nodes=self._get('get','nodes');capacity_pods=self._get('get','pods','-A')
+            capacity=rollout_capacity(capacity_nodes,capacity_pods,self.plans)
+            r.write(self.root/'capacity-before-instrumentation.json',capacity)
+            r.write(self.root/'capacity-pods-before.json',capacity_pods)
+            if not capacity['ready']:raise ValueError('capture CPU reservation/rollout capacity invalid; see capacity-before-instrumentation.json')
         self.snapshot={'name':self.name,'owner':self.owner,'namespace':NS,'ownership_marker_uid':marker['metadata']['uid'],'cleanup_deadline_epoch':self.deadline+int(self.settings.get('artifact_recovery_seconds',1800)),'plans':self.plans}
         r.write(self.root/'watchdog-snapshot.json',self.snapshot)
         # Fully validated snapshots are durable before the first cluster mutation.

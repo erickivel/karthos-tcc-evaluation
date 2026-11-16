@@ -499,10 +499,32 @@ printf '%s:%s\\n' "$meta" "$digest"
         for name in ('servicegraph.request.count', 'servicegraph.request.error.count', 'servicegraph.request.duration'):
             self._api(name)
 
+    @staticmethod
+    def _identity_error_detail(error):
+        value=getattr(error,'stderr',None) or ''
+        if isinstance(value,bytes):value=value.decode(errors='replace')
+        return {'http_request_logged':'Request Headers:' in value or 'GET https://' in value,
+                'http_response_logged':'Response Status:' in value,
+                'stderr_sha256':hashlib.sha256(value.encode()).hexdigest(),
+                'stderr_bytes':len(value.encode()),
+                'kubectl_log_pids':sorted(set(__import__('re').findall(r'^[IWEF]\d{4}\s+\S+\s+(\d+)\s+',value,__import__('re').MULTILINE))),
+                'transport_markers':[marker for marker in ('TLS handshake timeout','connection refused','context deadline exceeded','i/o timeout','Unauthorized','Forbidden','no such host') if marker in value],
+                'error_type':type(error).__name__}
+
     def _poll_collector(self,kind,before,filename=None,stream=None):
         if self._stop.is_set():
             return
-        current = json.loads(r.kube('get', 'pod', before['metadata']['name'], '-n', KARTHOS_NAMESPACE, '-o', 'json', timeout=5, quiet=True).stdout)
+        requested=time.time_ns();started=time.monotonic()
+        try:
+            current = json.loads(r.kube('get', 'pod', before['metadata']['name'], '-n', KARTHOS_NAMESPACE, '-o', 'json', '--v=8', timeout=5, quiet=True).stdout)
+        except Exception as exc:
+            self._record('collector-identity',kind,requested,error=exc,
+                         stage='kubectl-identity-command',elapsed_seconds=time.monotonic()-started,
+                         timeout_seconds=5,collector_uid=before['metadata'].get('uid'),
+                         transport_stderr=self._identity_error_detail(exc),
+                         attribution='correlate command interval with infrastructure/auth-timing.ndjson; HTTP markers distinguish reached API transport from pre-request delay')
+            raise
+
         errors = pod_errors(before, current)
         if errors:
             raise ValueError('; '.join(errors))

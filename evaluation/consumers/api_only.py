@@ -204,7 +204,7 @@ def answer_questions(graph, metrics, *, service='checkout', namespace=None, serv
 
 
 def graph_calls_source(metric_source):
-    return {'traces.servicegraph':'traces.otlp','mesh.istio':'mesh.istio'}.get(metric_source)
+    return {'traces.servicegraph':'traces.servicegraph','traces.otlp':'traces.otlp','mesh.istio':'mesh.istio'}.get(metric_source)
 
 
 def scoped_service(graph, namespace, name):

@@ -14,6 +14,7 @@ def parser():
     build.add_argument('--product-repository',help='Authorized source URL or local committed checkout; pinned product SHA and hash still required')
     build.add_argument('--image-prefix',default='karthos-eval');build.add_argument('--build-images',action='store_true')
     prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.completion-v2.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2,COMPLETION,COMPLETION_V2),default=COMPLETION_V2)
+    prep.add_argument('--matrix-profile',choices=('astronomy-recovery-v1','astronomy-istio-repair-v1'))
     prep.add_argument('--origin-report',type=Path);prep.add_argument('--origin-seal',type=Path);prep.add_argument('--origin-uri')
     prep.add_argument('--continuation-dir',type=Path);prep.add_argument('--continuation-receipt',type=Path)
     comparison=sub.add_parser('compare-deployments');comparison.add_argument('--left',type=Path,required=True);comparison.add_argument('--right',type=Path,required=True);comparison.add_argument('--left-sha256',required=True);comparison.add_argument('--right-sha256',required=True)
@@ -23,11 +24,25 @@ def parser():
     for name in ['status','teardown','export']:
         q=sub.add_parser(name);q.add_argument('--run-id',required=True)
     download=sub.add_parser('download');download.add_argument('--manifest',required=True);download.add_argument('--run-id',required=True);download.add_argument('--object',dest='object_uri',required=True);download.add_argument('--destination',type=Path,required=True)
+    for name in ('monitor','recover-iap'):
+        mon=sub.add_parser(name,help='Observe controller; recover-iap temporarily opens narrowly scoped IAP SSH ingress')
+        for flag in ('project','zone','controller','owner-id','run-id','uid'):
+            mon.add_argument('--'+flag,required=True)
+        mon.add_argument('--interval',type=int,default=900)
+        if name=='monitor':mon.add_argument('--watch',action='store_true')
+        else:mon.add_argument('--receipt',type=Path,required=True)
     return p
 
 
 def dispatch(a,root):
     root=Path(root)
+    if a.command=='recover-iap':
+        from .operator_monitor import Operator,observe
+        from .iap_recovery import recover
+        return recover(Operator(root,a),observe,a.receipt)
+    if a.command=='monitor':
+        from .operator_monitor import monitor
+        return monitor(root,a)
     if a.command=='build':
         from .commit_build import build_from_commit
         return build_from_commit(a.repository or root,a.revision,a.destination,toolchain=a.toolchain,build_images=a.build_images,image_prefix=a.image_prefix,product_repository=a.product_repository)
@@ -39,7 +54,7 @@ def dispatch(a,root):
         return analyse(root,a.run_id,a.analysis_id)
     if a.command=='prepare':
         from .prepare import prepare
-        return {'manifest':str(prepare(root,root/a.config,a.id,product_snapshot=a.product_snapshot,schedule=a.schedule,benchmark=getattr(a,'benchmark',None),product_lock=getattr(a,'product_lock',None),local_evidence=getattr(a,'local_evidence',None),continuation_dir=getattr(a,'continuation_dir',None),continuation_receipt=getattr(a,'continuation_receipt',None),origin_report=getattr(a,'origin_report',None),origin_seal=getattr(a,'origin_seal',None),origin_uri=getattr(a,'origin_uri',None))),'cloud_started':False}
+        return {'manifest':str(prepare(root,root/a.config,a.id,product_snapshot=a.product_snapshot,schedule=a.schedule,benchmark=getattr(a,'benchmark',None),product_lock=getattr(a,'product_lock',None),local_evidence=getattr(a,'local_evidence',None),continuation_dir=getattr(a,'continuation_dir',None),continuation_receipt=getattr(a,'continuation_receipt',None),origin_report=getattr(a,'origin_report',None),origin_seal=getattr(a,'origin_seal',None),origin_uri=getattr(a,'origin_uri',None),matrix_profile=getattr(a,'matrix_profile',None))),'cloud_started':False}
     if a.command=='download':
         from .optional_download import download
         return download(root,Path(a.manifest),a.run_id,a.object_uri,a.destination)
@@ -84,6 +99,8 @@ def main(argv=None):
     try:result=dispatch(args,root)
     except (ValueError,RuntimeError,OSError,TimeoutError) as exc:
         print(json.dumps({'state':'blocked','reason':str(exc),'command':args.command}),file=sys.stderr);return 2
-    print(json.dumps(result,indent=2,default=str));return 0
+    print(json.dumps(result,indent=2,default=str))
+    if args.command=='recover-iap' and result.get('temporary_removal_confirmed') is not True:return 2
+    return 0
 
 if __name__=='__main__':raise SystemExit(main())

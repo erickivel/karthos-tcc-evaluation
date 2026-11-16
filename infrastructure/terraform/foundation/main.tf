@@ -77,7 +77,7 @@ resource "google_project_iam_member" "node" {
   member  = "serviceAccount:${google_service_account.runtime["node"].email}"
 }
 resource "google_project_iam_member" "controller" {
-  for_each = toset(["roles/container.developer", "roles/container.clusterViewer"])
+  for_each = toset(["roles/container.developer", "roles/container.clusterViewer", "roles/logging.logWriter"])
   project  = var.project_id
   role     = each.key
   member   = "serviceAccount:${google_service_account.runtime["controller"].email}"

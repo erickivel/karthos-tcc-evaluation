@@ -209,6 +209,25 @@ def transition(ctx,driver,spec,report):
     return result
 
 
+def _retained_failure_report(path):
+    """Recover bounded metadata, never re-decode a large report after an error."""
+    from .report_summary import load_summary
+    path=Path(path);result=load_summary(path)
+    result.setdefault('execution',{'state':'incomplete'})
+    result.setdefault('evidence',{'valid':False})
+    detailed=path/'gke-evaluation.json'
+    if detailed.is_file():
+        result['retained_detail_reference']={'name':detailed.name,'sha256':sha(detailed),'bytes':detailed.stat().st_size}
+    return result
+
+
+def _persist_attempt_report(ctx,path,report,*,preserve_detail=False):
+    # A bounded recovery view is an interpretation, never a replacement for
+    # already-recorded detailed measurements.
+    name='recovery-verdict.json' if preserve_detail and (Path(path)/'gke-evaluation.json').exists() else 'gke-evaluation.json'
+    ctx.write(Path(path)/name,report)
+
+
 def _checkpoint(ctx,records,history,readiness,sequence):
     from . import export
     directory=ctx.result/'checkpoints'/f'phase-{sequence:04d}';directory.mkdir(parents=True,exist_ok=False)
@@ -254,7 +273,7 @@ def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_po
             'execution':execution,'evidence_valid':valid,'evidence_scope':'local measurement; export and continuation reported separately',
             'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
             'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
-            'families':report.get('families',{}),
+            'families':report.get('families',{}),'analysis':report.get('analysis',{}),
             'reason':failure or report.get('reason'),'path':report.get('path'),
             'export':receipt or {'verified':False},'evidence_export_verified':(receipt or {}).get('verified') is True,
             'transition':barrier,'continuation_safe':barrier.get('safe') if isinstance(barrier,dict) else None,
@@ -370,16 +389,19 @@ def execute(ctx,driver):
                         retain_setup_evidence(ctx,driver,attempt,path/'setup')
                 if not diagnostics_status.get('stopped') is True:raise SafetyFailure('supplementary diagnostic worker remains active')
                 retained=driver.paths.get(attempt['id'])
-                if report is None and retained and (Path(retained)/'gke-evaluation.json').exists():report=read(Path(retained)/'gke-evaluation.json')
+                preserve_detail=bool(report is None and retained and (Path(retained)/'gke-evaluation.json').exists())
+                if preserve_detail:report=_retained_failure_report(retained)
                 report=report or {'execution':{'state':'incomplete' if setup_ok else 'unattempted'},'evidence':{'valid':False},'reason':error and error['message']}
                 window_path=driver.paths.get(attempt['id'])
                 if window_path is None:
                     window_path=ctx.result/'failed-windows'/attempt['id'];window_path.mkdir(parents=True,exist_ok=True);driver.paths[attempt['id']]=window_path
                 shutil.copytree(path,window_path/'execution-diagnostics',dirs_exist_ok=True)
                 report['path']=str(window_path);report['spec']=attempt
-                ctx.write(window_path/'gke-evaluation.json',report)
+                _persist_attempt_report(ctx,window_path,report,preserve_detail=preserve_detail)
                 from .report_summary import save_summary
-                save_summary(window_path,report)
+                from .evidence_first import enabled
+                deferred=enabled(ctx) and report.get('analysis',{}).get('state')=='pending'
+                if not deferred:save_summary(window_path,report)
                 barrier=transition(ctx,driver,attempt,report)
                 if not barrier['safe']:
                     # Only immutable, stopped supplementary diagnostics enter
@@ -391,12 +413,26 @@ def execute(ctx,driver):
                     receipt=driver.upload(attempt,report)
                 receipt['export_timing']=dict(export_timing)
                 if receipt.get('verified') is not True:raise SafetyFailure('attempt evidence export did not verify')
+                analysis_failed=False
+                if deferred:
+                    raw_receipt=receipt
+                    report=driver.analyse(attempt,raw_receipt)
+                    analysis_failed=report.get('analysis',{}).get('state')=='failed'
+                    analysis_receipt=driver.upload_analysis(attempt,report)
+                    if analysis_receipt.get('verified') is not True:raise SafetyFailure('analysis evidence export did not verify')
+                    receipt=dict(raw_receipt,analysis_export=analysis_receipt)
+                    report['analysis_export']=analysis_receipt
+                    if report.get('source_report'):
+                        report['source_report']=dict(report['source_report'],name='analysis/'+report['source_report']['name'])
+                    # Preserve raw measurement checkpoint; expose the bounded
+                    # analysis to checkpoint/history consumers without expansion.
+                    ctx.write(window_path/'orchestration-summary.json',report)
                 generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
                 unexpected=generator.get('unexpected_outcomes')
                 valid=report.get('evidence',{}).get('valid') is True
                 execution=report.get('execution',{}).get('state','incomplete')
                 failed=bool(error or execution!='complete' or not valid or type(unexpected) is int and unexpected>0)
-                item=attempt_record(attempt,report,failure=error,barrier=barrier,receipt=receipt,retry_policy_complete=number==2 or not failed)
+                item=attempt_record(attempt,report,failure=error,barrier=barrier,receipt=receipt,retry_policy_complete=number==2 or not failed or analysis_failed)
                 item['cluster']=copy.deepcopy(ctx.state.get('evaluation_cluster_instances',[])[-1:])
                 attempts.append(item)
                 row=_row(spec,copy.deepcopy(attempts))
@@ -408,7 +444,7 @@ def execute(ctx,driver):
                 if not barrier['safe']:raise SafetyFailure('attempt completion barrier failed: '+str(barrier.get('error')))
                 if spec['phase']=='arbitration' and spec['scenario']=='both-sources':arbitration_ready=setup_ok and valid
                 ctx.event('window-exported',window=attempt['id'],logical_id=spec['id'],state=item['state'])
-                if not failed:break
+                if not failed or analysis_failed:break
                 # Do not immediately repeat explicit rediscovery against the
                 # already transitioned plan. Reconstruct its prerequisite first.
                 if number==1 and spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
@@ -434,8 +470,13 @@ def execute(ctx,driver):
         if current_attempt and not any(a.get('attempt_id')==current_attempt['id'] for row in records for a in row.get('attempts',[])):
             observed=report
             retained=driver.paths.get(current_attempt['id'])
-            if observed is None and retained and (Path(retained)/'gke-evaluation.json').exists():observed=read(Path(retained)/'gke-evaluation.json')
-            failed=attempt_record(current_attempt,observed,failure=failure,barrier=barrier,receipt=receipt)
+            if observed is None and retained and (Path(retained)/'gke-evaluation.json').exists():observed=_retained_failure_report(retained)
+            from .evidence_first import AnalysisSafetyError
+            if isinstance(exc,AnalysisSafetyError):barrier={'safe':False,'error':failure}
+            measurement_preserved=bool(receipt and receipt.get('verified') is True and observed and observed.get('analysis'))
+            failed=attempt_record(current_attempt,observed,failure=failure,barrier=barrier,receipt=receipt,
+                                  retry_policy_complete=measurement_preserved)
+            if measurement_preserved:failed['recovery']='resume analysis/export from preserved raw evidence; no automatic traffic rerun'
             failed['path']=failed.get('path') or (str(retained) if retained else None)
             failed['diagnostics']=str(ctx.result/'attempt-diagnostics'/current_attempt['id'])
             at=next((i for i,row in enumerate(records) if row['id']==current_attempt['logical_id']),None)

@@ -154,3 +154,9 @@ Original evidence remains in `results/` and GCS. Corrected interpretations go in
 | `analyses/` | Versioned interpretations linked to evidence checksums |
 
 Research drafts and historical planning notes in `.plan-docs/` are ignored and are not runtime dependencies. Historical result bundles remain unchanged.
+
+## Reanalyse preserved official evidence
+
+See [official evidence recovery](docs/official-evidence-recovery.md) for checksum-bound offline commands, optional streaming-analysis dependencies, executed-versus-recovered API evidence, and the capacity/timeout safeguards. Corrected interpretations go into a new `analyses/` directory; original `results/` and cloud archives remain unchanged.
+
+Controller report serialization, bounded failure recovery and memory-validation notes are documented in [controller evidence memory](docs/controller-evidence-memory.md).

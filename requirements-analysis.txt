@@ -1,0 +1,3 @@
+# Bounded analysis dependencies; also pinned in the controller runtime lock.
+ijson==3.4.0.post0
+PyYAML==6.0.3

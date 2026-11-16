@@ -181,7 +181,8 @@ class EvaluationTests(unittest.TestCase):
         candidate = {'pod_uid': 'pod-1'}
         volume_references = [candidate, {'pod_uid': 'pod-2'}]
 
-        def compare(observation, inputs, references, *, snapshots=()):
+        def compare(observation, inputs, references, *, snapshots=(), reference_index=None):
+            self.assertEqual(reference_index, {})  # Fixture rows have no source measurement timestamp.
             self.assertEqual(observation, observed)
             self.assertEqual(inputs, [])
             self.assertEqual(references, [candidate])
