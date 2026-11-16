@@ -44,3 +44,15 @@ class TargetedProfileTests(unittest.TestCase):
   with self.assertRaises(ValueError):validate_config(c,schedule=COMPLETION_V2)
   p['execution_profile']='astronomy-recovery-v1'
   with self.assertRaises(ValueError):build_matrix(p,schedule=COMPLETION_V2)
+
+ def test_approved_270_passes_launch_budget_binding(self):
+  from evaluation.gke.repair import validate_budget
+  c=json.loads(Path('config/gke.completion-v2.example.yaml').read_text())
+  c.update(execution_profile='astronomy-istio-repair-v1',evidence_pipeline='sealed-before-analysis-v1');c['limits']['gross_limit_usd']=270
+  b=dict(prior_runtime_allowance_usd=190.18,combined_estimate_usd=263.01,gross_limit_usd=270,shared_allowances_cumulative=True,basis='reviewed conservative bound')
+  c['readiness']['study_budget']=b
+  p=self.protocol();p.update(execution_profile='astronomy-istio-repair-v1',combined_gross_limit_usd=270)
+  m=dict(config=c,protocol_definition=p,schedule=COMPLETION_V2,study_budget=b,cost_preview={'gross_estimate':72.83})
+  validate_budget(m)
+  c.pop('evidence_pipeline')
+  with self.assertRaises(ValueError):validate_budget(m)

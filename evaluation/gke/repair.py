@@ -29,6 +29,12 @@ def validate_budget(manifest):
         raise ValueError('repair combined budget differs from reviewed configuration')
     from .models import COMPLETION_SCHEDULES,COMPLETION_V2
     limit=240 if manifest.get('schedule')==COMPLETION_V2 and manifest.get('protocol_definition',{}).get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1') and manifest['config'].get('execution_profile')==manifest.get('protocol_definition',{}).get('execution_profile') else 200 if manifest.get('schedule')==COMPLETION_V2 else 150 if manifest.get('schedule') in COMPLETION_SCHEDULES else 100
+    if (manifest.get('schedule')==COMPLETION_V2
+            and manifest.get('protocol_definition',{}).get('execution_profile')==manifest['config'].get('execution_profile')=='astronomy-istio-repair-v1'
+            and manifest['config'].get('evidence_pipeline')=='sealed-before-analysis-v1'
+            and manifest['config'].get('limits',{}).get('gross_limit_usd')==270
+            and manifest['protocol_definition'].get('combined_gross_limit_usd')==270):
+        limit=270
     if manifest.get('schedule') in COMPLETION_SCHEDULES and manifest['config'].get('limits',{}).get('gross_limit_usd')!=limit:
         raise ValueError('completion requires the approved USD'+str(limit)+' combined ceiling')
     previous=budget.get('prior_runtime_allowance_usd');combined=budget.get('combined_estimate_usd')
