@@ -1,0 +1,363 @@
+{
+  "run_id": "thesis-robustness-full-20261119",
+  "role": "failed candidate primary campaign; does not replace original evidence",
+  "runtime_revision": "9cfad320647910774573f5f3701ef1c9c2fe83a1",
+  "product_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+  "source_seal_sha256": "485e628ca3e0a2606978599e8e258fb6d34c32fc3c2f68e06021bf68553d4870",
+  "measurement_windows_completed": 0,
+  "setup_attempts": 2,
+  "state": "incomplete",
+  "windows": [
+    {
+      "id": "official-completion-smoke-boutique-trace",
+      "cell": "boutique-trace",
+      "phase": "smoke",
+      "repeat": 1,
+      "source": "trace",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "failed",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [
+        {
+          "attempt_id": "official-completion-smoke-boutique-trace-a1",
+          "state": "failed",
+          "execution": "unattempted",
+          "evidence_valid": false
+        },
+        {
+          "attempt_id": "official-completion-smoke-boutique-trace-a2",
+          "state": "failed",
+          "execution": "unattempted",
+          "evidence_valid": false
+        }
+      ],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-baseline-boutique-trace",
+      "cell": "boutique-trace",
+      "phase": "baseline",
+      "repeat": 1,
+      "source": "trace",
+      "demo": "boutique",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-smoke-astronomy-trace",
+      "cell": "astronomy-trace",
+      "phase": "smoke",
+      "repeat": 1,
+      "source": "trace",
+      "demo": "astronomy",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-baseline-astronomy-trace",
+      "cell": "astronomy-trace",
+      "phase": "baseline",
+      "repeat": 1,
+      "source": "trace",
+      "demo": "astronomy",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-smoke-astronomy-mesh",
+      "cell": "astronomy-mesh",
+      "phase": "smoke",
+      "repeat": 1,
+      "source": "mesh",
+      "demo": "astronomy",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-baseline-astronomy-mesh",
+      "cell": "astronomy-mesh",
+      "phase": "baseline",
+      "repeat": 1,
+      "source": "mesh",
+      "demo": "astronomy",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-smoke-boutique-mesh",
+      "cell": "boutique-mesh",
+      "phase": "smoke",
+      "repeat": 1,
+      "source": "mesh",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-baseline-boutique-mesh",
+      "cell": "boutique-mesh",
+      "phase": "baseline",
+      "repeat": 1,
+      "source": "mesh",
+      "demo": "boutique",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-arbitration-both-sources",
+      "cell": "boutique-mesh",
+      "phase": "arbitration",
+      "repeat": 1,
+      "source": "mesh",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-completion-arbitration-replanned-trace",
+      "cell": "boutique-trace",
+      "phase": "arbitration",
+      "repeat": 1,
+      "source": "trace",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-r2-smoke-boutique-mesh",
+      "cell": "boutique-mesh",
+      "phase": "smoke",
+      "repeat": 2,
+      "source": "mesh",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-r2-baseline-boutique-mesh",
+      "cell": "boutique-mesh",
+      "phase": "baseline",
+      "repeat": 2,
+      "source": "mesh",
+      "demo": "boutique",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-r2-smoke-boutique-trace",
+      "cell": "boutique-trace",
+      "phase": "smoke",
+      "repeat": 2,
+      "source": "trace",
+      "demo": "boutique",
+      "duration_seconds": 60,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    },
+    {
+      "id": "official-r2-baseline-boutique-trace",
+      "cell": "boutique-trace",
+      "phase": "baseline",
+      "repeat": 2,
+      "source": "trace",
+      "demo": "boutique",
+      "duration_seconds": 300,
+      "rate": 2,
+      "state": "unattempted",
+      "execution": "unattempted",
+      "evidence_valid": false,
+      "attempts": [],
+      "numerical_comparison": "inconclusive: measurement not executed"
+    }
+  ],
+  "claims": [
+    {
+      "claim": "local-structure",
+      "verdict": "pass",
+      "scope": "pre-existing local evidence"
+    },
+    {
+      "claim": "local-source-semantics",
+      "verdict": "pass",
+      "scope": "pre-existing local evidence"
+    },
+    {
+      "claim": "local-arbitration",
+      "verdict": "pass",
+      "scope": "pre-existing local evidence"
+    },
+    {
+      "claim": "local-temporal-history",
+      "verdict": "pass",
+      "scope": "pre-existing local evidence"
+    },
+    {
+      "claim": "local-api-only",
+      "verdict": "pass",
+      "scope": "pre-existing local evidence"
+    },
+    {
+      "claim": "gke-readiness",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "interval-callers",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "current-replicas-and-placement",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "container-resource-history",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "request-error-derivation",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "request-error-numerical-agreement",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "retained-replicas-and-health",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "bounded-lifecycle-observation",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "gke-structural-fidelity",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "selected-source-single-contribution",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "catalog-contract",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "representative-numerical-agreement",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "source-arbitration",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "no-double-counting",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "host-lifecycle-exact-alignment",
+      "verdict": "not-applicable",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "fresh-cluster-identities",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "source-independence-boutique",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "source-independence-astronomy",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "clean-rebuild-boutique-trace",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    },
+    {
+      "claim": "clean-rebuild-boutique-mesh",
+      "verdict": "insufficient",
+      "scope": "new cloud campaign"
+    }
+  ],
+  "metric_values": "No measurement values were acquired. Missing values and errors are unavailable, not zero."
+}

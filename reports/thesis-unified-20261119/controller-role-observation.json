@@ -1,0 +1,16 @@
+{
+  "name": "roles/container.developer",
+  "title": "Kubernetes Engine Developer",
+  "stage": "GA",
+  "rbac_permissions": [
+    "container.clusterRoleBindings.get",
+    "container.clusterRoleBindings.list",
+    "container.clusterRoles.get",
+    "container.clusterRoles.list",
+    "container.roleBindings.get",
+    "container.roleBindings.list",
+    "container.roles.get",
+    "container.roles.list"
+  ],
+  "source": "gcloud iam roles describe roles/container.developer, authenticated read on 2026-11-19"
+}

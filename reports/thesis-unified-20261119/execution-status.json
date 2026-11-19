@@ -1,0 +1,91 @@
+{
+  "run_id": "thesis-robustness-full-20261119",
+  "phase": "closed-after-operational-failure",
+  "started_at_utc": "2026-11-19T07:28:24.850296+00:00",
+  "deadline_sao_paulo": "2026-11-20T00:28:24.850296-03:00",
+  "measurement_cutoff_sao_paulo": "2026-11-19T23:28:24.850296-03:00",
+  "quarantine_policy_preflight": {
+    "bucket": "karthos-karthos-eval-quarantine",
+    "iam_bindings": [
+      {
+        "bucket": "karthos-karthos-eval-quarantine",
+        "condition": {
+          "expression": "resource.name.startsWith('projects/_/buckets/karthos-karthos-eval-quarantine/objects/gke-quarantine-v1/runs/thesis-robustness-full-20261119/')",
+          "title": "QuarantineCurrentRun"
+        },
+        "member": "serviceAccount:karthos-eval-controller@karthos.iam.gserviceaccount.com",
+        "role": "roles/storage.objectCreator"
+      },
+      {
+        "bucket": "karthos-karthos-eval-quarantine",
+        "condition": {
+          "expression": "resource.name.startsWith('projects/_/buckets/karthos-karthos-eval-quarantine/objects/gke-quarantine-v1/runs/thesis-robustness-full-20261119/')",
+          "title": "QuarantineCurrentRun"
+        },
+        "member": "serviceAccount:karthos-eval-controller@karthos.iam.gserviceaccount.com",
+        "role": "roles/storage.objectViewer"
+      }
+    ],
+    "policy_bindings_verified": true,
+    "policy_sha256": "c69a417dfc4162c75c99c4b5373e51d6840ed6d91c881bddcfb6d6ecf701b360",
+    "prefix": "gke-quarantine-v1/runs/thesis-robustness-full-20261119/",
+    "remote_permissions_verified": false,
+    "run_id": "thesis-robustness-full-20261119",
+    "scope": "bucket policy binding check only; actual controller upload/readback probe remains mandatory"
+  },
+  "measurements_started": false,
+  "temporary_resources_cleanup_verified": true,
+  "checked_at": "2026-11-19T08:31:46.082902+00:00",
+  "watchdog_armed": false,
+  "cluster_generation": 1,
+  "clusters": [
+    {
+      "name": "projects/karthos/locations/us-central1-b/clusters/karthos-eval-08d05e1b878018cf5aee",
+      "uid": "8a09d8fe101e4c148d081d54e737182cb50144e257ac4caaa573a850e0dffb8d"
+    }
+  ],
+  "offline_report_revision": "8c7efe6",
+  "controller_process": "deleted",
+  "quarantine_access_verified": true,
+  "quarantine_probe": {
+    "verified": true,
+    "uri": "gs://karthos-karthos-eval-quarantine/gke-quarantine-v1/runs/thesis-robustness-full-20261119/f84d684f2f8e614b6b8e219cecdc386e79b0d4f56683f540843c0e2deafaf61b/3df6fe4686835b3c63b5c6c9e925691ead6b301c43656f586c6d6a0c117bc914",
+    "generation": "1795074730521992",
+    "sha256": "3df6fe4686835b3c63b5c6c9e925691ead6b301c43656f586c6d6a0c117bc914"
+  },
+  "temporary_observer_access_removed": true,
+  "planned_windows": 14,
+  "completed_measurement_windows": 0,
+  "failed_setup_attempts": 2,
+  "remaining_unattempted_windows": 13,
+  "scientific_conclusion": "inconclusive: no measurement windows ran",
+  "automatic_new_campaign_authorized": false,
+  "failure": "First setup: ClusterRoleBinding patch forbidden for controller principal; second setup: Helm uninstall failed. Final preservation and provider cleanup pending verification.",
+  "final_summary_readback_verified": true,
+  "sealed_summary_files": 28,
+  "state": "incomplete",
+  "study_complete": false,
+  "qualified": false,
+  "research_evidence_copies_verified": true,
+  "research_objects_per_copy": 49,
+  "research_bytes_per_copy": 924548,
+  "cloud_claims_insufficient": 19,
+  "existing_local_claims_pass": 5,
+  "optional_claims_not_applicable": 1,
+  "controller_primary_export_verified": true,
+  "controller_secondary_export_verified": true,
+  "temporary_quarantine_grants_removed": true,
+  "cleanup_handoff": "complete: resource absence and lease release verified",
+  "controller_and_disks_absence_verified": true,
+  "post_run_infrastructure_fix_revision": "6e19b8b",
+  "post_run_fixes_deployed": false,
+  "post_run_suite": {
+    "tests": 1486,
+    "skipped": 4,
+    "passed": true
+  },
+  "deployment_rbac_blocker_resolved": false,
+  "watchdog_firewall_operator_fallback_verified": true,
+  "project_lease_released": true,
+  "all_temporary_resources_absent": true
+}

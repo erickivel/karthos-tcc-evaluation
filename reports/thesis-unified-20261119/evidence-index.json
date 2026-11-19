@@ -1,0 +1,705 @@
+{
+  "run_id": "thesis-robustness-full-20261119",
+  "checked_at": "2026-11-19T08:16:21.252326+00:00",
+  "scope": "all completed research-prefix objects except the replication receipt itself; control and private quarantine objects excluded",
+  "copies": [
+    {
+      "bucket": "karthos-karthos-eval-evidence",
+      "objects": [
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/EXPORT-PROJECTION.json",
+          "generation": "1795075082329029",
+          "bytes": 618,
+          "sha256": "b45348275aa8b89485eb60a3aa5091d0dfe26911407726485bfd471f8b88cd93"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/GKE-SHA256SUMS",
+          "generation": "1795075082316883",
+          "bytes": 253,
+          "sha256": "978808657dd52575c309e73170d0f7e75fd30bbea83a0dede9806f29d4fe6ba7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window-index.json",
+          "generation": "1795075096848339",
+          "bytes": 283,
+          "sha256": "2a570758151164eb06a45c9cef4a08dd908db128305c0a3b31bfa204e8a1dfab"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window.tar.gz",
+          "generation": "1795075097285637",
+          "bytes": 8427,
+          "sha256": "22fba679422b7cac2a5a8ddd3d8dedeb9f988c16f580c4d0b7c0a92d71c5eae3"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/EXPORT-PROJECTION.json",
+          "generation": "1795075189833381",
+          "bytes": 711,
+          "sha256": "36cbfd8ffcb1399871862b071c1b2ad7f56987246f321febec7ad04dfea66c99"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/GKE-SHA256SUMS",
+          "generation": "1795075189960686",
+          "bytes": 253,
+          "sha256": "298a247d54d95547d2f281847cd860246b85326daa047d3a2769c62f76d200dd"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window-index.json",
+          "generation": "1795075205029563",
+          "bytes": 284,
+          "sha256": "3f4cfe8f4c41ee0da22eb8b1790618519fd4d360908ddc0928cf2da51af797b9"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window.tar.gz",
+          "generation": "1795075205058806",
+          "bytes": 10519,
+          "sha256": "004ac3f971a7246ca77e7759f4988108a073c44196b4f94277f943eb82b25250"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/EXPORT-PROJECTION.json",
+          "generation": "1795075220425204",
+          "bytes": 711,
+          "sha256": "9dc96ffabcb7757fd44122b37d6f40d98081955fa4a2dab751ec420b23286a08"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/GKE-SHA256SUMS",
+          "generation": "1795075220221589",
+          "bytes": 253,
+          "sha256": "26a613c7bfc4675d33b1cf374827a0fc19f93e1ed2e961e52174efed21bd5ca5"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window-index.json",
+          "generation": "1795075235951509",
+          "bytes": 284,
+          "sha256": "fe95a3787c964067a3fd1d4bf839ac0a197c0cf3d733044de489660ca5e357dc"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window.tar.gz",
+          "generation": "1795075236331392",
+          "bytes": 11417,
+          "sha256": "b5fdd2ccb97789cfe39858e05055883336d07ea3ae8a00512f1726599289e5c7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/EXPORT-PROJECTION.json",
+          "generation": "1795075906530847",
+          "bytes": 240,
+          "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/GKE-SHA256SUMS",
+          "generation": "1795075906776054",
+          "bytes": 2922,
+          "sha256": "485e628ca3e0a2606978599e8e258fb6d34c32fc3c2f68e06021bf68553d4870"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/index.json",
+          "generation": "1795075920863775",
+          "bytes": 5863,
+          "sha256": "0e63c03d5b92ed4b30af3ffa11213d5c60cb66aeb5f34c9fb830f09657f81192"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/diagnostics-status.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/diagnostics-status.json",
+          "generation": "1795075921513585",
+          "bytes": 412,
+          "sha256": "f60375c8a946abd024978106d9badcd09600b96e77f910d18f0d746b3a59bfeb"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "generation": "1795075935403741",
+          "bytes": 2538,
+          "sha256": "879d9d18bd92995faa81262a992d8aca1cb9e800a01c1fe2575ae32196f153fb"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/diagnostics-status.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/diagnostics-status.json",
+          "generation": "1795075936482000",
+          "bytes": 411,
+          "sha256": "a0717aa21fd26d748889404f3377f65cff01296c100dc166458799a83907e235"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "generation": "1795075950285954",
+          "bytes": 2535,
+          "sha256": "01103b6aa699cb2126eb18d65dd4ca6559a00c63b1d7ebe71ad43f6e40201b0b"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/index.json",
+          "generation": "1795075951567405",
+          "bytes": 6267,
+          "sha256": "9cae0d48cb738b8a0e9cc472e9565a09efb604198cbf253e308f40bd5afbab24"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "generation": "1795075965040904",
+          "bytes": 2528,
+          "sha256": "50bb96c953deeefaaa26042f6fe933bd06dd1e3312cdaa257835da31d31004af"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "generation": "1795075966382558",
+          "bytes": 2525,
+          "sha256": "a3992b99ee95967097d7354858b0638ca98d8d41f64f7ff6a1d2b1d514e520ce"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.csv",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.csv",
+          "generation": "1795075979704621",
+          "bytes": 6892,
+          "sha256": "04382ecdc41464014f4b8124c6af013443954e594156049ec5edfff0fab4d170"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.json",
+          "generation": "1795075981156441",
+          "bytes": 20549,
+          "sha256": "0a5d4d41fd15a8667109745b01a921afc49aa3bcb8944c20524f8a3458d3ef07"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0001.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0001.json",
+          "generation": "1795075994237684",
+          "bytes": 2450,
+          "sha256": "d8cfaaab0efc0712594132c4cc25229a4648edfd44b53fb0fcf2950eb9a6bf76"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0002.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0002.json",
+          "generation": "1795075995613259",
+          "bytes": 2663,
+          "sha256": "45da1a9dd985efd59124e840b3afd85e14222c2e51783238b7885142ff2c645d"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0003.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0003.json",
+          "generation": "1795076009062198",
+          "bytes": 2665,
+          "sha256": "76fdcead4910342d8913f27349ceddf57ad61c3bfcba505718ca276897ce3c27"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/claim-matrix.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/claim-matrix.json",
+          "generation": "1795076009990154",
+          "bytes": 74165,
+          "sha256": "80b9fcfe0fe9d285343d28a6b6d46ffc38322afa25bad29287e3245acb63cc32"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/controller-headroom.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/controller-headroom.json",
+          "generation": "1795076023831469",
+          "bytes": 250,
+          "sha256": "8704070c7adfdccb4932ebd90bf04e4fa419ae71699cca0fb8ca8ef1c1f40a7a"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/auth-timing.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/auth-timing.ndjson",
+          "generation": "1795076024444584",
+          "bytes": 139398,
+          "sha256": "8c842cb69a8f29d01be17fdccce401e51786ac4b67ffc276b3c260dba6299c84"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-demo.stderr.log",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-demo.stderr.log",
+          "generation": "1795076038362036",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-karthos.stderr.log",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-karthos.stderr.log",
+          "generation": "1795076039174254",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/quarantine-access-probe.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/quarantine-access-probe.json",
+          "generation": "1795076052993365",
+          "bytes": 544,
+          "sha256": "dc6f717063c8b3e6857bc7ded1f1dc79e8593a1d04deb94d1dcbf1fd85348fee"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/kubernetes-version.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/kubernetes-version.json",
+          "generation": "1795076053636542",
+          "bytes": 1490,
+          "sha256": "ad4dc5c3694409ecbaa8e57deb0d214d21b60461c118a9ca8c0c10e1e5931975"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.csv",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.csv",
+          "generation": "1795076067504152",
+          "bytes": 11346,
+          "sha256": "16f9d72b1a93cecd8463fe976e27b70ef7fc92a3caa4f3a4846d04195f4f5490"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.html",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.html",
+          "generation": "1795076068225385",
+          "bytes": 22901,
+          "sha256": "e965e607f23fd8a3393674cb1922b1fd8b69d82581ca63cfc928dab18be05711"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.json",
+          "generation": "1795076082050695",
+          "bytes": 47951,
+          "sha256": "e82fd67fc16acee30fcb13483522b2785b521eeb4c2e79bfd553a2f9affa449d"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/node-inventory.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/node-inventory.json",
+          "generation": "1795076082827160",
+          "bytes": 1241,
+          "sha256": "c7db4e1578507465bb4ae1bba05d51a14f81583df1ed2f33b2a9e41948163b9f"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/phase-timings.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/phase-timings.ndjson",
+          "generation": "1795076096418108",
+          "bytes": 32182,
+          "sha256": "7d49d93c12e2607e9bd3c7a6a8c8ee1eac60c97f4b39dbe64297dc8eb073d533"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/progress.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/progress.ndjson",
+          "generation": "1795076097495435",
+          "bytes": 3425,
+          "sha256": "87467263642153e8bb72df16bddcad5d0ca725d5fbde4ad7173deaf0d951d842"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/run-report.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/run-report.json",
+          "generation": "1795076110797243",
+          "bytes": 92737,
+          "sha256": "0755c1a1f8ec77875c8238ed98e1d4a9bcb836ca474efac63db73730327cdfb4"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/EXPORT-PROJECTION.json",
+          "generation": "1795075052447118",
+          "bytes": 9450,
+          "sha256": "50aa8abbda8e00f2c192c060cb7b6f1a2bdc7dd5469be5e2af0cb474da794524"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/GKE-SHA256SUMS",
+          "generation": "1795075052428390",
+          "bytes": 253,
+          "sha256": "78be9b13a79d777691b9247c4431a0f43f33060494a9a1cb4c385094b86402a3"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window-index.json",
+          "generation": "1795075067333283",
+          "bytes": 285,
+          "sha256": "b37917c7c3da5057d68edbe6a94df94b85ff269eb83a9fd6aee800b18d143379"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window.tar.gz",
+          "generation": "1795075067316509",
+          "bytes": 303452,
+          "sha256": "5593e6857d38d94146f59184108058bb79dae2982e5c2f8fa2cb17562f52d2f7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/EXPORT-PROJECTION.json",
+          "generation": "1795075159911350",
+          "bytes": 2375,
+          "sha256": "1a7e25615554379d48ec1d5ab8545bf5fad5cf83c6945ec71eae95cd600a7cd1"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/GKE-SHA256SUMS",
+          "generation": "1795075159866534",
+          "bytes": 253,
+          "sha256": "9a86ccd51426e2c2371829408ffc08fa6726485ad7e63fa133a352e282c9292e"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window-index.json",
+          "generation": "1795075174708729",
+          "bytes": 284,
+          "sha256": "5c7bbc092621d8a16da1704fcd0191f842a2309a94cbd709837d0c864c6de51e"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window.tar.gz",
+          "generation": "1795075174728834",
+          "bytes": 85093,
+          "sha256": "449b0a891abc62431654caa3a8a84639e9b78ae570bcc1cd1ba620c520fa0ff6"
+        }
+      ]
+    },
+    {
+      "bucket": "karthos-karthos-eval-evidence-backup",
+      "objects": [
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/EXPORT-PROJECTION.json",
+          "generation": "1795076119344308",
+          "bytes": 618,
+          "sha256": "b45348275aa8b89485eb60a3aa5091d0dfe26911407726485bfd471f8b88cd93"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/GKE-SHA256SUMS",
+          "generation": "1795076119327312",
+          "bytes": 253,
+          "sha256": "978808657dd52575c309e73170d0f7e75fd30bbea83a0dede9806f29d4fe6ba7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window-index.json",
+          "generation": "1795076119486512",
+          "bytes": 283,
+          "sha256": "2a570758151164eb06a45c9cef4a08dd908db128305c0a3b31bfa204e8a1dfab"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0001/window.tar.gz",
+          "generation": "1795076119509347",
+          "bytes": 8427,
+          "sha256": "22fba679422b7cac2a5a8ddd3d8dedeb9f988c16f580c4d0b7c0a92d71c5eae3"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/EXPORT-PROJECTION.json",
+          "generation": "1795076119616910",
+          "bytes": 711,
+          "sha256": "36cbfd8ffcb1399871862b071c1b2ad7f56987246f321febec7ad04dfea66c99"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/GKE-SHA256SUMS",
+          "generation": "1795076119680322",
+          "bytes": 253,
+          "sha256": "298a247d54d95547d2f281847cd860246b85326daa047d3a2769c62f76d200dd"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window-index.json",
+          "generation": "1795076119761874",
+          "bytes": 284,
+          "sha256": "3f4cfe8f4c41ee0da22eb8b1790618519fd4d360908ddc0928cf2da51af797b9"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0002/window.tar.gz",
+          "generation": "1795076119824779",
+          "bytes": 10519,
+          "sha256": "004ac3f971a7246ca77e7759f4988108a073c44196b4f94277f943eb82b25250"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/EXPORT-PROJECTION.json",
+          "generation": "1795076119875150",
+          "bytes": 711,
+          "sha256": "9dc96ffabcb7757fd44122b37d6f40d98081955fa4a2dab751ec420b23286a08"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/GKE-SHA256SUMS",
+          "generation": "1795076119988331",
+          "bytes": 253,
+          "sha256": "26a613c7bfc4675d33b1cf374827a0fc19f93e1ed2e961e52174efed21bd5ca5"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window-index.json",
+          "generation": "1795076119995554",
+          "bytes": 284,
+          "sha256": "fe95a3787c964067a3fd1d4bf839ac0a197c0cf3d733044de489660ca5e357dc"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/checkpoints/phase-0003/window.tar.gz",
+          "generation": "1795076120180156",
+          "bytes": 11417,
+          "sha256": "b5fdd2ccb97789cfe39858e05055883336d07ea3ae8a00512f1726599289e5c7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/EXPORT-PROJECTION.json",
+          "generation": "1795076120228189",
+          "bytes": 240,
+          "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/GKE-SHA256SUMS",
+          "generation": "1795076120321345",
+          "bytes": 2922,
+          "sha256": "485e628ca3e0a2606978599e8e258fb6d34c32fc3c2f68e06021bf68553d4870"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/index.json",
+          "generation": "1795076120383312",
+          "bytes": 5863,
+          "sha256": "0e63c03d5b92ed4b30af3ffa11213d5c60cb66aeb5f34c9fb830f09657f81192"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/diagnostics-status.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/diagnostics-status.json",
+          "generation": "1795076120502278",
+          "bytes": 412,
+          "sha256": "f60375c8a946abd024978106d9badcd09600b96e77f910d18f0d746b3a59bfeb"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "generation": "1795076120486411",
+          "bytes": 2538,
+          "sha256": "879d9d18bd92995faa81262a992d8aca1cb9e800a01c1fe2575ae32196f153fb"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/diagnostics-status.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/diagnostics-status.json",
+          "generation": "1795076120620043",
+          "bytes": 411,
+          "sha256": "a0717aa21fd26d748889404f3377f65cff01296c100dc166458799a83907e235"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-diagnostics/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "generation": "1795076120655725",
+          "bytes": 2535,
+          "sha256": "01103b6aa699cb2126eb18d65dd4ca6559a00c63b1d7ebe71ad43f6e40201b0b"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/index.json",
+          "generation": "1795076120798966",
+          "bytes": 6267,
+          "sha256": "9cae0d48cb738b8a0e9cc472e9565a09efb604198cbf253e308f40bd5afbab24"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a1/export-reference.json",
+          "generation": "1795076120767770",
+          "bytes": 2528,
+          "sha256": "50bb96c953deeefaaa26042f6fe933bd06dd1e3312cdaa257835da31d31004af"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempt-reports/official-completion-smoke-boutique-trace-a2/export-reference.json",
+          "generation": "1795076120886429",
+          "bytes": 2525,
+          "sha256": "a3992b99ee95967097d7354858b0638ca98d8d41f64f7ff6a1d2b1d514e520ce"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.csv",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.csv",
+          "generation": "1795076120946824",
+          "bytes": 6892,
+          "sha256": "04382ecdc41464014f4b8124c6af013443954e594156049ec5edfff0fab4d170"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/attempts.json",
+          "generation": "1795076121064718",
+          "bytes": 20549,
+          "sha256": "0a5d4d41fd15a8667109745b01a921afc49aa3bcb8944c20524f8a3458d3ef07"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0001.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0001.json",
+          "generation": "1795076121060532",
+          "bytes": 2450,
+          "sha256": "d8cfaaab0efc0712594132c4cc25229a4648edfd44b53fb0fcf2950eb9a6bf76"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0002.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0002.json",
+          "generation": "1795076121188533",
+          "bytes": 2663,
+          "sha256": "45da1a9dd985efd59124e840b3afd85e14222c2e51783238b7885142ff2c645d"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0003.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/checkpoint-receipts/phase-0003.json",
+          "generation": "1795076121256407",
+          "bytes": 2665,
+          "sha256": "76fdcead4910342d8913f27349ceddf57ad61c3bfcba505718ca276897ce3c27"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/claim-matrix.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/claim-matrix.json",
+          "generation": "1795076121385794",
+          "bytes": 74165,
+          "sha256": "80b9fcfe0fe9d285343d28a6b6d46ffc38322afa25bad29287e3245acb63cc32"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/controller-headroom.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/controller-headroom.json",
+          "generation": "1795076121441706",
+          "bytes": 250,
+          "sha256": "8704070c7adfdccb4932ebd90bf04e4fa419ae71699cca0fb8ca8ef1c1f40a7a"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/auth-timing.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/auth-timing.ndjson",
+          "generation": "1795076121562618",
+          "bytes": 139398,
+          "sha256": "8c842cb69a8f29d01be17fdccce401e51786ac4b67ffc276b3c260dba6299c84"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-demo.stderr.log",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-demo.stderr.log",
+          "generation": "1795076121566542",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-karthos.stderr.log",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/helm-renderer-karthos.stderr.log",
+          "generation": "1795076121689537",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/quarantine-access-probe.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/infrastructure/quarantine-access-probe.json",
+          "generation": "1795076121704560",
+          "bytes": 544,
+          "sha256": "dc6f717063c8b3e6857bc7ded1f1dc79e8593a1d04deb94d1dcbf1fd85348fee"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/kubernetes-version.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/kubernetes-version.json",
+          "generation": "1795076121819634",
+          "bytes": 1490,
+          "sha256": "ad4dc5c3694409ecbaa8e57deb0d214d21b60461c118a9ca8c0c10e1e5931975"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.csv",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.csv",
+          "generation": "1795076121834945",
+          "bytes": 11346,
+          "sha256": "16f9d72b1a93cecd8463fe976e27b70ef7fc92a3caa4f3a4846d04195f4f5490"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.html",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.html",
+          "generation": "1795076121960568",
+          "bytes": 22901,
+          "sha256": "e965e607f23fd8a3393674cb1922b1fd8b69d82581ca63cfc928dab18be05711"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/matrix.json",
+          "generation": "1795076122018862",
+          "bytes": 47951,
+          "sha256": "e82fd67fc16acee30fcb13483522b2785b521eeb4c2e79bfd553a2f9affa449d"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/node-inventory.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/node-inventory.json",
+          "generation": "1795076122148279",
+          "bytes": 1241,
+          "sha256": "c7db4e1578507465bb4ae1bba05d51a14f81583df1ed2f33b2a9e41948163b9f"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/phase-timings.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/phase-timings.ndjson",
+          "generation": "1795076122142107",
+          "bytes": 32182,
+          "sha256": "7d49d93c12e2607e9bd3c7a6a8c8ee1eac60c97f4b39dbe64297dc8eb073d533"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/progress.ndjson",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/progress.ndjson",
+          "generation": "1795076122273584",
+          "bytes": 3425,
+          "sha256": "87467263642153e8bb72df16bddcad5d0ca725d5fbde4ad7173deaf0d951d842"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/run-report.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/final-summary/run-report.json",
+          "generation": "1795076122314131",
+          "bytes": 92737,
+          "sha256": "0755c1a1f8ec77875c8238ed98e1d4a9bcb836ca474efac63db73730327cdfb4"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/EXPORT-PROJECTION.json",
+          "generation": "1795076122422201",
+          "bytes": 9450,
+          "sha256": "50aa8abbda8e00f2c192c060cb7b6f1a2bdc7dd5469be5e2af0cb474da794524"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/GKE-SHA256SUMS",
+          "generation": "1795076122451785",
+          "bytes": 253,
+          "sha256": "78be9b13a79d777691b9247c4431a0f43f33060494a9a1cb4c385094b86402a3"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window-index.json",
+          "generation": "1795076122582746",
+          "bytes": 285,
+          "sha256": "b37917c7c3da5057d68edbe6a94df94b85ff269eb83a9fd6aee800b18d143379"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a1/window.tar.gz",
+          "generation": "1795076122616971",
+          "bytes": 303452,
+          "sha256": "5593e6857d38d94146f59184108058bb79dae2982e5c2f8fa2cb17562f52d2f7"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/EXPORT-PROJECTION.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/EXPORT-PROJECTION.json",
+          "generation": "1795076122700509",
+          "bytes": 2375,
+          "sha256": "1a7e25615554379d48ec1d5ab8545bf5fad5cf83c6945ec71eae95cd600a7cd1"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/GKE-SHA256SUMS",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/GKE-SHA256SUMS",
+          "generation": "1795076122804518",
+          "bytes": 253,
+          "sha256": "9a86ccd51426e2c2371829408ffc08fa6726485ad7e63fa133a352e282c9292e"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window-index.json",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window-index.json",
+          "generation": "1795076122890452",
+          "bytes": 284,
+          "sha256": "5c7bbc092621d8a16da1704fcd0191f842a2309a94cbd709837d0c864c6de51e"
+        },
+        {
+          "name": "gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window.tar.gz",
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/thesis-robustness-full-20261119/repeat-1/smoke/official-completion-smoke-boutique-trace-a2/window.tar.gz",
+          "generation": "1795076122978695",
+          "bytes": 85093,
+          "sha256": "449b0a891abc62431654caa3a8a84639e9b78ae570bcc1cd1ba620c520fa0ff6"
+        }
+      ]
+    }
+  ],
+  "identical": true,
+  "verified": true
+}
