@@ -1,0 +1,158 @@
+{
+  "run_id": "boutique-complement-20261119-v2",
+  "copies": [
+    {
+      "bucket": "karthos-karthos-eval-evidence",
+      "seal": {
+        "valid": true,
+        "errors": [],
+        "checked": 10
+      },
+      "objects": [
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/EXPORT-PROJECTION.json",
+          "generation": "1795069605372637",
+          "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18",
+          "bytes": 240
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/GKE-SHA256SUMS",
+          "generation": "1795069605400843",
+          "sha256": "fcd70ffa4a0e0462cfe0df5d38ef9053f4a71d705ccf9d92a3f59a36d0cc3b3f",
+          "bytes": 866
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/attempt-diagnostics/index.json",
+          "generation": "1795069618757074",
+          "sha256": "3d6abb1bd428ff559b07aa52a0f2be79eddbf22e291be00ec4ff15a26ccf2f9b",
+          "bytes": 62
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/attempt-reports/index.json",
+          "generation": "1795069618836636",
+          "sha256": "01183d2df8910b8ecc77ffe3840c4d8039092e851c26b21069d97a696adf692c",
+          "bytes": 76
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/failure-traces/controller-stage.json",
+          "generation": "1795069632229244",
+          "sha256": "0abc913c5de4db784105c756d61650b95a61602cf2c69bac8f3ddf8dd5621dc9",
+          "bytes": 1328
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.csv",
+          "generation": "1795069632238925",
+          "sha256": "a02951fdcf7712ce1b7990103c7069710c13a6712579442f916446243482adfb",
+          "bytes": 1517
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.html",
+          "generation": "1795069645616956",
+          "sha256": "c078583e652a9f034c3d810d940ee01f1d4ad4d72f4f0bf32ecde2f277059ebc",
+          "bytes": 2547
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.json",
+          "generation": "1795069645586748",
+          "sha256": "7e6fb8ef3df1015ca6165b604de5135374627bfaaccd10b3b0580a7c3647be18",
+          "bytes": 2727
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/phase-timings.ndjson",
+          "generation": "1795069658847430",
+          "sha256": "ff0df0f4e05772c45cfdea2a21b41c2fe8a530e9af96555ae6312249491166a8",
+          "bytes": 381
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/progress.ndjson",
+          "generation": "1795069659098562",
+          "sha256": "632eb1ebad073e092fd309b7fcfa2b3da05af01257fc45d10059d022e956b991",
+          "bytes": 277
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/run-report.json",
+          "generation": "1795069672107118",
+          "sha256": "f9f23acc7af31884380249c83f8f6ade575f109bafe812694300cea3c79549e2",
+          "bytes": 3336
+        }
+      ]
+    },
+    {
+      "bucket": "karthos-karthos-eval-evidence-backup",
+      "seal": {
+        "valid": true,
+        "errors": [],
+        "checked": 10
+      },
+      "objects": [
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/EXPORT-PROJECTION.json",
+          "generation": "1795069680236216",
+          "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18",
+          "bytes": 240
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/GKE-SHA256SUMS",
+          "generation": "1795069680220500",
+          "sha256": "fcd70ffa4a0e0462cfe0df5d38ef9053f4a71d705ccf9d92a3f59a36d0cc3b3f",
+          "bytes": 866
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/attempt-diagnostics/index.json",
+          "generation": "1795069680393853",
+          "sha256": "3d6abb1bd428ff559b07aa52a0f2be79eddbf22e291be00ec4ff15a26ccf2f9b",
+          "bytes": 62
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/attempt-reports/index.json",
+          "generation": "1795069680413525",
+          "sha256": "01183d2df8910b8ecc77ffe3840c4d8039092e851c26b21069d97a696adf692c",
+          "bytes": 76
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/failure-traces/controller-stage.json",
+          "generation": "1795069680543328",
+          "sha256": "0abc913c5de4db784105c756d61650b95a61602cf2c69bac8f3ddf8dd5621dc9",
+          "bytes": 1328
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.csv",
+          "generation": "1795069680636333",
+          "sha256": "a02951fdcf7712ce1b7990103c7069710c13a6712579442f916446243482adfb",
+          "bytes": 1517
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.html",
+          "generation": "1795069680696258",
+          "sha256": "c078583e652a9f034c3d810d940ee01f1d4ad4d72f4f0bf32ecde2f277059ebc",
+          "bytes": 2547
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/matrix.json",
+          "generation": "1795069680806380",
+          "sha256": "7e6fb8ef3df1015ca6165b604de5135374627bfaaccd10b3b0580a7c3647be18",
+          "bytes": 2727
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/phase-timings.ndjson",
+          "generation": "1795069680863749",
+          "sha256": "ff0df0f4e05772c45cfdea2a21b41c2fe8a530e9af96555ae6312249491166a8",
+          "bytes": 381
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/progress.ndjson",
+          "generation": "1795069680954335",
+          "sha256": "632eb1ebad073e092fd309b7fcfa2b3da05af01257fc45d10059d022e956b991",
+          "bytes": 277
+        },
+        {
+          "uri": "gs://karthos-karthos-eval-evidence-backup/gke-qualification-v1/runs/boutique-complement-20261119-v2/final-summary/run-report.json",
+          "generation": "1795069680988247",
+          "sha256": "f9f23acc7af31884380249c83f8f6ade575f109bafe812694300cea3c79549e2",
+          "bytes": 3336
+        }
+      ]
+    }
+  ],
+  "identical": true
+}

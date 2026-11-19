@@ -8,7 +8,7 @@ O estudo original contabilizou 14 janelas lógicas e 18 tentativas: 13 janelas c
 
 Nas cinco baselines válidas, as verificações delimitadas de estrutura, contagem, erros, duração assentada, CPU/memória de containers e volumes são aprovadas. A sexta baseline permanece inconclusiva para essas afirmações devido à invalidade da aquisição, mesmo quando cálculos diagnósticos concordam. Host e alinhamento exato de ciclo de vida permanecem inconclusivos. Não há conclusão universal de precisão das 43 métricas.
 
-A execução complementar foi provisionada e o controlador foi acionado; a aquisição das janelas ainda não foi confirmada nesta revisão. Não se atribui a ela resultado, cluster observado ou comparação entre implantações antes da coleta e verificação. Ela permanecerá separada do estudo original.
+A execução complementar `boutique-complement-20261119-v2` falhou na preparação do controlador: o teste real de escrita na quarentena recebeu HTTP 403. As quatro janelas ficaram não executadas (zero tentativas de janela). As permissões condicionais por run não haviam sido aplicadas antes do acionamento: falha operacional de preparação, não discordância numérica nem reprovação do Karthos. A comparação entre implantações permanece inconclusiva. O registro desta execução não substitui o segundo cluster original. `complement-execution.json` preserva o resultado separado.
 
 ## Resultados por baseline
 
@@ -50,7 +50,7 @@ No cenário `both-sources`, a proveniência/configuração seleciona Istio e os 
 | Cluster 2 original — Boutique/Istio | 1920 | 1560 | 0 | 360 |
 | Cluster 2 original — Boutique/traces | 1920 | 1560 | 0 | 360 |
 
-As contagens acima são requisições registradas pelos observadores durante `[início,fim)`, não número de jornadas nem chamadas totais do cluster. Zero sondas identificadas significa ausência de atribuição pelos registros disponíveis; não prova ausência de sondas. Os registros históricos não permitem atribuir automaticamente todos os acessos desconhecidos. Nenhuma contagem é inferida pela configuração ou subtraída dos totais. Na complementação, user-agent será preservado no log para permitir atribuição por rota declarada mais `kube-probe/`, mantendo desconhecidos.
+As contagens acima são requisições registradas pelos observadores durante `[início,fim)`, não número de jornadas nem chamadas totais do cluster. Zero sondas identificadas significa ausência de atribuição pelos registros disponíveis; não prova ausência de sondas. Os registros históricos não permitem atribuir automaticamente todos os acessos desconhecidos. Nenhuma contagem é inferida pela configuração ou subtraída dos totais. O avaliador está preparado para preservar user-agent no log e permitir atribuição por rota declarada mais `kube-probe/`, mantendo desconhecidos; a complementação interrompida não produziu esses registros.
 
 ## CPU e memória descritivas
 
@@ -106,4 +106,10 @@ Cotação de venda do dólar: R$ 5,8102 (BCB, fechamento de 18/11/2026), com mar
 
 Fontes de preparação: [BCB/PTAX](https://ptax.bcb.gov.br/ptax_internet/consultarUltimaCotacaoDolar.do), [preços Compute Engine](https://cloud.google.com/products/compute/pricing/general-purpose), [preços GKE](https://cloud.google.com/kubernetes-engine/pricing). `rule-freeze.json` distingue a correção retrospectiva do estudo original do congelamento anterior às medições complementares.
 
-A reanálise histórica foi preservada em duas cópias privadas com leitura de retorno e SHA-256 conferidos. `publication-original.json` registra os objetos e gerações; digest do pacote: `2d1b60d8649dd7aa24c4dc5d9278188d7909cb67c152dac01eaf6f2852f41690`. O pacote registra a revisão anterior ao acionamento do controlador; a complementação será publicada separadamente.
+A reanálise histórica foi preservada em duas cópias privadas com leitura de retorno e SHA-256 conferidos. `publication-original.json` registra os objetos e gerações; digest do pacote: `2d1b60d8649dd7aa24c4dc5d9278188d7909cb67c152dac01eaf6f2852f41690`. O pacote registra a revisão anterior ao acionamento do controlador; o relatório da complementação interrompida foi preservado separadamente nas duas cópias. `publication-complement.json` registra leitura de retorno, gerações e hashes; ambos os selos validaram os dez membros declarados.
+
+## Desfecho operacional da complementação
+
+Um novo cluster foi efetivamente criado, com identidade distinta das duas implantações originais. A compatibilidade dos insumos científicos foi verificada antes do lançamento; `deployment-input-review.json` detalha a conferência dos arquivos. Sem janelas coletadas, isso não demonstra reprodução dos resultados nem equivalência do software observado nos nós. Não houve repetição automática da experiência.
+
+A ausência do cluster, VM, discos, redes/sub-redes, roteadores, firewalls, watchdog e agendamento foi conferida no provedor em 19/11/2026 às 06:37:23 UTC. O lease também foi liberado. `cleanup-complement.json` registra a prova e a corrida entre o encerramento automático e o local, resolvida sem recriar infraestrutura. Buckets de evidência, registro e estado compartilhado foram preservados. O próximo uso do Terraform deve reconciliar por refresh os controles removidos diretamente. A ausência de resultados permanece explícita nos quatro registros `unattempted`. A falha e o diagnóstico selados estão no índice da publicação complementar. Qualquer nova implantação exige decisão explícita sobre o segundo cluster adicional e deve contabilizar o consumo desta tentativa no mesmo teto de R$ 1.200. O faturamento final ainda não foi observado.
