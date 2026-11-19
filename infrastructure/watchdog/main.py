@@ -19,7 +19,8 @@ MAX_SECONDS = 12 * 3600
 
 def deadline_limit(record):
     limit=record.get("infrastructure_seconds",MAX_SECONDS)
-    if type(limit) is not int or limit not in (MAX_SECONDS,18*3600):
+    full=record.get("execution_profile")=="thesis-robustness-full-v1"
+    if type(limit) is not int or not (0 < limit <= 24*3600 if full else limit in (MAX_SECONDS,18*3600)):
         raise ValueError("invalid approved infrastructure deadline limit")
     return limit
 

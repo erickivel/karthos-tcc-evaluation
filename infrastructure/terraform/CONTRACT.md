@@ -393,4 +393,4 @@ RAM-backed /tmp mount. Reviewed source/product remain read-only. Live startup mu
 still measure at least 220 GiB free before accepting the full bounded run; nominal
 disk size is not a free-space or quota measurement.
 
-Official thesis-completion-v2 inventories explicitly set `infrastructure_seconds: 64800` for the approved 18-hour limit. Legacy inventories without that field retain the 43,200-second cap. The pinned watchdog validates the declared limit and never extends the immutable recorded deadline.
+Official thesis-completion-v2 inventories explicitly set `infrastructure_seconds: 64800` for the approved 18-hour limit. The `thesis-robustness-full-v1` profile additionally records `execution_profile: thesis-robustness-full-v1`; only this explicit marker permits a positive integer limit up to 86,400 seconds (the reviewed full-run configuration uses 72,000 seconds). Without that marker, explicit limits remain restricted to 43,200 or 64,800 seconds. Legacy inventories without the limit field retain the 43,200-second cap. The pinned watchdog validates the declared limit and never extends the immutable recorded deadline.

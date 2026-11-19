@@ -21,6 +21,15 @@ OUTPUTS={
 }
 
 
+def infrastructure_deadline_limit(config):
+    """Full robustness has an explicit cap; historical profiles retain 18 hours."""
+    full=config.get('execution_profile')=='thesis-robustness-full-v1'
+    limit=config.get('limits',{}).get('infrastructure_seconds',43200)
+    if type(limit) is not int or limit<=0 or (full and limit>86400):
+        raise ValueError('invalid approved infrastructure deadline limit')
+    return min(86400 if full else 64800,limit)
+
+
 def require_context(ctx,*,cleanup=False):
     if getattr(ctx,'cleanup_only',False) and not cleanup:
         raise ValueError('saved-inventory context authorizes cleanup only')
@@ -29,7 +38,7 @@ def require_context(ctx,*,cleanup=False):
         raise ValueError('unexpected evaluation ownership')
     if ctx.state.get('run_id') != ctx.run_id:
         raise ValueError('run identity mismatch')
-    if not getattr(ctx,'cleanup_only',False) and not 0 < ctx.state['deadline']-ctx.state['started_at'] <= min(64800,ctx.config.get('limits',{}).get('infrastructure_seconds',43200)):
+    if not getattr(ctx,'cleanup_only',False) and not 0 < ctx.state['deadline']-ctx.state['started_at'] <= infrastructure_deadline_limit(ctx.config):
         raise ValueError('invalid approved infrastructure deadline')
 
 
@@ -431,6 +440,8 @@ def _inventory_record(ctx,resources,intents):
               'creation_intents':intents,'lease':ctx.state.get('lease')}
     if getattr(ctx,'manifest',{}).get('schedule')==COMPLETION_V2:
         record['infrastructure_seconds']=ctx.config['limits']['infrastructure_seconds']
+        if ctx.config.get('execution_profile')=='thesis-robustness-full-v1':
+            record['execution_profile']=ctx.config['execution_profile']
     if readiness:
         from .readiness import cutoff
         record['deadline'] = cutoff(ctx)
