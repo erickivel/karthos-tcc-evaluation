@@ -1,0 +1,122 @@
+{
+  "evaluation_commit": "9cfad320647910774573f5f3701ef1c9c2fe83a1",
+  "product_commit": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+  "state": "scientific-source-files-match",
+  "files": [
+    {
+      "path": "evaluation/workloads/README.md",
+      "original": "7ab9b9caac6d124365d41ed1fd803124e27c55fea988caea0f8bd510b0f88a7d",
+      "unified": "7ab9b9caac6d124365d41ed1fd803124e27c55fea988caea0f8bd510b0f88a7d",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/common.py",
+      "original": "26b4a0019b6999426d562f58664b16ed235bc0f76fee9a1efd49f965762e98af",
+      "unified": "26b4a0019b6999426d562f58664b16ed235bc0f76fee9a1efd49f965762e98af",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/idle_boundary.js",
+      "original": "484beb6acf25a70f669bee8d998ac956fa9079686d226be520bec504e94d8c69",
+      "unified": "484beb6acf25a70f669bee8d998ac956fa9079686d226be520bec504e94d8c69",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/locust_reports.py",
+      "original": "e499c7d14424e9d78f55635774ce33883183eb2f41df6adc0ea7541ae9e08253",
+      "unified": "e499c7d14424e9d78f55635774ce33883183eb2f41df6adc0ea7541ae9e08253",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/matched_locust.py",
+      "original": "05886cc1a8bb594ecb1f0b937c6b3cef769983f8549168f3acf875389e3f6477",
+      "unified": "05886cc1a8bb594ecb1f0b937c6b3cef769983f8549168f3acf875389e3f6477",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/native_locust.py",
+      "original": "dad163de8c04a9a2aab8e6e80f418f8b8de4254eb27f57b4a8b020ecea46c6cd",
+      "unified": "dad163de8c04a9a2aab8e6e80f418f8b8de4254eb27f57b4a8b020ecea46c6cd",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/run.js",
+      "original": "34390a6d645b5a614cc212d4b1759572cef8054c46adbfd8830eadf700cefedc",
+      "unified": "34390a6d645b5a614cc212d4b1759572cef8054c46adbfd8830eadf700cefedc",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/timing_probe.js",
+      "original": "ae68038e8d766be0a69fae67f43d27981a801cb56ea7e627c9b7de92f738f5da",
+      "unified": "ae68038e8d766be0a69fae67f43d27981a801cb56ea7e627c9b7de92f738f5da",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/timing_probe.py",
+      "original": "60a73b67b5b7da2964ab604b8c76e1c16ad902ba72d0f7d6077850c4d2ccbb09",
+      "unified": "60a73b67b5b7da2964ab604b8c76e1c16ad902ba72d0f7d6077850c4d2ccbb09",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/timing_probe_contract.py",
+      "original": "b1efac9982cf05ed75bb2dd75e421f7b457a0ca109c0eb4d876e7f93445e654b",
+      "unified": "b1efac9982cf05ed75bb2dd75e421f7b457a0ca109c0eb4d876e7f93445e654b",
+      "matches": true
+    },
+    {
+      "path": "evaluation/workloads/workload.json",
+      "original": "4a2820da7701d3b170d2abc8a736de3579b09e32baa08f2a2357d0822bdc2f4a",
+      "unified": "4a2820da7701d3b170d2abc8a736de3579b09e32baa08f2a2357d0822bdc2f4a",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/.terraform.lock.hcl",
+      "original": "8ec2acdbb3d02a8fc039969dc47ab512ed1541ffc50180362e4895978aed061b",
+      "unified": "8ec2acdbb3d02a8fc039969dc47ab512ed1541ffc50180362e4895978aed061b",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/main.tf",
+      "original": "95c78c94362eba4cd17fe1d62293b0913d8584184a055973b7a0a5f67e32d99e",
+      "unified": "95c78c94362eba4cd17fe1d62293b0913d8584184a055973b7a0a5f67e32d99e",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/names.tf",
+      "original": "5a4242e2ab407ad77e860b13863e5058e4e0a85cf107a5d951b2e064fb82a26c",
+      "unified": "5a4242e2ab407ad77e860b13863e5058e4e0a85cf107a5d951b2e064fb82a26c",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/outputs.tf",
+      "original": "0698420a117929d21aa36a1fb053467ab3ba6a0fb3f6574a7b2f35ff796a9693",
+      "unified": "0698420a117929d21aa36a1fb053467ab3ba6a0fb3f6574a7b2f35ff796a9693",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/variables.tf",
+      "original": "1773bd024c07490d844f0a8a7d7bc1829b801df19468b9863f9385b11b781611",
+      "unified": "1773bd024c07490d844f0a8a7d7bc1829b801df19468b9863f9385b11b781611",
+      "matches": true
+    },
+    {
+      "path": "infrastructure/terraform/cluster/versions.tf",
+      "original": "6d70c10533a2ea39357f42b54d8475059203acf61b8f19883a51c699c26228e4",
+      "unified": "6d70c10533a2ea39357f42b54d8475059203acf61b8f19883a51c699c26228e4",
+      "matches": true
+    },
+    {
+      "path": "protocols/thesis-completion-v2/coverage.yaml",
+      "original": "65bba86a81a66f90a2e2f560bc2a8fc4d1cbf9bda2b90ff7b87e63606ebf6261",
+      "unified": "65bba86a81a66f90a2e2f560bc2a8fc4d1cbf9bda2b90ff7b87e63606ebf6261",
+      "matches": true
+    },
+    {
+      "path": "protocols/thesis-completion-v2/metrics.yaml",
+      "original": "cb3301758c542b58f5bc5d7043016e59d9d167f66de63ad9825f13e55b32b53d",
+      "unified": "cb3301758c542b58f5bc5d7043016e59d9d167f66de63ad9825f13e55b32b53d",
+      "matches": true
+    }
+  ],
+  "scope": "Source input comparison; final manifest and observed runtime versions must also be checked. Evaluator/controller/watchdog changed operationally; frozen product and scientific inputs retained."
+}
