@@ -176,3 +176,47 @@ class ConsumerJobTests(unittest.TestCase):
         self.assertEqual(self.calls[namespace_delete+1][0][:2],('get','namespace'))
         job=self.objects['job','api-consumer']
         self.assertLess(job['spec']['activeDeadlineSeconds'],160)
+
+    def test_real_command_denials_remain_fatal_after_consumer_cleanup(self):
+        import time
+        from unittest.mock import patch
+        from evaluation.gke.context import LiveContext
+        from evaluation.gke.models import THESIS
+        from evaluation.tests.test_evidence_first_execution import EvidenceFirstExecutionTests
+        definitions=self.root/'protocols'/THESIS
+        write(definitions/'queries.yaml',{'api_only':True,'missing_is_unknown':True,'schema_version':2,
+            'services':{'boutique':'checkoutservice'},'containers':{'boutique':'server'},'questions':['fixture']})
+        write(definitions/'metrics.yaml',{'metrics':[]})
+        self.ctx.config.update(execution_profile='thesis-robustness-full-v1',limits={'cleanup_reserve_seconds':1})
+        self.ctx.manifest={'schedule':THESIS,'product_pins':{'openapi_sha256':'fixture'}}
+        self.ctx.state={};self.ctx.deadline=time.time()+1000;self.ctx.work=self.root/'work'
+        manifest=json.loads((self.window/'manifest.json').read_text());manifest['namespace']='demo';write(self.window/'manifest.json',manifest)
+        original=self.ctx.kube
+        for denied_stage in ('create','wait','logs','delete'):
+            with self.subTest(stage=denied_stage):
+                self.objects.clear();self.calls.clear()
+                message='Error from server (Forbidden): controller cannot '+denied_stage
+                def execute(args,**kwargs):
+                    words=tuple(args[1:])
+                    if words[0]==denied_stage:
+                        return SimpleNamespace(returncode=1,stdout='',stderr=message)
+                    response=original(*words,input_text=kwargs.get('input'))
+                    if words[0]=='wait':
+                        self.objects['job','api-consumer']['status']={'conditions':[{'type':'Complete','status':'True'}]}
+                    if words[:2]==('delete','--raw') and words[2].count('/')==4:
+                        self.objects.pop(('namespace',words[2].rsplit('/',1)[-1]))
+                    return response
+                self.ctx.executor=execute
+                self.ctx.kube=lambda *args,**kwargs:LiveContext.command(self.ctx,['kubectl',*args],**kwargs)
+                with patch('evaluation.gke.thesis.openapi_projection',return_value={'fixture':True}):
+                    status=capture_consumer(self.ctx,self.window,'history',spec={'demo':'boutique'},timeout=80,deadline=time.monotonic()+160)
+                self.assertTrue(status.get('nonretryable_authorization'),status)
+                self.assertFalse(status['valid'])
+                if denied_stage in ('wait','logs'):self.assertTrue(status['cleanup_verified'])
+                self.assertTrue(any(p.read_text()==message for p in (self.ctx.work/'command-diagnostics').glob('*.stderr')))
+                # The returned evidence marker reaches the real recovery decision.
+                report={'answer':{'state':'insufficient'},'consumer':status,'export':{'verified':True},
+                        'continuation_safe':status['cleanup_verified'],'nonretryable_authorization':True}
+                events,result=EvidenceFirstExecutionTests().run_case(profile='thesis-robustness-full-v1',history_outcomes=[report,'correct'])
+                self.assertEqual(events.count('history'),1)
+                self.assertIn('authorization',result['failure']['message'])

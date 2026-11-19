@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from .models import definition_path,read, identifier
+from .cloud_identity import is_authorization_failure
 from .diagnostics.resources import labels, _image, OWNER_LABEL, RUN_LABEL
 
 BACKEND_NAMESPACE='karthos-system'
@@ -202,6 +203,7 @@ def capture_consumer(ctx,path,phase,*,spec=None,timeout=200,deadline=None):
                       history_claim='Only retained snapshots selected by requested at= instants; no guessed history.')
     except Exception as exc:
         status.update(state='insufficient',error=str(exc))
+        if is_authorization_failure(exc):status['nonretryable_authorization']=True
     finally:
         if thesis and pending is not None:
             status['cleanup_errors'].append('create may have changed '+pending+' without a verified owned UID')
@@ -210,7 +212,9 @@ def capture_consumer(ctx,path,phase,*,spec=None,timeout=200,deadline=None):
                 status['namespace_retained']='cleanup refused a changed child identity; retain namespace for inspection'
                 continue
             try: _delete_owned(ctx,obj,owner,remaining=remaining)
-            except Exception as exc: status['cleanup_errors'].append(str(exc))
+            except Exception as exc:
+                status['cleanup_errors'].append(str(exc))
+                if is_authorization_failure(exc):status['nonretryable_authorization']=True
         if thesis and created and not status['cleanup_errors']:
             try:
                 cleanup_deadline=time.monotonic()+min(50,remaining())
@@ -227,6 +231,7 @@ def capture_consumer(ctx,path,phase,*,spec=None,timeout=200,deadline=None):
                     time.sleep(min(1,max(0,cleanup_deadline-time.monotonic())))
             except Exception as exc:
                 status['cleanup_errors'].append(str(exc))
+                if is_authorization_failure(exc):status['nonretryable_authorization']=True
         if status['cleanup_errors'] or (thesis and not status['cleanup_verified']):
             status['state']='insufficient'
         if thesis:

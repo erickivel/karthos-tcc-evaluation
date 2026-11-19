@@ -66,3 +66,16 @@ class RobustnessFullTests(unittest.TestCase):
         validate_config(c,schedule=COMPLETION_V2)
         c['limits']['infrastructure_seconds']=86401
         with self.assertRaises(ValueError):validate_config(c,schedule=COMPLETION_V2)
+
+    def test_bootstrap_handshake_budget_is_per_cluster_and_full_profile_only(self):
+        from evaluation.gke.recoverable_run import planning_forecast
+        c=self.config();matrix=build_matrix(self.protocol(),schedule=COMPLETION_V2)
+        c['readiness']['phase_estimates_seconds']={k:1 for k in c['readiness']['phase_estimates_seconds']}
+        full=planning_forecast(c,matrix)
+        legacy=dict(c);legacy.pop('execution_profile')
+        old=planning_forecast(legacy,matrix)
+        self.assertEqual(full.get('authorization_bootstrap_seconds'),1200)
+        self.assertEqual(full['seconds']-old['seconds'],1200)
+        one=planning_forecast(c,[r for r in matrix if r['repeat']==1])
+        self.assertEqual(one.get('authorization_bootstrap_seconds'),600)
+        self.assertEqual(planning_forecast(c,[]).get('authorization_bootstrap_seconds'),0)

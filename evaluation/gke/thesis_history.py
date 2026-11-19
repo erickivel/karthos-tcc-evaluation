@@ -7,6 +7,7 @@ import re
 from . import export
 from .consumer import capture_consumer
 from .diagnostics.restarts import observe_restart,restart_target
+from .cloud_identity import is_authorization_failure
 from .models import THESIS_HISTORY_SECONDS,RECOVERABLE_SCHEDULES,read
 from .thesis import replica_inventory,score_history
 from ..consumers.api_only import APIConsumer
@@ -44,6 +45,8 @@ def capture(ctx,cell,spec):
             _capture(ctx,cell,spec,path,monotonic_end,report)
         except Exception as exc:
             report['answer']={'state':'insufficient','reason':str(exc) or type(exc).__name__}
+            if ctx.config.get('execution_profile')=='thesis-robustness-full-v1' and is_authorization_failure(exc):
+                report['nonretryable_authorization']=True
         report['observation_and_cleanup_seconds']=time.monotonic()-monotonic_start
         ctx.write(path/'report.json',report)
         ctx.phase_deadline=deadline
@@ -54,6 +57,8 @@ def capture(ctx,cell,spec):
                 prefix='gke-qualification-v1/runs/'+ctx.run_id+'/'+relative)
         except Exception as exc:
             report['export']={'verified':False,'reason':str(exc) or type(exc).__name__}
+            if ctx.config.get('execution_profile')=='thesis-robustness-full-v1' and is_authorization_failure(exc):
+                report['nonretryable_authorization']=True
         report['elapsed_seconds']=time.monotonic()-monotonic_start
         if report['elapsed_seconds']>=deadline-started or report['export'].get('verified') is not True:
             report['continuation_safe']=False
@@ -180,6 +185,8 @@ def _capture(ctx,cell,spec,path,deadline,report):
     ctx.write(path/'manifest.json',{'start':before_at,'end':after_at,'namespace':namespace,'source_id':source_id(cell.source)})
     status=capture_consumer(ctx,path,'history',spec=spec,timeout=min(110,remaining(10)),deadline=deadline-10)
     report['consumer']=status
+    if ctx.config.get('execution_profile')=='thesis-robustness-full-v1' and status.get('nonretryable_authorization') is True:
+        report['nonretryable_authorization']=True
     if status.get('cleanup_verified') is not True:
         raise ValueError('owned API-only consumer cleanup did not verify')
     verify_stable_replacement()

@@ -127,7 +127,7 @@ class BoundedHistoryIntegrationTests(unittest.TestCase):
                         snapshot={"id":2 if state["new"] else 1,"created_at":at})
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)
-            ctx=SimpleNamespace(manifest={"protocol_definition":{"lifecycle_observation_version":"bounded-lifecycle-v1"}},
+            ctx=SimpleNamespace(config={},manifest={"protocol_definition":{"lifecycle_observation_version":"bounded-lifecycle-v1"}},
                  json=json_read,kube=lambda *a,**kw:None,write=write,run_id="fixture")
             def consumer(*args,**kwargs):
                 doc={"openapi_validated":True,"snapshot_changed":True,

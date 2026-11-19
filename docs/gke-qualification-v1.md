@@ -662,3 +662,42 @@ API acceptance is recorded separately from log readback, which is not performed.
 Terraform declaration and publishing the updated controller image/startup are
 separate operations. A passing unit test does not prove deployed IAM. See
 [Cloud Logging access control](https://docs.cloud.google.com/logging/docs/access-control).
+
+### Per-cluster deployment authorization for the unified profile
+
+`thesis-robustness-full-v1` requires an explicit controller bootstrap binding in
+each fresh disposable cluster. The operator uses the current run's immutable
+creation receipt and generation-pinned inventory, not the cluster name alone:
+
+```sh
+python -m evaluation.gke bootstrap-controller-rbac \
+  --project PROJECT --zone ZONE --controller VM --owner-id gke-qualification-v1 \
+  --run-id RUN --uid INSTANCE_ID --cluster CLUSTER --cluster-uid CLUSTER_UID \
+  --operator-account ACCOUNT --inventory-uri URI --inventory-generation GENERATION \
+  --receipt /private/tmp/controller-rbac-bootstrap.json
+```
+
+The helper validates the active lease, inventory content hash, cluster creation
+UID, controller identity and network. It opens a temporary IAP tunnel, verifies
+the Kubernetes API certificate against the observed cluster CA and private IP,
+and checks the authenticated operator identity. Operator credentials remain in
+local memory. It creates only the named cluster-admin binding for the expected
+controller email in that owned disposable cluster, refusing conflicting bindings.
+The helper has a shared 300-second work deadline and separately verifies tunnel
+and temporary firewall cleanup. No project-wide role is granted.
+
+Before application setup, the runtime allows at most 600 seconds for the named
+binding, verifies the actual controller identity and permissions, and performs
+a disposable RBAC CRUD probe with UID-guarded cleanup. The second cluster has a
+new UID and requires its own bootstrap; monitor the `authorization-required`
+event and current pinned inventory. Both waits are included in the forecast.
+The first bootstrap can occur before runtime handoff. Missing evidence or denied
+permissions stop preparation; explicit authorization failures are not retried as
+operational window failures. Receipts are retained under
+`infrastructure/authorization-repeat-N.json`. Historical profiles retain their
+existing behavior.
+
+New controller VMs include the `userinfo.email` OAuth scope so GKE resolves the
+service account email used by the binding. The reused watchdog custom role must
+include `compute.networks.updatePolicy` before provisioning; configuration alone
+is not deployment proof. See [GKE RBAC](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control).

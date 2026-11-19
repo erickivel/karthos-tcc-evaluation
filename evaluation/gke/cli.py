@@ -31,11 +31,18 @@ def parser():
         mon.add_argument('--interval',type=int,default=900)
         if name=='monitor':mon.add_argument('--watch',action='store_true')
         else:mon.add_argument('--receipt',type=Path,required=True)
+    bootstrap=sub.add_parser('bootstrap-controller-rbac',help='Grant controller access only inside a UID-verified owned evaluation cluster')
+    for flag in ('project','zone','controller','owner-id','run-id','uid','cluster','cluster-uid','operator-account','inventory-uri','inventory-generation'):
+        bootstrap.add_argument('--'+flag,required=True)
+    bootstrap.add_argument('--receipt',type=Path,required=True)
     return p
 
 
 def dispatch(a,root):
     root=Path(root)
+    if a.command=='bootstrap-controller-rbac':
+        from .operator_authorization import bootstrap
+        return bootstrap(root,a)
     if a.command=='recover-iap':
         from .operator_monitor import Operator,observe
         from .iap_recovery import recover
@@ -100,6 +107,7 @@ def main(argv=None):
     except (ValueError,RuntimeError,OSError,TimeoutError) as exc:
         print(json.dumps({'state':'blocked','reason':str(exc),'command':args.command}),file=sys.stderr);return 2
     print(json.dumps(result,indent=2,default=str))
+    if args.command=='bootstrap-controller-rbac' and result.get('verified') is not True:return 2
     if args.command=='recover-iap' and result.get('temporary_removal_confirmed') is not True:return 2
     return 0
 

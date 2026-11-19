@@ -7,6 +7,7 @@ import shutil
 import time
 import traceback
 from pathlib import Path
+from .cloud_identity import is_authorization_failure
 from .models import canonical_sha, read, sha, write, COMPLETION, COMPLETION_V2, COMPLETION_SCHEDULES, REPAIR, REPAIR_V2, REPAIR_SCHEDULES, RECOVERABLE_SCHEDULES
 
 
@@ -52,11 +53,12 @@ def planning_forecast(config, matrix, continuation=None):
     checkpoints=len(matrix)+(1 if history else 0)+1
     checkpoint_seconds=checkpoints*estimates['checkpoint_export'] if split else 0
     final_export=estimates['final_export'] if split else 0
-    seconds=(estimates['provision']+rebuild+resource_preparation+groups*(estimates['setup']+120+readiness_export)
+    authorization_bootstrap=600*len({row['repeat'] for row in matrix}) if config.get('execution_profile')=='thesis-robustness-full-v1' else 0
+    seconds=(estimates['provision']+rebuild+resource_preparation+authorization_bootstrap+groups*(estimates['setup']+120+readiness_export)
              +sum(row['duration_seconds']+60+90+180+estimates['capture_setup_restore']+window_export for row in matrix)
              +history+estimates['retry_reserve']+config['limits']['cleanup_reserve_seconds']+checkpoint_seconds+final_export)
     return {'fits':seconds<=config['limits']['infrastructure_seconds'],'seconds':seconds,
-            'export_model':'split-v1' if split else 'legacy-combined',
+            'export_model':'split-v1' if split else 'legacy-combined','authorization_bootstrap_seconds':authorization_bootstrap,
             'checkpoint_count':checkpoints if split else None,'checkpoint_export_seconds':checkpoint_seconds,
             'final_export_seconds':final_export,'readiness_export_seconds':groups*readiness_export,
             'window_export_seconds':len(matrix)*window_export,'estimates':estimates,'setup_groups':groups,'launch_segment':config.get('execution_segment','all'),'launch_windows':len(matrix),'rebuild_seconds':rebuild,'history_seconds':history,'resource_preparation_seconds':resource_preparation,'retry_reserve_policy':'bounded; deadline may leave retries or windows unattempted',
@@ -356,6 +358,8 @@ def execute(ctx,driver):
                     except (SafetyFailure,ProductDefect,KeyboardInterrupt):raise
                     except Exception as exc:
                         cluster_errors.append({'attempt':number,'error':str(exc),'at':time.time()});ctx.write(ctx.result/'infrastructure'/f'repeat-{spec["repeat"]}-attempt-{number}.json',cluster_errors[-1])
+                        if is_authorization_failure(exc):
+                            raise SafetyFailure('cluster authorization failure; unchanged retry forbidden') from exc
                         from .teardown import destroy_cluster
                         restored=destroy_cluster(ctx)
                         if restored.get('residual') or restored.get('errors') or restored.get('unresolved_creation_intents'):raise SafetyFailure('cluster creation recovery left resources') from exc
@@ -404,6 +408,7 @@ def execute(ctx,driver):
                 except (SafetyFailure,ProductDefect,MinimalReadinessSafetyError,KeyboardInterrupt):raise
                 except Exception as exc:
                     error={'type':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
+                    if is_authorization_failure(exc):error['nonretryable_authorization']=True
                     ctx.write(path/'failure.json',error);active_cell=None
                 finally:
                     diagnostics_status=diagnostic.stop()
@@ -455,7 +460,8 @@ def execute(ctx,driver):
                 valid=report.get('evidence',{}).get('valid') is True
                 execution=report.get('execution',{}).get('state','incomplete')
                 failed=bool(error or execution!='complete' or not valid or type(unexpected) is int and unexpected>0)
-                item=attempt_record(attempt,report,failure=error,barrier=barrier,receipt=receipt,retry_policy_complete=number==2 or not failed or analysis_failed)
+                nonretryable_authorization=bool(error and error.get('nonretryable_authorization'))
+                item=attempt_record(attempt,report,failure=error,barrier=barrier,receipt=receipt,retry_policy_complete=number==2 or not failed or analysis_failed or nonretryable_authorization)
                 item['cluster']=copy.deepcopy(ctx.state.get('evaluation_cluster_instances',[])[-1:])
                 attempts.append(item)
                 row=_row(spec,copy.deepcopy(attempts))
@@ -467,6 +473,8 @@ def execute(ctx,driver):
                 if not barrier['safe']:raise SafetyFailure('attempt completion barrier failed: '+str(barrier.get('error')))
                 if spec['phase']=='arbitration' and spec['scenario']=='both-sources':arbitration_ready=setup_ok and valid
                 ctx.event('window-exported',window=attempt['id'],logical_id=spec['id'],state=item['state'])
+                if nonretryable_authorization:
+                    raise SafetyFailure('deployment authorization failure; evidence preserved, unchanged retry forbidden')
                 if ctx.config.get('execution_profile') in ('boutique-complement-v1','thesis-robustness-full-v1') and failed and (number==2 or analysis_failed):
                     raise SafetyFailure('bounded profile operational attempts exhausted; evidence preserved, remaining windows unattempted')
                 if not failed or analysis_failed:break
@@ -485,6 +493,10 @@ def execute(ctx,driver):
                     try:
                         _budget(ctx,720);history=driver.thesis_history({**spec,'id':spec['id']+f'-history-a{number}'})
                         if full_history:history_attempts.append({'attempt':number,'report':copy.deepcopy(history)})
+                        if full_history and history.get('nonretryable_authorization') is True:
+                            history['attempts']=history_attempts
+                            sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
+                            raise SafetyFailure('history authorization failure; preserved report, unchanged retry forbidden')
                         if history.get('export',{}).get('verified') is not True:raise SafetyFailure('history export failed')
                         if history.get('continuation_safe') is not True:raise SafetyFailure('history cleanup not verified')
                         if full_history and history.get('answer',{}).get('state') not in ('correct','incorrect'):
@@ -494,6 +506,13 @@ def execute(ctx,driver):
                     except Exception as exc:
                         history_errors.append({'attempt':number,'error':str(exc)})
                         if full_history:history_attempts.append(history_errors[-1])
+                        if full_history and is_authorization_failure(exc):
+                            history_errors[-1]['nonretryable_authorization']=True
+                            detail=dict(history_errors[-1],traceback=traceback.format_exc())
+                            ctx.write(ctx.result/'failure-traces'/f'history-authorization-repeat-{spec["repeat"]}-a{number}.json',detail)
+                            history={'state':'incomplete','attempts':history_attempts,'nonretryable_authorization':True}
+                            sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
+                            raise SafetyFailure('history authorization failure; diagnostics preserved, unchanged retry forbidden') from exc
                 if history is None:history={'state':'incomplete','attempts':history_errors}
                 if full_history:history['attempts']=history_attempts
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)

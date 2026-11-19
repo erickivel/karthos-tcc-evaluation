@@ -22,6 +22,46 @@ def sanitized_error(text):
     return redact_text(text)[-1200:]
 
 
+
+class AuthorizationCommandError(RuntimeError):
+    """Explicit control-plane authorization denial; preserve evidence, do not retry."""
+
+
+def control_command(args):
+    """Unwrap only argv-based env assignments, never shell text or env options."""
+    words=[str(x) for x in args]
+    if words and Path(words[0]).name=='env':
+        words=words[1:]
+        while words and re.fullmatch(r'[A-Za-z_][A-Za-z_0-9]*=.*',words[0],flags=re.S):
+            words=words[1:]
+    if not words or Path(words[0]).name not in ('kubectl','helm','gcloud'):
+        return None
+    return words
+
+
+def is_authorization_failure(error):
+    """Follow explicit causes only; do not classify arbitrary application messages."""
+    seen=set()
+    while error is not None and id(error) not in seen:
+        if isinstance(error,AuthorizationCommandError):return True
+        seen.add(id(error));error=getattr(error,'__cause__',None)
+    return False
+
+
+def authorization_denied(args, error):
+    # Only errors from control commands, never application responses or logs.
+    command=control_command(args)
+    if command is None:return False
+    executable=Path(command[0]).name;words=command[1:]
+    if executable=='kubectl' and any(x in words for x in ('logs','exec','attach','port-forward')):
+        # Only a server-originated rejection is unambiguous for these commands.
+        return bool(re.search(r'(?i)error from server \((?:forbidden|unauthorized)\)',error))
+    return bool(re.search(r'(?i)error from server \((?:forbidden|unauthorized)\)|'
+                          r'is forbidden:.*(?:user |cannot |requires one of)|'
+                          r'\bPERMISSION_DENIED\b|'
+                          r'required [\"\'][a-zA-Z]+\.[a-zA-Z.]+[\"\'] permission',error))
+
+
 def command_failure(ctx,args,result):
     """Keep exact stderr privately, return bounded sanitized command/exit evidence."""
     error=result.stderr.decode(errors='backslashreplace') if isinstance(result.stderr,bytes) else result.stderr or ''
@@ -30,8 +70,10 @@ def command_failure(ctx,args,result):
     raw=directory/(name+'.stderr')
     descriptor=os.open(raw,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600)
     with os.fdopen(descriptor,'w') as output:output.write(error)
-    stage=' '.join(str(x) for x in args[:3] if not str(x).startswith('-'))
-    return RuntimeError(stage+' exited '+str(result.returncode)+': '+sanitized_error(error)+' [private diagnostic '+name+']')
+    display=control_command(args) or args
+    stage=' '.join(str(x) for x in display[:3] if not str(x).startswith('-'))
+    error_type=AuthorizationCommandError if getattr(ctx,'config',{}).get('execution_profile')=='thesis-robustness-full-v1' and authorization_denied(args,error) else RuntimeError
+    return error_type(stage+' exited '+str(result.returncode)+': '+sanitized_error(error)+' [private diagnostic '+name+']')
 
 
 def principal_preflight(ctx):

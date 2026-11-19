@@ -287,6 +287,8 @@ class LiveDriver:
         from . import provision
         from .setup import preflight
         provision.create_cluster(self.ctx,repeat,credentials=True)
+        from .deployment_authorization import verify as verify_authorization
+        verify_authorization(self.ctx,repeat)
         self.nodes=preflight(self.ctx)
         infra=[node for node in self.nodes if node['slot']=='infra']
         if len(infra)!=1:raise ValueError('exactly one observability generator node required')

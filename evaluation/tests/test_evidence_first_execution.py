@@ -36,6 +36,7 @@ class EvidenceFirstExecutionTests(unittest.TestCase):
      events.append('history')
      outcome=next(history_results)
      if isinstance(outcome,Exception):raise outcome
+     if isinstance(outcome,dict):return outcome
      return {'answer':{'state':outcome},'export':{'verified':True},'continuation_safe':True}
     def finish(self):events.append('finish');return {'verified':True}
    for name in ('_budget','_checkpoint'):

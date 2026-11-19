@@ -49,9 +49,15 @@ class LiveContext:
             from .readiness import RESERVE, cutoff
             deadline, reserve = min(deadline, cutoff(self)), RESERVE
         remaining=timeout if cleanup else ensure_budget(deadline,reserve=reserve)
-        from .cloud_identity import command_environment,command_failure
+        from .cloud_identity import command_environment,command_failure,authorization_denied
         result=self.executor([str(x) for x in args],env=command_environment(self.root),cwd=cwd,input=input_text.encode() if binary and isinstance(input_text,str) else input_text,text=not binary,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=min(timeout,remaining))
-        if check and result.returncode:raise command_failure(self,args,result)
+        if result.returncode:
+            error=result.stderr.decode(errors='backslashreplace') if isinstance(result.stderr,bytes) else result.stderr or ''
+            # check=False may inspect ordinary nonzero outcomes, but must not hide a
+            # control-plane denial from the full campaign's no-retry boundary.
+            if check or (self.config.get('execution_profile')=='thesis-robustness-full-v1'
+                         and authorization_denied(args,error)):
+                raise command_failure(self,args,result)
         return result
     def kube(self,*args,**kwargs):return self.command(['kubectl','--kubeconfig',str(self.kubeconfig),*args],**kwargs)
     def json(self,*args):return json.loads(self.kube(*args,'-o','json').stdout)
