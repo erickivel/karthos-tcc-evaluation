@@ -77,3 +77,8 @@ class DoubleCountingTests(unittest.TestCase):
         self.assertEqual(single_contribution(record)['state'],'fail')
         record=self.record();record['traffic']['report']['windows']={}
         self.assertEqual(single_contribution(record)['state'],'insufficient')
+
+    def test_missing_source_selection_is_inconclusive_not_contradiction(self):
+        from evaluation.gke.independent_claims import no_double_counting
+        result=no_double_counting([dict(id='both',phase='arbitration',scenario='both-sources')],{'both':('gs://both',{})})
+        self.assertEqual(result['verdict'],'insufficient')

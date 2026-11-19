@@ -50,3 +50,18 @@ class BaselineBreakdownTests(unittest.TestCase):
     def test_no_baselines_cannot_pass(self):
         from evaluation.gke.baseline_results import baseline_results
         self.assertEqual(baseline_results([], [], {}, lambda d: 'pass')['verdict'], 'insufficient')
+
+    def test_exported_invalid_baseline_retains_diagnostic_without_approval(self):
+        from evaluation.gke.baseline_results import baseline_results
+        spec=dict(id='invalid',phase='baseline')
+        data=dict(evidence={'valid':False},families={'structural':{'state':'pass'}})
+        result=baseline_results([spec],[],{'invalid':('gs://invalid',data)},lambda d:'pass')
+        self.assertEqual(result['counts']['passed'],0)
+        self.assertEqual(result['baselines'][0]['verdict'],'insufficient')
+        self.assertEqual(result['baselines'][0]['observed_verdict'],'pass')
+
+    def test_incomplete_execution_cannot_pass_available_subset(self):
+        from evaluation.gke.baseline_results import baseline_results
+        data=dict(evidence={'valid':True},execution={'state':'incomplete'})
+        result=baseline_results([dict(id='x',phase='baseline')],[],{'x':('gs://x',data)},lambda d:'pass')
+        self.assertEqual(result['counts']['passed'],0)

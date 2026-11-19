@@ -19,7 +19,7 @@ from .models import sha,write
 from .report_summary import family_summaries
 from ..references.kubelet import read_summary
 
-VERSION='accuracy-evidence-v3.5.0'
+VERSION='accuracy-evidence-v3.5.1'
 
 
 def _counts(checks):
@@ -233,9 +233,13 @@ def reanalyse_archive(archive,destination,*,expected_sha256,analysis_archive=Non
     # Publish only after archive/member verification and all calculations finish.
     destination.mkdir(parents=True,exist_ok=False)
     write(destination/'summary.json',summary);write(destination/'comparison-changes.json',changes)
+    from .comparison_details import details
+    with gzip.GzipFile(filename=str(destination/'resource-comparisons.ndjson.gz'),mode='wb',mtime=0) as output:
+        for index,check in enumerate(revised):
+            output.write((json.dumps(dict(index=index,**details(check)),sort_keys=True)+'\n').encode())
     write(destination/'analysis-manifest.json',{'analysis_version':VERSION,'archive':str(archive),'archive_sha256':expected_sha256,'analysis_archive':str(analysis_archive) if analysis_archive else None,'analysis_archive_sha256':analysis_sha256,'used_members':used,'member_origins':{name:tar.origins[name] for name in used},
-        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','trace_settled.py','volume_provenance.py','reference_inventory.py')},
-        'historical_results_modified':False})
+        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','trace_settled.py','volume_provenance.py','reference_inventory.py','comparison_details.py')},
+        'historical_results_modified':False,'reporting_revision_note':'3.5.1 adds resource value/error/tolerance rows; comparison rules identical to 3.5.0'})
     write(destination/'SHA256SUMS',''.join(sha(p)+'  '+p.name+'\n' for p in sorted(destination.iterdir()) if p.is_file()))
     return summary
 

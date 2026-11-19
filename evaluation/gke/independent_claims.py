@@ -93,7 +93,8 @@ def no_double_counting(matrix, exported, thresholds=None):
         uri,data=record;artifacts.append(uri)
         checks.append(single_contribution(data,thresholds))
         checks.append(dict(state=data.get('families',{}).get('traffic_count',{}).get('state','insufficient')))
-        checks.append(dict(state='pass' if data.get('source_selection',{}).get('expected_source')=='mesh.istio' else 'fail'))
+        expected=data.get('source_selection',{}).get('expected_source')
+        checks.append(dict(state='insufficient' if not expected else 'pass' if expected=='mesh.istio' else 'fail'))
     states=[row['state'] for row in checks]
     verdict='fail' if 'fail' in states else 'pass' if states and all(s=='pass' for s in states) else 'insufficient'
     return dict(claim='no-double-counting',verdict=verdict,checks=checks,artifacts=artifacts,

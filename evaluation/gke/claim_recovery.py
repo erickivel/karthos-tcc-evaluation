@@ -83,6 +83,7 @@ def recover_archive(archive,expected,destination,accuracy,*,analysis_archive=Non
         write(destination/'report.json',report)
         write(destination/'inputs.json',{'archive_sha256':expected,'analysis_archive':str(analysis_archive) if analysis_archive else None,'analysis_archive_sha256':analysis_sha256,'members':used,'member_origins':{name:tar.origins[name] for name in used},'source_revision':old.get('manifest',{}).get('validated_product_revision'),
             'verifier_hashes':{str(p):sha(p) for p in (Path(__file__),Path(__file__).with_name('thesis.py'),Path(__file__).with_name('thesis_comparison.py'),Path(__file__).with_name('independent_claims.py'))},'originals_modified':False})
+    write(destination/'SHA256SUMS',''.join(sha(p)+'  '+str(p.relative_to(destination))+'\n' for p in sorted(destination.rglob('*')) if p.is_file()))
     return report
 
 if __name__=='__main__':
