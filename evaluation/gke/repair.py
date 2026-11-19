@@ -24,13 +24,13 @@ def origin_evidence(report,seal,uri,matrix,*,expected_protocol="thesis-qualifica
 def validate_budget(manifest):
     """Explicit cumulative planning allowance; credits never substitute for gross cost."""
     import math
-    from .complement_budget import PROFILE, validate as validate_complement
-    if manifest.get('config',{}).get('execution_profile')==PROFILE:
+    from .complement_budget import PROFILES, validate as validate_complement
+    if manifest.get('config',{}).get('execution_profile') in PROFILES:
         from .models import COMPLETION_V2
         expected=validate_complement(manifest['config'])
         protocol=manifest.get('protocol_definition',{})
         estimate=manifest.get('cost_preview',{}).get('gross_estimate')
-        if (manifest.get('schedule')!=COMPLETION_V2 or protocol.get('execution_profile')!=PROFILE
+        if (manifest.get('schedule')!=COMPLETION_V2 or protocol.get('execution_profile')!=manifest['config']['execution_profile']
                 or protocol.get('combined_gross_limit_usd')!=expected['gross_limit_usd']
                 or type(estimate) not in (int,float) or not math.isfinite(estimate)
                 or not 0<=estimate<=expected['launch_ceiling_usd']):

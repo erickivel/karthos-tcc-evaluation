@@ -358,6 +358,8 @@ def provision(ctx):
         finally:versions.write_text(original)
         tf_init(ctx,'foundation',migrate=True)
         ctx.event('foundation-remote-state-migrated')
+    from .quarantine import verify_preprovision_policy
+    verify_preprovision_policy(ctx)
     acquire_project_lease(ctx)
     digest=hashlib.sha256(ctx.manifest_path.read_bytes()).hexdigest()
     ctx.state['manifest_object']=dict(upload_file(ctx,ctx.manifest_path,'control/'+ctx.run_id+'/manifests/'+digest+'.json'),sha256=digest)

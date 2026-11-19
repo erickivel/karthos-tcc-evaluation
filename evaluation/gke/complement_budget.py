@@ -4,6 +4,8 @@ from datetime import date
 from decimal import Decimal, ROUND_FLOOR
 
 PROFILE = 'boutique-complement-v1'
+FULL_PROFILE = 'thesis-robustness-full-v1'
+PROFILES = (PROFILE, FULL_PROFILE)
 
 
 def limits(config):
@@ -21,10 +23,19 @@ def limits(config):
         raise ValueError('exchange rate date required') from exc
     if not str(budget.get('fx_source', '')).startswith('https://'):
         raise ValueError('exchange rate source required')
+    prior = budget.get('prior_spending_brl', 0)
+    if config.get('execution_profile') == FULL_PROFILE or 'prior_spending_brl' in budget:
+        basis = budget.get('prior_spending_basis')
+        if ('prior_spending_brl' not in budget or type(prior) not in (int, float)
+                or not math.isfinite(prior) or not 0 <= prior < 1200-reserve
+                or not isinstance(basis, str) or not basis.strip()):
+            raise ValueError('explicit prior spending or conservative allowance and documented basis required; cleanup reserve protected')
+    remaining = Decimal('1200') - Decimal(str(prior))
     effective = Decimal(str(rate)) * (1 + Decimal(str(margin)))
     usd = lambda value: float((Decimal(str(value))/effective).quantize(Decimal('.01'), rounding=ROUND_FLOOR))
-    return dict(gross_limit_usd=usd(1200), launch_ceiling_usd=usd(1200-reserve),
-                effective_brl_per_usd=float(effective), scope='additional execution; historical spending excluded')
+    return dict(gross_limit_usd=usd(remaining), launch_ceiling_usd=usd(remaining-Decimal(str(reserve))),
+                effective_brl_per_usd=float(effective), scope='additional BRL1200 envelope less documented prior spending; earlier study spending excluded',
+                prior_spending_brl=prior, remaining_brl=float(remaining))
 
 
 def validate(config):
@@ -33,7 +44,8 @@ def validate(config):
     if any(actual.get(key) != expected[key] for key in ('gross_limit_usd', 'launch_ceiling_usd')):
         raise ValueError('USD limits must match conservative BRL conversion and cleanup reserve')
     seconds, cleanup = actual.get('infrastructure_seconds'), actual.get('cleanup_reserve_seconds')
+    maximum_seconds = 86400 if config.get('execution_profile') == FULL_PROFILE else 64800
     if (type(seconds) is not int or type(cleanup) is not int
-            or not 1800 <= cleanup < seconds <= 64800):
+            or not 1800 <= cleanup < seconds <= maximum_seconds):
         raise ValueError('bounded infrastructure deadline and at least 30 minutes cleanup required')
     return expected

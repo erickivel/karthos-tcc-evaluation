@@ -467,8 +467,8 @@ def execute(ctx,driver):
                 if not barrier['safe']:raise SafetyFailure('attempt completion barrier failed: '+str(barrier.get('error')))
                 if spec['phase']=='arbitration' and spec['scenario']=='both-sources':arbitration_ready=setup_ok and valid
                 ctx.event('window-exported',window=attempt['id'],logical_id=spec['id'],state=item['state'])
-                if ctx.config.get('execution_profile')=='boutique-complement-v1' and failed and (number==2 or analysis_failed):
-                    raise SafetyFailure('complement operational attempts exhausted; evidence preserved, remaining windows unattempted')
+                if ctx.config.get('execution_profile') in ('boutique-complement-v1','thesis-robustness-full-v1') and failed and (number==2 or analysis_failed):
+                    raise SafetyFailure('bounded profile operational attempts exhausted; evidence preserved, remaining windows unattempted')
                 if not failed or analysis_failed:break
                 # Do not immediately repeat explicit rediscovery against the
                 # already transitioned plan. Reconstruct its prerequisite first.
@@ -479,17 +479,26 @@ def execute(ctx,driver):
                 history={'state':'blocked','reason':'Boutique deployment unavailable after baseline attempts','action_taken':False}
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
             if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec.get('history_observation',True) and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
-                history_errors=[]
+                history_errors=[];history_attempts=[]
+                full_history=ctx.config.get('execution_profile')=='thesis-robustness-full-v1'
                 for number in (1,2):
                     try:
                         _budget(ctx,720);history=driver.thesis_history({**spec,'id':spec['id']+f'-history-a{number}'})
+                        if full_history:history_attempts.append({'attempt':number,'report':copy.deepcopy(history)})
                         if history.get('export',{}).get('verified') is not True:raise SafetyFailure('history export failed')
                         if history.get('continuation_safe') is not True:raise SafetyFailure('history cleanup not verified')
+                        if full_history and history.get('answer',{}).get('state') not in ('correct','incorrect'):
+                            continue
                         break
                     except (SafetyFailure,ProductDefect,KeyboardInterrupt):raise
-                    except Exception as exc:history_errors.append({'attempt':number,'error':str(exc)})
+                    except Exception as exc:
+                        history_errors.append({'attempt':number,'error':str(exc)})
+                        if full_history:history_attempts.append(history_errors[-1])
                 if history is None:history={'state':'incomplete','attempts':history_errors}
+                if full_history:history['attempts']=history_attempts
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
+                if full_history and history.get('answer',{}).get('state') not in ('correct','incorrect'):
+                    raise SafetyFailure('full profile history operational attempts exhausted; evidence preserved, remaining windows unattempted')
     except (Exception,KeyboardInterrupt) as exc:
         failure={'kind':type(exc).__name__,'message':str(exc),'traceback':traceback.format_exc()}
         if current_attempt and not any(a.get('attempt_id')==current_attempt['id'] for row in records for a in row.get('attempts',[])):

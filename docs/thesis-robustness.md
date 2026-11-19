@@ -50,3 +50,9 @@ Mudanças operacionais desta revisão: corrigir a corrida de `sleep_bounded`; pr
 Resultados: distinguir análise original, reanálise e complemento. Manter falhas/inconclusões e tentativas visíveis. CPU/memória existentes podem formar tabela descritiva, sem inferência causal sobre sobrecarga. Kiali permanece comparação qualitativa pela tabela da revisão de ferramentas. As cinco perguntas justificam consumo pela API; não se cria novo consumidor.
 
 Ameaças/limitações: um provedor, versão Kubernetes efetivamente observada, Istio sidecar, amostra delimitada, dependências compartilhadas das referências, sondas não observadas, atraso evento–API não avaliado e ausência de hipótese de escala/custo. Observação de 720 s não demonstra comportamento durante retenção de 7–30 dias. Repositórios, commits fixos, digests e manifestos verificáveis permitem rastrear reprodução; DOI não é obrigatório.
+
+## Campanha integral revisada
+
+A decisão posterior do usuário substitui o complemento de quatro janelas por `thesis-robustness-full-v1`: as quatorze janelas originais, duas implantações distintas e a observação temporal existente, com as regras corrigidas congeladas antes da execução. O [registro de preparação](../reports/thesis-unified-20261119/PREPARATION.md) descreve escopo, limites, orçamento cumulativo adicional e condições de lançamento. A campanha final deve ser apresentada separadamente dos estudos de desenvolvimento/piloto; não substituir falhas novas por resultados antigos favoráveis.
+
+O novo perfil desconta explicitamente o gasto ou a provisão conservadora da preparação anterior do teto adicional de R$ 1.200, antes da reserva de encerramento. Verifica bindings condicionais exatos de quarentena no provedor antes do lease e dos recursos de execução, após resolver a fundação existente. Essa verificação não concede permissões nem substitui o probe real do controlador. O limite de retry e a interrupção após falha também abrangem a observação temporal.

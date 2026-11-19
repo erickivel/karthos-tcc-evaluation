@@ -66,9 +66,11 @@ def validate_config(c,*,schedule=None):
             and c.get('evidence_pipeline')=='sealed-before-analysis-v1' and l['gross_limit_usd']==270):
         expected_gross=270
     expected_seconds=64800 if schedule==COMPLETION_V2 else 43200
-    from .complement_budget import PROFILE, validate as validate_complement
-    if schedule==COMPLETION_V2 and c.get('execution_profile')==PROFILE:
+    from .complement_budget import FULL_PROFILE, PROFILES, validate as validate_complement
+    if schedule==COMPLETION_V2 and c.get('execution_profile') in PROFILES:
         validate_complement(c)
+        if c.get('execution_profile')==FULL_PROFILE and c.get('evidence_pipeline')!='sealed-before-analysis-v1':
+            raise ValueError('full robustness profile requires sealed-before-analysis-v1')
         if l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen retention/diagnostic hold changed')
     elif l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=(90 if schedule==COMPLETION_V2 else 80) or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
@@ -80,7 +82,10 @@ def build_matrix(p, *, schedule=QUALIFICATION):
         for key,value in (('lifecycle_observation_version','bounded-lifecycle-v1'),('traffic_population_version','settled-primary-v1'),('retain_fixed_window_diagnostic',True)):
             if key in p and (type(p[key]) is not type(value) or p[key]!=value):
                 raise ValueError('unsupported official observation contract: '+key)
-    from .complement_budget import PROFILE
+    from .complement_budget import PROFILE, FULL_PROFILE
+    if schedule==COMPLETION_V2 and p.get('execution_profile')==FULL_PROFILE:
+        full=dict(p);full.pop('execution_profile');full['combined_gross_limit_usd']=200
+        return build_matrix(full,schedule=schedule)
     if schedule==COMPLETION_V2 and p.get('execution_profile')==PROFILE:
         full=dict(p);full.pop('execution_profile');full['combined_gross_limit_usd']=200
         return [dict(row, id='complement-'+row['phase']+'-'+row['cell'], repeat=1,

@@ -121,3 +121,44 @@ def probe_access(ctx, directory):
     receipt=transfer(path,{'original_relative_path':'quarantine-access-probe.json',
                            'bytes':path.stat().st_size,'sha256':sha(path)})
     return dict(receipt,state='passed',scope='non-sensitive storage permission probe; no workload traffic')
+
+
+def verify_preprovision_policy(ctx):
+    """Check explicit current-run bindings, never mutate IAM or prove access.
+
+    The operator must apply the proposal before provisioning. Exact expressions
+    avoid interpreting arbitrary CEL. The real controller upload/readback probe
+    remains mandatory: policy presence does not establish effective permissions.
+    """
+    from .complement_budget import FULL_PROFILE
+    from .models import canonical_sha, write
+    if ctx.config.get('execution_profile') != FULL_PROFILE:
+        return None
+    requirements = preflight_requirements(ctx)
+    if requirements is None:
+        raise ValueError('quarantine configuration required before provisioning')
+    result = ctx.command(['gcloud','storage','buckets','get-iam-policy',
+                          'gs://' + requirements['bucket'],'--format=json'],timeout=60)
+    if result.returncode:
+        raise RuntimeError('quarantine bucket IAM policy read failed')
+    policy = json.loads(result.stdout)
+    bindings = policy.get('bindings') if isinstance(policy,dict) else None
+    if not isinstance(bindings,list):
+        raise ValueError('quarantine IAM policy bindings missing or malformed')
+    for expected in requirements['iam_bindings']:
+        if not any(isinstance(binding,dict)
+                   and binding.get('role') == expected['role']
+                   and isinstance(binding.get('members'),list)
+                   and expected['member'] in binding['members']
+                   and isinstance(binding.get('condition'),dict)
+                   and binding['condition'].get('expression') == expected['condition']['expression']
+                   for binding in bindings):
+            raise ValueError('quarantine current-run IAM bindings missing; operator must explicitly apply iam_proposal grants before provisioning')
+    receipt = {'bucket':requirements['bucket'], 'prefix':requirements['prefix'],
+               'run_id':ctx.run_id, 'iam_bindings':requirements['iam_bindings'],
+               'policy_sha256':canonical_sha(policy), 'policy_bindings_verified':True,
+               'remote_permissions_verified':False,
+               'scope':'bucket policy binding check only; actual controller upload/readback probe remains mandatory'}
+    write(ctx.work/'quarantine-policy-preflight.json',receipt)
+    ctx.state['quarantine_policy_preflight'] = receipt
+    return receipt
