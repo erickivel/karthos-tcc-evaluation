@@ -1,0 +1,33 @@
+{
+  "run_id": "thesis-robustness-full-20261119-v2",
+  "evaluation_commit": "45f85e0bcdb33365b7ad2311d5c4a1f56a5c7df0",
+  "frozen_at": "2026-11-19T12:47:51.386677+00:00",
+  "manifest_sha256": "7b858e15c1206c755713675a0f9022e3aa521bf9d8811fb1bd6e331a2bee57c0",
+  "windows": 14,
+  "exact_original_matrix": true,
+  "scientific_agreement": "pass",
+  "scientific_sha256": [
+    "bb3f19868e7dbbc09221dee7c052a5f45167d615003740f724a07de3a1bf43a3",
+    "bb3f19868e7dbbc09221dee7c052a5f45167d615003740f724a07de3a1bf43a3"
+  ],
+  "bundle_hashes": {
+    "source": "7b7a9bef3387f496db37a02f795f64c949318a9c619fef4d34e7ff26f26e88d1",
+    "product": "d24c057888669b1b83a34c19af3536a031a13da29ffe49b9fdea651e9567fc1d",
+    "cache": "32457fe54047607f2fd72040f1e7e5de7b37d292e9229b8c2bca8a67741a9789",
+    "toolchain": "af9b47751f17c9795bbc2b97a50db046948d435dd0a9113ca4dfb8d98390a4f4"
+  },
+  "controller_image": "us-central1-docker.pkg.dev/karthos/karthos-evaluation/controller@sha256:e6a32781ee6ca5b3386245c0092cae9182d88119922bf083fa07ca0aedb10e38",
+  "watchdog_image": "us-central1-docker.pkg.dev/karthos/karthos-evaluation/watchdog@sha256:f87f19c3198117f49bb6d509e931dec9fab0be3590d06a94d56bc5948ce9d8ef",
+  "local_tests": {
+    "executed": 1537,
+    "skipped": 4,
+    "passed": true
+  },
+  "prior_allowance_brl": 450,
+  "prior_allowance_scope": "both failed 19 November preparations jointly, not invoiced spending",
+  "gross_additional_cap_brl": 1200,
+  "cleanup_reserve_brl": 150,
+  "deadline_seconds": 72000,
+  "forecast_seconds": 67320,
+  "cloud_measurements_started": false
+}
