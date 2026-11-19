@@ -29,7 +29,7 @@ http {
   }
   log_format evidence escape=json '{"observed_at":$msec,"boundary":"BOUNDARY",'
     '"request_id":"$http_x_evaluation_request_id","run_id":"$http_x_evaluation_run",'
-    '"uri":"$uri","method":"$request_method","status":$status,'
+    '"uri":"$uri","method":"$request_method","status":$status,"user_agent":"$http_user_agent",'
     '"request_time_seconds":"$request_time","upstream_time_seconds":"$upstream_response_time",'
     '"grpc_status":"$eval_grpc_status","traceparent":"$http_traceparent",'
     '"remote_addr":"$remote_addr","bytes":$body_bytes_sent}';

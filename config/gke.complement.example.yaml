@@ -1,0 +1,84 @@
+{
+  "capture_finalization_version": 2,
+  "evidence_pipeline": "sealed-before-analysis-v1",
+  "execution_segment": "all",
+  "export_horizon_version": "recorded-horizon-v1",
+  "gcp": {
+    "billing_account_id": null,
+    "foundation_reference": {
+      "expected_outputs": {},
+      "review_note": "Supply the refreshed complete reference after scoped foundation review; preparation never applies it.",
+      "source_files": null
+    },
+    "project_id": null,
+    "region": "us-central1",
+    "zone": "us-central1-b"
+  },
+  "infrastructure": {
+    "bootstrap_sdk_image": null,
+    "controller_boot_image": null,
+    "controller_image": null,
+    "controller_machine_type": "e2-standard-4",
+    "extra_image_lock": {},
+    "gateway_reader_cpu_limit_m": 750,
+    "kubernetes_version": null,
+    "product_image_mirrors": {},
+    "release_channel": "STABLE",
+    "resource_policy": "requests-v1",
+    "watchdog_image": null,
+    "worker_count": 3,
+    "worker_machine_type": "e2-standard-4"
+  },
+  "limits": {
+    "cleanup_reserve_seconds": 3600,
+    "diagnostic_hold_seconds": 1800,
+    "gross_limit_usd": 187.75,
+    "infrastructure_seconds": 43200,
+    "launch_ceiling_usd": 164.28,
+    "max_evidence_bytes": 107374182400,
+    "optional_local_download_bytes": 5368709120,
+    "raw_evidence_retention_days": 90
+  },
+  "product_snapshot": null,
+  "protocol": "gke-qualification-v1",
+  "quarantine": {
+    "bucket": null,
+    "prefix": "gke-quarantine-v1/runs/REPLACE-WITH-PREPARATION-ID/"
+  },
+  "readiness": {
+    "billing_and_credit_verified": false,
+    "capacity_verified": false,
+    "phase_estimates_seconds": {
+      "capture_setup_restore": null,
+      "checkpoint_export": null,
+      "final_export": null,
+      "history": null,
+      "provision": null,
+      "readiness_export": null,
+      "rebuild": null,
+      "retry_reserve": null,
+      "setup": null,
+      "window_export": null
+    },
+    "pricing_verified": false,
+    "quotas_verified": false,
+    "resource_helper_image": null,
+    "secondary_export_destination": null,
+    "secondary_export_verified": false,
+    "toolchain_verified": false
+  },
+  "schema_version": 1,
+  "servicegraph_store_max_items": 10000,
+  "source_policy": "validated-snapshot-only",
+  "execution_profile": "boutique-complement-v1",
+  "complement_budget": {
+    "currency": "BRL",
+    "reference_brl": 800,
+    "ceiling_brl": 1200,
+    "brl_per_usd": 5.8102,
+    "fx_margin": 0.1,
+    "cleanup_reserve_brl": 150,
+    "fx_date": "2026-11-18",
+    "fx_source": "https://ptax.bcb.gov.br/ptax_internet/consultarUltimaCotacaoDolar.do"
+  }
+}

@@ -111,10 +111,16 @@ def extract_ledger(log: str) -> list[dict]:
 
 def sleep_bounded(seconds: float) -> None:
     end = time.monotonic() + seconds
-    while time.monotonic() < end:
-        if r._DEADLINE is not None and time.monotonic() >= r._DEADLINE:
-            raise TimeoutError('eight-hour study deadline reached')
-        time.sleep(min(5, end - time.monotonic()))
+    while True:
+        now = time.monotonic()
+        if now >= end:
+            return
+        if r._DEADLINE is not None and now >= r._DEADLINE:
+            raise TimeoutError('study deadline reached')
+        remaining = min(5, end - now)
+        if r._DEADLINE is not None:
+            remaining = min(remaining, r._DEADLINE - now)
+        time.sleep(remaining)
 
 
 def observer_targets(cell, *, include_agent=False):

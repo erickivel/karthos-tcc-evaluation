@@ -317,7 +317,11 @@ def input_agreement(left, right):
 def duration_evidence(data):
     families=data.get('families',{})
     state=families.get('traffic_duration',{}).get('state','insufficient')
-    method='fixed-window matched population'
+    primary=families.get('traffic_duration',{})
+    method=('matched settled population'
+            if primary.get('population_scope')=='settled' else
+            'fixed-window matched population' if primary.get('population_scope')=='fixed-window' else
+            primary.get('scope','historical duration population scope not recorded'))
     if state not in ('pass','fail') and all(families.get(k,{}).get('state')=='pass' for k in
                                           ('settled_traffic_duration','evidence_horizon','exact_api_storage_parity')):
         state='pass';method='separately matched settled population with covered export and exact API/storage parity'

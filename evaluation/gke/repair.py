@@ -24,13 +24,26 @@ def origin_evidence(report,seal,uri,matrix,*,expected_protocol="thesis-qualifica
 def validate_budget(manifest):
     """Explicit cumulative planning allowance; credits never substitute for gross cost."""
     import math
+    from .complement_budget import PROFILE, validate as validate_complement
+    if manifest.get('config',{}).get('execution_profile')==PROFILE:
+        from .models import COMPLETION_V2
+        expected=validate_complement(manifest['config'])
+        protocol=manifest.get('protocol_definition',{})
+        estimate=manifest.get('cost_preview',{}).get('gross_estimate')
+        if (manifest.get('schedule')!=COMPLETION_V2 or protocol.get('execution_profile')!=PROFILE
+                or protocol.get('combined_gross_limit_usd')!=expected['gross_limit_usd']
+                or type(estimate) not in (int,float) or not math.isfinite(estimate)
+                or not 0<=estimate<=expected['launch_ceiling_usd']):
+            raise ValueError('complement forecast exceeds reserved additional BRL budget or profile differs')
+        return
     budget=manifest.get('study_budget',{})
     if budget!=manifest['config'].get('readiness',{}).get('study_budget'):
         raise ValueError('repair combined budget differs from reviewed configuration')
     from .models import COMPLETION_SCHEDULES,COMPLETION_V2
-    limit=240 if manifest.get('schedule')==COMPLETION_V2 and manifest.get('protocol_definition',{}).get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1') and manifest['config'].get('execution_profile')==manifest.get('protocol_definition',{}).get('execution_profile') else 200 if manifest.get('schedule')==COMPLETION_V2 else 150 if manifest.get('schedule') in COMPLETION_SCHEDULES else 100
+    limit=240 if manifest.get('schedule')==COMPLETION_V2 and manifest.get('protocol_definition',{}).get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1') and manifest['config'].get('execution_profile')==manifest.get('protocol_definition',{}).get('execution_profile') else 200 if manifest.get('schedule')==COMPLETION_V2 else 150 if manifest.get('schedule') in COMPLETION_SCHEDULES else 100
     if (manifest.get('schedule')==COMPLETION_V2
-            and manifest.get('protocol_definition',{}).get('execution_profile')==manifest['config'].get('execution_profile')=='astronomy-istio-repair-v1'
+            and manifest.get('protocol_definition',{}).get('execution_profile')==manifest['config'].get('execution_profile')
+            and manifest['config'].get('execution_profile') in (None,'astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1')
             and manifest['config'].get('evidence_pipeline')=='sealed-before-analysis-v1'
             and manifest['config'].get('limits',{}).get('gross_limit_usd')==270
             and manifest['protocol_definition'].get('combined_gross_limit_usd')==270):

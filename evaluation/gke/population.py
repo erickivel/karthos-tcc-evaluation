@@ -88,7 +88,15 @@ def prove(name,traffic,verification):
                 if row.get('resets')!=0 or not all(type(row.get(k)) in (int,float) and math.isfinite(row[k]) for k in ('first','last','increase')) or row['first']>row['last']:raise ValueError('counter reset, nonfinite value or missing bracket')
                 found[key]=row
             if set(found)-set(expected) or any(k not in found and v!=0 for k,v in expected.items()):raise ValueError('missing or unexpected outcome partitions')
-            if any(r['increase']!=expected.get(k,0) for k,r in found.items()):raise ValueError('partition totals do not establish the expected controlled population')
+            discrepancies=[{'identity':dict(k),'expected':expected.get(k,0),'observed':r['increase'],
+                            'observation_bounds':[r['first'],r['last']],
+                            'metric':r['metric'] if native_rows else r['metric']['__name__'],
+                            'boundary':'source' if native_rows else 'storage',
+                            'cause_confidence':'unknown'}
+                           for k,r in found.items() if r['increase']!=expected.get(k,0)]
+            if discrepancies:
+                result['partition_discrepancies']=discrepancies
+                raise ValueError('partition totals do not establish the expected controlled population')
             return found
         found=check_rows(stored)
         if not found:return blocked('stored request counter partitions unavailable')

@@ -336,6 +336,8 @@ def score_window_answers(document, before, after, report):
 def claim_matrix(ctx,windows,history,readiness_report):
     """Link independently scored claims to the exact sealed sources."""
     from .report_summary import load_summary
+    from .baseline_results import baseline_results
+    from .independent_claims import single_contribution
     by_window={}
     for row in windows:
         path=Path(row['path'])/'gke-evaluation.json' if row.get('path') else None
@@ -370,15 +372,29 @@ def claim_matrix(ctx,windows,history,readiness_report):
         states=[state for _,state in entries]
         verdict='fail' if 'incorrect' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(s=='correct' for s in states) else 'insufficient'
         add(name,verdict,'API-only answers scored against independent evidence',[uri for uri,_ in entries if uri])
+        rows[-1].update(baseline_results(ctx.manifest['matrix'], windows, by_window,
+                                       lambda data: data.get('thesis_answers', {}).get(name, {}).get('state')))
     history=history or {}
     history_state=history.get('answer',{}).get('state') if (
         history.get('export',{}).get('verified') is True and history.get('continuation_safe') is True) else None
     add('retained-replicas-and-health',{'correct':'pass','incorrect':'fail'}.get(history_state,'insufficient'),
         'bounded GKE checkout replacement with independently observed before and after inventories',
         [history['export']['uri']] if history.get('export',{}).get('verified') else [])
+    if ctx.manifest.get('protocol_definition',{}).get('lifecycle_observation_version')=='bounded-lifecycle-v1':
+        bounded=history.get('lifecycle_observation',{})
+        valid=(history_state=='correct' and bounded.get('version')=='bounded-lifecycle-v1'
+               and bounded.get('state')=='pass' and bounded.get('exact_transition_time_established') is False)
+        add('bounded-lifecycle-observation','pass' if valid else 'insufficient',
+            'controller-observed trigger, Kubernetes reference and public API acquisition bounds; no exact cache/kernel or internal ingestion time',
+            [history['export']['uri']] if history.get('export',{}).get('verified') else [])
+        rows[-1]['observed']=bounded
     baselines=[(uri,data) for uri,data in by_window.values() if data.get('spec',{}).get('phase')=='baseline']
     from .thesis_comparison import representative_state
     for claim,reference,extract in (
+        ('gke-structural-fidelity', 'independent retained Kubernetes pod/service/node inventories; bounded declared structure',
+         lambda d: d.get('structural_fidelity',{}).get('state','insufficient')),
+        ('selected-source-single-contribution', 'independent checkout population, selected provenance and settled totals; not per-request deduplication',
+         lambda d: single_contribution(d,ctx.manifest.get('thresholds'))['state']),
         ('catalog-contract', '43 pinned names, units, sources and aggregation contracts',
          lambda d: 'pass' if (d.get('coverage',{}).get('contract') or {}).get('valid') else 'insufficient'),
         ('representative-numerical-agreement', 'aligned source and independent measurements; exact API/storage checks reported separately',
@@ -387,6 +403,7 @@ def claim_matrix(ctx,windows,history,readiness_report):
         states=[extract(data) for _,data in baselines]
         verdict='fail' if 'fail' in states else 'pass' if required_baselines>0 and len(states)==required_baselines and all(state=='pass' for state in states) else 'insufficient'
         add(claim,verdict,reference,[uri for uri,_ in baselines if uri])
+        rows[-1].update(baseline_results(ctx.manifest['matrix'], windows, by_window, extract))
         if claim=='representative-numerical-agreement' and ctx.manifest.get('schedule') in (COMPLETION,COMPLETION_V2):
             rows[-1]['limitations']=['selected traffic count/error/duration, container resources and volumes only; host and lifecycle exact alignment is excluded from this claim, and bounded observations do not establish exact agreement']
     if ctx.manifest.get('schedule') in REPAIR_SCHEDULES:
@@ -414,6 +431,8 @@ def claim_matrix(ctx,windows,history,readiness_report):
     if ctx.manifest.get('schedule')==COMPLETION_V2:
         from .thesis_comparison import arbitration_claim
         rows.append(arbitration_claim(ctx.manifest['matrix'],by_window,strict=True))
+        from .independent_claims import no_double_counting
+        rows.append(no_double_counting(ctx.manifest['matrix'],by_window,ctx.manifest.get('thresholds')))
         add('host-lifecycle-exact-alignment','not-applicable',
             'excluded: telemetry does not expose exact kernel/cache alignment; bounded observations remain separately reported',[])
         rows[-1]['required']=False
@@ -427,6 +446,14 @@ def claim_matrix(ctx,windows,history,readiness_report):
             ['progress.ndjson#phase-cluster-established'])
         rows[-1]['observed']={str(k):sorted(v) for k,v in identities.items()}
     rows.extend(comparisons)
+    from .complement_budget import PROFILE
+    if ctx.manifest.get('protocol_definition',{}).get('execution_profile')==PROFILE:
+        for row in rows:
+            if row['claim'] in ('retained-replicas-and-health','source-arbitration','no-double-counting','fresh-cluster-identities','source-independence-astronomy') or row['claim'].startswith('clean-rebuild'):
+                row.update(verdict='not-applicable',required=False,
+                           reference='separate complementary run; historical phases are not imported; cross-deployment comparison is a separate sealed analysis')
+        rows.append(dict(claim='cross-deployment-reproducibility',verdict='insufficient',
+                         reference='requires separate checksum-bound comparison with original cluster 1',artifacts=[]))
     return dict(protocol=ctx.manifest.get('schedule',THESIS),
                 local_contract_protocol=(ctx.manifest.get('local_contract_evidence') or {}).get('protocol'),
                 product_revision=ctx.manifest['product_pins']['karthos_revision'],claims=rows)

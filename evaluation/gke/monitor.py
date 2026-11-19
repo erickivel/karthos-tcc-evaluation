@@ -27,6 +27,19 @@ def controller_health(provider, process, serial):
     """Keep current observations distinct from retained serial history."""
     import re
     oom = bool(re.search(r'Out of memory: Killed process \d+ \(python[^)]*\)', serial))
+    denied_at=accepted_at=-1
+    for index,line in enumerate(serial.splitlines()):
+        if 'logging.logEntries.create' in line and re.search(r'\b(denied|lacks|PERMISSION_DENIED)\b',line,re.I):
+            denied_at=index
+        try:
+            record=json.loads(line)
+            if isinstance(record,dict) and record.get('logging_write_accepted') is True and record.get('verified') is True:
+                accepted_at=index
+        except (ValueError,TypeError):
+            pass
+    logging_state=('resolved-in-retained-history' if accepted_at>denied_at>=0 else
+                   'failure-in-retained-history' if denied_at>=0 else
+                   'accepted-in-retained-history' if accepted_at>=0 else 'unknown')
     running = (process or {}).get('Running')
     cause = 'current process liveness not established'
     if running is True:
@@ -36,5 +49,5 @@ def controller_health(provider, process, serial):
     return {'provider_state': (provider or {}).get('status', 'unknown'),
             'process_state': 'running' if running is True else 'stopped' if running is False else 'unknown',
             'container_exit_code': (process or {}).get('ExitCode'),
-            'serial_python_oom': oom, 'logging_permission_denied': 'logging.logEntries.create' in serial,
+            'serial_python_oom': oom, 'logging_permission_denied': denied_at>=0, 'logging_preflight_state': logging_state,
             'cause': cause, 'serial_scope': 'retained history; not proof of current process state'}

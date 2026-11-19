@@ -98,6 +98,8 @@ class MultinodeTests(unittest.TestCase):
                 elif kind == 'agent:n1' and stream is not None:
                     agent_started.set()
             with (patch('evaluation.timing_capture.r.forward', return_value=contextlib.nullcontext('http://fixture.invalid')),
+                  patch('evaluation.kubelet_transport.pod_proxy', return_value=contextlib.nullcontext('/tmp/fixture.sock')),
+                  patch('evaluation.kubelet_transport.pod_request', return_value=pod('n1')),
                   patch('evaluation.timing_capture.r.kube_json', return_value={'items': [{'metadata': {'name': 'victoria'}}]}),
                   patch('evaluation.timing_capture.CollectorTailStream.handshake') as handshake,
                   patch.object(capture, '_poll_remote'),

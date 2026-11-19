@@ -113,7 +113,7 @@ class FakeContext:
         elif args[:3]==['gcloud','storage','cp']:self.objects[args[4]]=Path(args[3]).read_text()
         elif args[:4]==['gcloud','billing','projects','describe']:value={'billingEnabled':True,'billingAccountName':'billingAccounts/'+self.billing}
         elif args[:3]==['gcloud','projects','describe']:value={'projectId':'research-project','projectNumber':'12345','lifecycleState':'ACTIVE'}
-        elif args[:3]==['gcloud','services','list']:value=[{'config':{'name':x+'.googleapis.com'}} for x in ['cloudbilling','compute','container','storage','artifactregistry','run','cloudscheduler','iam','iamcredentials']]
+        elif args[:3]==['gcloud','services','list']:value=[{'config':{'name':x+'.googleapis.com'}} for x in ['cloudresourcemanager','logging','cloudbilling','compute','container','storage','artifactregistry','run','cloudscheduler','iam','iamcredentials']]
         elif args[:4]==['gcloud','compute','disks','list']:value=[]
         elif args[:4]==['gcloud','compute','regions','describe']:value={'quotas':[{'metric':'CPUS','limit':self.cpus,'usage':0},{'metric':'SSD_TOTAL_GB','limit':self.ssd_gb,'usage':self.ssd_usage}]}
         elif args[:4]==['gcloud','compute','project-info','describe']:value={'quotas':[] if self.global_cpus is None else [{'metric':'CPUS_ALL_REGIONS','limit':self.global_cpus,'usage':self.global_cpu_usage}]}

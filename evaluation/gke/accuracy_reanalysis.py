@@ -19,7 +19,7 @@ from .models import sha,write
 from .report_summary import family_summaries
 from ..references.kubelet import read_summary
 
-VERSION='accuracy-evidence-v3.3.0'
+VERSION='accuracy-evidence-v3.5.0'
 
 
 def _counts(checks):
@@ -202,6 +202,8 @@ def reanalyse_archive(archive,destination,*,expected_sha256,analysis_archive=Non
         from .population import resolve_scope
         traffic=resolve_scope(old.get('traffic',{}).get('report',{}),old.get('spec',{}))
         settled=settled_mesh_duration(traffic,verification,names,document,records,old.get('thresholds',{}))
+        from .trace_settled import from_evidence as trace_settled
+        settled_trace=trace_settled(traffic,verification,names,document,records,old.get('thresholds',{}))
         selected=[]
         for metric in old.get('selected_accuracy',[]):
             row=dict(metric);name=row['name']
@@ -211,11 +213,12 @@ def reanalyse_archive(archive,destination,*,expected_sha256,analysis_archive=Non
             if matches:row.update(state=_state(matches),checks=matches)
             selected.append(row)
         from .observation_contracts import summarize
-        view=dict(old,settled_duration_diagnostics=settled,selected_accuracy=selected,numerical_agreement=dict(old.get('numerical_agreement',{}),state=_state(revised),checks=revised))
+        view=dict(old,settled_trace_population=settled_trace,settled_duration_diagnostics=settled,selected_accuracy=selected,numerical_agreement=dict(old.get('numerical_agreement',{}),state=_state(revised),checks=revised))
         families=family_summaries(view)
         reasons=Counter((c.get('observed',{}).get('metric',c.get('metric')),c.get('state'),c.get('reason')) for c in revised)
         summary={'analysis_version':VERSION,'spec':old.get('spec'),
             'original_families':old.get('families',{}),'families':families,
+            'settled_trace_population':settled_trace,
             'recovery_inventory':dict(recovery_inventory,forwarded_volume_attribution=dict(forwarded)),'settled_duration':settled,
             'bounded_observations':summarize(revised),
             'resources':{'original_counts':_counts(original),'revised_counts':_counts(revised),
@@ -231,7 +234,7 @@ def reanalyse_archive(archive,destination,*,expected_sha256,analysis_archive=Non
     destination.mkdir(parents=True,exist_ok=False)
     write(destination/'summary.json',summary);write(destination/'comparison-changes.json',changes)
     write(destination/'analysis-manifest.json',{'analysis_version':VERSION,'archive':str(archive),'archive_sha256':expected_sha256,'analysis_archive':str(analysis_archive) if analysis_archive else None,'analysis_archive_sha256':analysis_sha256,'used_members':used,'member_origins':{name:tar.origins[name] for name in used},
-        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','volume_provenance.py','reference_inventory.py')},
+        'implementation_sha256':{name:sha(Path(__file__).parent/name) for name in ('accuracy_reanalysis.py','evaluate.py','report_summary.py','population.py','trace_settled.py','volume_provenance.py','reference_inventory.py')},
         'historical_results_modified':False})
     write(destination/'SHA256SUMS',''.join(sha(p)+'  '+p.name+'\n' for p in sorted(destination.iterdir()) if p.is_file()))
     return summary

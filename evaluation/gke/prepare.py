@@ -23,7 +23,7 @@ def cost_preview(config):
     # Conservative allowances are assumptions, NOT a live quote or billing cap.
     hours=config['limits']['infrastructure_seconds']/3600
     items={'compute_four_e2_standard_4':4*hours*0.13402284,'gke_management_without_free_credit':hours*.10,'disks_allowance':3.,'network_nat_allowance':5.,'logging_allowance':10.,'registry_and_watchdog_allowance':5.,'gcs_100_GiB_90_days_allowance':10.,'secondary_export_and_transfer_allowance':15.}
-    return {'currency':'USD','gross_estimate':round(sum(items.values()),2),'items':items,'credits_assumed':0,'launch_ceiling':80,'gross_limit':config['limits']['gross_limit_usd'],'kind':'offline estimate with explicit allowances; current SKU verification required before launch','references':['https://cloud.google.com/products/compute/pricing/general-purpose','https://cloud.google.com/kubernetes-engine/pricing','https://cloud.google.com/storage/pricing'],'alerts_are_not_enforcement':True}
+    return {'currency':'USD','gross_estimate':round(sum(items.values()),2),'items':items,'credits_assumed':0,'launch_ceiling':config['limits']['launch_ceiling_usd'],'gross_limit':config['limits']['gross_limit_usd'],'kind':'offline estimate with explicit allowances; current SKU verification required before launch','references':['https://cloud.google.com/products/compute/pricing/general-purpose','https://cloud.google.com/kubernetes-engine/pricing','https://cloud.google.com/storage/pricing'],'alerts_are_not_enforcement':True}
 
 
 def foundation_checkpoint_check(root, config):

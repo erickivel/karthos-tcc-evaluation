@@ -356,6 +356,12 @@ class FastCapture(ContinuousCapture):
             self.kubelet_socket=self.stack.enter_context(kubelet_proxy(
                 self.nodes,r.http_timeout(10),self.path/'structured/kubelet-proxy.stderr',
                 lifecycle=self.kubelet_proxy_lifecycle))
+        self.mesh_socket=None
+        if self.sample_settings.get('kubelet_transport')=='private-kubernetes-proxy' and getattr(self.cell,'source',None)=='mesh' and self._mesh_targets():
+            from .kubelet_transport import mesh_proxy
+            self.mesh_proxy_lifecycle={}
+            self.mesh_socket=self.stack.enter_context(mesh_proxy(self._mesh_targets(),r.http_timeout(10),
+                self.path/'structured/mesh-proxy.stderr',lifecycle=self.mesh_proxy_lifecycle))
         self._sampling_preflight()
     def _read_kubelet_json(self,row,node=None):
         """Bounded read-only recovery; only a valid response becomes a sample.
@@ -427,9 +433,16 @@ class FastCapture(ContinuousCapture):
                     requested=self._read_kubelet_json(row,target[1])
                 elif stream=='mesh':
                     ns,pod=target;row.update(namespace=ns,pod=pod)
-                    result=r.kube('get','--raw',f'/api/v1/namespaces/{ns}/pods/{pod}:15090/proxy/stats/prometheus',check=False,timeout=5,quiet=True)
-                    if result.returncode:raise RuntimeError(result.stderr)
-                    row['text']=result.stdout
+                    if getattr(self,'mesh_socket',None) is not None:
+                        from .kubelet_transport import mesh_request
+                        row['transport']='private-kubernetes-proxy'
+                        result=mesh_request(self.mesh_socket,ns,pod,r.http_timeout(5))
+                    else:
+                        row['transport']='kubectl-get-raw'
+                        result=r.kube('get','--raw',f'/api/v1/namespaces/{ns}/pods/{pod}:15090/proxy/stats/prometheus',check=False,timeout=5,quiet=True)
+                    row['transport_diagnostic']=getattr(result,'transport_diagnostic',{})
+                    if result.returncode:raise RuntimeError('mesh request failed: '+str(result.stderr))
+                    row['text']=result.stdout.decode('utf-8') if isinstance(result.stdout,bytes) else result.stdout
                     if not row['text']:raise ValueError('empty mesh source')
                 else:
                     ns,pod,base=target;inventory=self._collector_pod(ns,pod)
@@ -437,7 +450,18 @@ class FastCapture(ContinuousCapture):
                     with r.urllib.request.urlopen(base+'/metrics',timeout=3) as response:row['text']=response.read().decode()
                     if not row['text']:raise ValueError('empty collector source')
                 row['error']=None
-            except Exception as exc:row['error']=str(exc)
+            except Exception as exc:
+                row['error']=str(exc)
+                from .gke.export import redact_text
+                stderr=getattr(exc,'stderr',None) or ''
+                if isinstance(stderr,bytes):stderr=stderr.decode('utf-8',errors='replace')
+                row['transport_diagnostic']={
+                    'stage':'kubectl API proxy request' if stream=='mesh' else 'reference acquisition',
+                    'error_type':type(exc).__name__,'timeout_seconds':getattr(exc,'timeout',None),
+                    'elapsed_seconds':(time.time_ns()-requested)/1e9,
+                    'stderr':redact_text(stderr[-4096:]),
+                    'internal_transport_stage':'unknown unless retained stderr identifies it',
+                    **row.get('transport_diagnostic',{}),**getattr(exc,'transport_diagnostic',{})}
             self._record(path,row,requested)
     def _record(self,path,row,requested):
         received=time.time_ns();row.update(requested_at_ns=requested,received_at_ns=received,requested_at=datetime.fromtimestamp(requested/1e9,timezone.utc).isoformat(),received_at=datetime.fromtimestamp(received/1e9,timezone.utc).isoformat(),captured_at=datetime.fromtimestamp(received/1e9,timezone.utc).isoformat())
@@ -684,18 +708,18 @@ class RepairCapture:
                 state['ready_at'] = now()
                 return pods
 
-    def _capture_candidates(self, kind, cleanup, timeout):
-        items = self._get('get', 'pods', '-n', NS, cleanup=cleanup, timeout=timeout)['items']
+    def _capture_candidates(self, kind, cleanup, timeout, inventory=None):
+        items = (inventory if inventory is not None else self._get('get', 'pods', '-n', NS, cleanup=cleanup, timeout=timeout))['items']
         return [pod for pod in items if pod['metadata']['name'].startswith('karthos-'+kind+'-')
                 and not pod['metadata'].get('deletionTimestamp')
                 and pod['metadata'].get('annotations',{}).get(OWNER)==self.owner]
 
-    def _pods(self,kind,cleanup=False,timeout=None):
+    def _pods(self,kind,cleanup=False,timeout=None,inventory=None):
         if kind=='gateway':
-            pod=self._pod('gateway',cleanup=cleanup,timeout=timeout)
+            pod=self._pod('gateway',cleanup=cleanup,timeout=timeout,inventory=inventory)
             if not pod_ready(pod):raise CapturePodsPending('gateway must be Ready')
             return {'gateway':pod}
-        selected = self._capture_candidates(kind, cleanup, timeout)
+        selected = self._capture_candidates(kind, cleanup, timeout, inventory)
         grouped={node:[] for node in self.nodes}
         for pod in selected:
             node=pod.get('spec',{}).get('nodeName')
@@ -707,8 +731,8 @@ class RepairCapture:
             if len(pods) > 1:raise ValueError('agent has ambiguous owned capture pods on '+node)
             if not pods or not pod_ready(pods[0]):raise CapturePodsPending('agent needs exactly one owned Ready running pod on '+node)
         return {'agent:'+node:pods[0] for node,pods in grouped.items()}
-    def _pod(self,kind,cleanup=False,timeout=None):
-        candidates = [pod for pod in self._capture_candidates(kind, cleanup, timeout)
+    def _pod(self,kind,cleanup=False,timeout=None,inventory=None):
+        candidates = [pod for pod in self._capture_candidates(kind, cleanup, timeout, inventory)
                       if pod.get('status',{}).get('phase') == 'Running']
         if not candidates:raise CapturePodsPending(f'{kind} capture needs exactly one owned running pod; found 0')
         if len(candidates) > 1:raise ValueError(f'{kind} capture needs exactly one owned running pod; found {len(candidates)}')
@@ -750,7 +774,40 @@ class RepairCapture:
             return self.frozen_snapshots
         from concurrent.futures import ThreadPoolExecutor
         from .capture_finalization import freeze_prefix, SnapshotReader, SnapshotIncomplete, inventory_script
-        deadline=time.monotonic()+min(30.,max(0.,self.deadline-time.time()))
+        started=time.monotonic()
+        allowance=120.
+        deadline=started+min(allowance,max(0.,self.deadline-time.time()))
+        identity_observations=[]
+        def identities(stage):
+            observed={};errors={};began=time.monotonic()
+            kinds=sorted({key.split(':',1)[0] for key in self.pods})
+            record={'stage':stage,'kinds':kinds,'requested_at':now()}
+            try:
+                remaining=deadline-time.monotonic()
+                if remaining<=0:raise TimeoutError('finalization deadline exhausted before identity lookup')
+                inventory=self._get('get','pods','-n',NS,cleanup=True,timeout=min(5.,remaining))
+                for kind in kinds:
+                    try:
+                        if kind=='agent' and any(key.startswith('agent:') for key in self.pods):
+                            observed.update(self._pods(kind,inventory=inventory))
+                        else:observed[kind]=self._pod(kind,inventory=inventory)
+                    except Exception as exc:errors[kind]=type(exc).__name__+': '+str(exc)
+                record['state']='failed' if errors else 'complete'
+                record['pod_inventory_count']=len(inventory.get('items',[]))
+                inventory_path=self.root/('finalization-pods-'+stage+'.json')
+                r.write(inventory_path,inventory)
+                record['inventory_file']=str(inventory_path.relative_to(self.path))
+                record['inventory_sha256']=hashlib.sha256(inventory_path.read_bytes()).hexdigest()
+            except Exception as exc:
+                errors={kind:type(exc).__name__+': '+str(exc) for kind in kinds}
+                record['state']='failed'
+            record.update(errors=errors,completed_at=now(),elapsed_seconds=time.monotonic()-began,
+                          remaining_seconds=max(0.,deadline-time.monotonic()))
+            identity_observations.append(record)
+            return observed,errors
+        before_observed,before_errors=identities('before')
+        # Preserve the total allowance; reserve time for the final lifecycle check.
+        stream_deadline=max(time.monotonic(),deadline-5.)
         def freeze_one(item):
             key,before=item;kind=key.split(':',1)[0]
             destination=self._destination(key)/'raw-attempt-1';destination.mkdir(parents=True,exist_ok=False)
@@ -759,7 +816,8 @@ class RepairCapture:
             required={'metrics.json',*({'traces.json'} if kind=='gateway' else {'receiver-input.ndjson'})}
             allowed={'metrics.json','traces.json','receiver-input.ndjson','receiver-errors.ndjson'}
             try:
-                observed=self._pod(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic()))) if ':' not in key else self._pods(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic())))[key]
+                if kind in before_errors:raise ValueError('before identity observation: '+before_errors[kind])
+                observed=before_observed[key]
                 errors=pod_errors(before,observed)
                 if errors:raise ValueError('; '.join(errors))
                 response=r.kube('exec','-n',NS,before['metadata']['name'],'-c','diag-reader','--',
@@ -772,33 +830,57 @@ class RepairCapture:
                         result['errors'].append('unexpected capture file:'+str(path));continue
                     listed.add(path.name)
                 for name in sorted(required-listed):result['errors'].append('source unavailable:'+name)
-                for name in sorted(listed):
+                quota_lock=threading.Lock();reserved={}
+                def freeze_file(name,queued_at):
+                    began=time.monotonic();receipt=None;error=None
                     try:
-                        # Retained bytes consume the budget even when reader cleanup fails.
-                        used=sum(file.stat().st_size for file in destination.iterdir() if file.is_file())
-                        with SnapshotReader(before,name,deadline) as reader:
-                            try:
-                                receipt=freeze_prefix(reader,destination/name,deadline=deadline,maximum_bytes=MAX_BYTES-used)
-                            except SnapshotIncomplete as exc:
-                                result['files'][name]=exc.receipt
-                                raise
-                            receipt['transport_recoveries']=reader.recoveries if hasattr(reader,'recoveries') else []
-                            result['files'][name]=receipt
+                        with SnapshotReader(before,name,stream_deadline) as reader:
+                            def bounded_read(offset):
+                                frame=reader(offset)
+                                with quota_lock:
+                                    # Charge bytes before handing them to the writer; failed
+                                    # reads never release already charged retained bytes.
+                                    high=max(reserved.get(name,0),offset+len(frame['data']))
+                                    if sum(v for k,v in reserved.items() if k!=name)+high>MAX_BYTES:
+                                        raise ValueError('snapshot source byte bound exceeded')
+                                    reserved[name]=high
+                                return frame
+                            receipt=freeze_prefix(bounded_read,destination/name,deadline=stream_deadline,timeout_seconds=allowance,maximum_bytes=MAX_BYTES)
+                            receipt['transport_recoveries']=getattr(reader,'recoveries',[])
                     except SnapshotIncomplete as exc:
-                        result['files'][name]=exc.receipt;result['errors'].append(name+': '+str(exc))
+                        receipt=exc.receipt;error=name+': '+str(exc)
                     except Exception as exc:
-                        result['errors'].append(name+': '+str(exc))
-                observed=self._pod(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic()))) if ':' not in key else self._pods(kind,cleanup=True,timeout=min(5.,max(.01,deadline-time.monotonic())))[key]
-                result['errors']+=pod_errors(before,observed)
+                        error=name+': '+str(exc)
+                    if receipt is not None:
+                        receipt['elapsed_seconds']=time.monotonic()-began
+                        receipt['queue_seconds']=max(0.,began-queued_at)
+                        receipt['remaining_seconds_at_start']=max(0.,stream_deadline-began)
+                    return name,receipt,error
+                futures=[file_pool.submit(freeze_file,name,time.monotonic()) for name in sorted(listed)]
+                for future in futures:
+                    name,receipt,error=future.result()
+                    if receipt is not None:result['files'][name]=receipt
+                    if error:result['errors'].append(error)
             except Exception as exc:
                 result['errors'].append(str(exc))
             result['complete']=not result['errors'] and all(row.get('complete') for row in result['files'].values())
             return key,result
-        with ThreadPoolExecutor(max_workers=min(4,max(1,len(self.pods)))) as pool:
-            components=dict(pool.map(freeze_one,self.pods.items()))
-        self.frozen_snapshots={'version':2,'components':components,'errors':[
+        with ThreadPoolExecutor(max_workers=4) as file_pool:
+            with ThreadPoolExecutor(max_workers=min(4,max(1,len(self.pods)))) as pool:
+                components=dict(pool.map(freeze_one,self.pods.items()))
+        after_observed,after_errors=identities('after')
+        for key,result in components.items():
+            kind=key.split(':',1)[0]
+            if kind in after_errors:
+                result['errors'].append('after identity observation: '+after_errors[kind])
+            elif key not in after_observed:
+                result['errors'].append('collector absent from final identity inventory')
+            else:result['errors']+=pod_errors(self.pods[key],after_observed[key])
+            result['complete']=not result['errors'] and all(row.get('complete') for row in result['files'].values())
+        self.frozen_snapshots={'version':2,'identity_observations':identity_observations,
+            'elapsed_seconds':time.monotonic()-started,'components':components,'errors':[
             key+': '+error for key,result in components.items() for error in result['errors']],
-            'finished_at':now(),'allowance_seconds':30}
+            'finished_at':now(),'allowance_seconds':allowance}
         self.frozen_snapshots['complete']=all(row['complete'] for row in components.values())
         self.state['finalization']=self.frozen_snapshots
         r.write(self.root/'snapshot-finalization.json',self.frozen_snapshots)
@@ -806,9 +888,13 @@ class RepairCapture:
 
     def _archive_attempt(self,kind,attempt):
         key=kind;kind=key.split(':',1)[0]
-        before=self.pods[key];after=self._pods(kind,cleanup=True)[key] if ':' in key else self._pod(kind,cleanup=True);dest=self._destination(key)
-        r.write(dest/'inventory-after.json',self._get('get','pods','-n',NS,cleanup=True));r.write(dest/'pod-after.json',after)
-        errors=pod_errors(before,after)
+        before=self.pods[key];dest=self._destination(key);errors=[]
+        if self.settings.get('capture_finalization_version')!=2:
+            after=self._pods(kind,cleanup=True)[key] if ':' in key else self._pod(kind,cleanup=True)
+            r.write(dest/'inventory-after.json',self._get('get','pods','-n',NS,cleanup=True));r.write(dest/'pod-after.json',after)
+            errors=pod_errors(before,after)
+        # Version 2 is bound to the finalization inventory. Do not make sealing
+        # already frozen bytes depend on another live observation afterward.
         archive=dest/('raw-files-attempt-'+str(attempt)+'.tar')
         raw=dest/('raw-attempt-'+str(attempt))
         if self.settings.get('capture_finalization_version')==2:
@@ -976,7 +1062,7 @@ class RepairCapture:
                 'worker_alive':bool(getattr(stream, 'thread', None) and stream.thread.is_alive())}
                 for stream in getattr(capture, 'log_captures', [])]
             proxies = {} if capture is None else {name:getattr(capture, name) for name in
-                ('kubelet_proxy_lifecycle', 'log_proxy_lifecycle') if hasattr(capture, name)}
+                ('kubelet_proxy_lifecycle', 'log_proxy_lifecycle', 'mesh_proxy_lifecycle') if hasattr(capture, name)}
             self.state['completion'] = {'capture_present':capture is not None,
                 'observed_at':now(), 'sampler_workers':workers, 'log_workers':streams,
                 'proxy_processes':proxies}

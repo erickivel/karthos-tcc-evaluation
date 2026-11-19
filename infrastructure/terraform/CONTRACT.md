@@ -9,7 +9,8 @@ Live init requires a reviewed private GCS backend, per-root prefix and locking:
 credentials, state, `.terraform/`, or plan files into evidence bundles.
 
 The dedicated project and billing attachment are supplied by its owner. Required
-APIs: compute, container, storage, artifactregistry, run, cloudscheduler, iam, iamcredentials.
+APIs (each with the .googleapis.com suffix): cloudbilling, cloudresourcemanager, logging, compute, container, storage, artifactregistry, run, cloudscheduler, iam, iamcredentials.
+The read-only provisioning preflight checks this set before creating resources and names any missing API. Controller startup separately checks its attached identity and attempts one bounded Logging write. HTTP status and allowlisted provider reasons are retained; credentials and arbitrary error payloads are not.
 For the initial bootstrap only, the approved orchestrator may create foundation
 using private local state and immediately migrate it to protected GCS state;
 subsequent roots and operations must use per-root remote locking. An existing

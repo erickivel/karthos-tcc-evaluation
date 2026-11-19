@@ -144,7 +144,7 @@ A percentage requires an independently established eligible denominator. Do not 
 
 Follow the [README](../README.md) from an evaluation commit. The build fetches exact dependency references and records image digests. Account-specific settings are separate. New execution does not require prior results or private work directories. Local fixture/kind qualification is evidence for the pinned product, not live GKE proof.
 
-Before launch, refresh registry, IAM, quotas, versions, billing and the complete two-cluster time/cost forecast, including rebuild, retries, history, capture/export, secondary verification and cleanup. Preserve the **18-hour infrastructure limit**, **US$90 projected launch threshold** and **US$200 combined gross ceiling**, including prior spending. Credits do not reduce gross cost. The previous ten-window forecast does not establish that this protocol fits; unresolved forecast conflicts block launch. Explicit launch approval remains required in assisted execution.
+Before launch, refresh registry, IAM, quotas, versions, billing and the complete two-cluster time/cost forecast, including rebuild, retries, history, capture/export, secondary verification and cleanup. Preserve the **18-hour infrastructure limit**, **US$90 projected launch threshold** and **US$270 combined gross ceiling**, including prior spending. Credits do not reduce gross cost. The previous ten-window forecast does not establish that this protocol fits; unresolved forecast conflicts block launch. Explicit launch approval remains required in assisted execution.
 
 Primary exports, quarantine originals and secondary backups remain private and checksum-bound. Retain raw evidence for 90 days under the existing no-automatic-deletion policy; state and credentials do not enter research bundles. Ownership-safe teardown removes temporary resources and leaves protected evidence/state intact. Operator closure verifies secondary exports and provider-side cleanup rather than assuming controller exit proves removal.
 
@@ -165,8 +165,11 @@ separate. Missing settled evidence cannot be replaced by a fixed-window pass.
 Host and lifecycle observations do not establish exact kernel-read or collector
 cache alignment. Their descriptive coverage and conservative reference-state
 observation intervals do not upgrade insufficient exact accuracy evidence.
-First-API-observation detection lag remains unavailable without a paired,
-independently timestamped source transition and matching API acquisition.
+The active bounded-lifecycle-v1 observation retains independent Kubernetes
+acquisition intervals and matching API acquisitions around the existing checkout
+replacement. It reports conservative controller-observed elapsed bounds, not the
+exact collector/cache transition or internal ingestion latency. See
+[bounded lifecycle observations](bounded-lifecycle-observations.md).
 
 Before setup completes, and again before each traffic attempt including reused
 deployments, `traffic_population.verify` checks the pinned native generators:
@@ -187,3 +190,12 @@ existing population/identity checks still decide that. Existing request/journey
 IDs are retained without adding metric labels. The sequential inventory
 acquisition bracket is not an atomic cluster snapshot or a guarantee against
 later external changes.
+
+The trace settled population check and fixed-window diagnostics are documented in
+[trace settled population](trace-settled-population.md). The active protocol
+records settled-primary-v1 and bounded-lifecycle-v1 explicitly without changing
+the fourteen traffic windows.
+
+## Complemento de robustecimento
+
+O perfil adicional Boutique, orçamento em BRL, regras retrospectivas e limites das afirmações estão em [thesis-robustness.md](thesis-robustness.md). As regras de orçamento acima descrevem a execução histórica completa; não substituem o teto adicional de R$ 1.200 do complemento.

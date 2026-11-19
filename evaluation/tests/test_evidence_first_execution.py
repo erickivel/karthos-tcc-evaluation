@@ -6,11 +6,14 @@ from evaluation.gke import recoverable_run as r
 from evaluation.gke.models import write
 
 class EvidenceFirstExecutionTests(unittest.TestCase):
- def run_case(self,analysis_failure=False,raw_valid=True,analysis_export_failure=False):
+ def run_case(self,analysis_failure=False,raw_valid=True,analysis_export_failure=False,complement=False,invalid=False):
   with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack:
    p=Path(d);events=[]
    spec={'id':'w','repeat':1,'cell':'astronomy-mesh','demo':'astronomy','phase':'smoke','duration_seconds':60,'scenario':'normal'}
    ctx=SimpleNamespace(run_id="test",result=p,config={'evidence_pipeline':'sealed-before-analysis-v1','limits':{}},manifest={'matrix':[spec],'schedule':'thesis-repair-validation-v2'},state={'resources':[]},write=write,event=lambda *a,**kw:None)
+   if complement:
+    ctx.config['execution_profile']='boutique-complement-v1'
+    ctx.manifest['matrix']=[spec,dict(spec,id='second')]
    class Driver:
     nodes=[];paths={}
     def start_repeat(self,n):events.append('cluster')
@@ -20,7 +23,7 @@ class EvidenceFirstExecutionTests(unittest.TestCase):
      return {'analysis':{'state':'pending'},'execution':{'state':'complete'},'evidence':{'valid':False}}
     def upload(self,s,report):events.append('raw-export');return {'verified':raw_valid}
     def analyse(self,s,receipt):
-     events.append('analyse');return {'analysis':{'state':'failed' if analysis_failure else 'complete'},'execution':{'state':'complete'},'evidence':{'valid':not analysis_failure},'path':str(self.paths[s['id']])}
+     events.append('analyse');return {'analysis':{'state':'failed' if analysis_failure else 'complete'},'execution':{'state':'complete'},'evidence':{'valid':not analysis_failure and not invalid},'path':str(self.paths[s['id']])}
     def upload_analysis(self,s,report):
      events.append('analysis-export')
      if analysis_export_failure:raise RuntimeError('analysis export failed')
@@ -28,7 +31,7 @@ class EvidenceFirstExecutionTests(unittest.TestCase):
     def finish(self):events.append('finish');return {'verified':True}
    for name in ('_budget','_checkpoint'):
     stack.enter_context(patch.object(r,name,return_value={'verified':True}))
-   stack.enter_context(patch.object(r,'scheduled_matrix',return_value=[spec]))
+   stack.enter_context(patch.object(r,'scheduled_matrix',return_value=ctx.manifest['matrix']))
    def barrier(*a):events.append('barrier');return {'safe':True}
    stack.enter_context(patch.object(r,'transition',side_effect=barrier))
    stack.enter_context(patch('evaluation.gke.provision.require_context'))
@@ -61,3 +64,9 @@ class EvidenceFirstExecutionTests(unittest.TestCase):
   self.assertTrue(attempt['export']['verified'])
   self.assertTrue(attempt['retry_policy_complete'])
   self.assertEqual(events.count('measure'),1)
+
+ def test_complement_stops_after_one_operational_retry_and_cleans(self):
+  events,result=self.run_case(complement=True,invalid=True)
+  self.assertEqual(events.count('measure'),2)
+  self.assertEqual(result['records'][-1]['state'],'unattempted')
+  self.assertEqual(events[-1],'finish')

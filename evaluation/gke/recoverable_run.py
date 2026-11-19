@@ -18,6 +18,10 @@ class ProductDefect(SafetyFailure):
     """A demonstrated product-contract defect requires human direction."""
 
 
+def history_required(schedule,matrix):
+    return schedule not in REPAIR_SCHEDULES and any(row.get('history_observation',True) and row.get('repeat')==1 and row.get('cell')=='boutique-mesh' and row.get('phase')=='baseline' for row in matrix)
+
+
 def scheduled_matrix(config, matrix, continuation=None):
     """One frozen study; launch segments select work, never rewrite workloads."""
     segment=config.get('execution_segment','all')
@@ -261,10 +265,29 @@ def _checkpoint(ctx,records,history,readiness,sequence):
     return receipt
 
 
+def evidence_failure_reason(report):
+    """Explain invalid execution without promoting numerical mismatches to failures."""
+    if report.get('reason'):return report['reason']
+    if report.get('timing_error'):return report['timing_error']
+    evidence=report.get('evidence',{})
+    reasons=[]
+    for key in ('agent_identities','extended_capture'):
+        component=evidence.get(key,{})
+        if isinstance(component,dict):
+            for error in component.get('errors',[])[:5]:
+                reasons.append(key+': '+str(error)[:500])
+    for error in evidence.get('reference_errors',[])[:5]:
+        reasons.append('reference: '+str(error)[:500])
+    if reasons:return '; '.join(reasons)[:2000]
+    if evidence.get('valid') is not True:return 'required evidence invalid; inspect per-boundary report'
+    if report.get('execution',{}).get('state')!='complete':return 'execution incomplete; inspect attempt diagnostics'
+    return None
+
+
 def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_policy_complete=False):
     """Physical measurements survive failures of later continuation/export steps."""
     report=report or {}
-    generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
+    generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{}) or {}
     unexpected=generator.get('unexpected_outcomes')
     execution=report.get('execution',{}).get('state','unattempted')
     valid=report.get('evidence',{}).get('valid') is True
@@ -274,7 +297,7 @@ def attempt_record(spec,report,*,failure=None,barrier=None,receipt=None,retry_po
             'application_outcomes':'unknown' if unexpected is None else ('unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes'),
             'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
             'families':report.get('families',{}),'analysis':report.get('analysis',{}),
-            'reason':failure or report.get('reason'),'path':report.get('path'),
+            'reason':failure or evidence_failure_reason(report),'path':report.get('path'),
             'export':receipt or {'verified':False},'evidence_export_verified':(receipt or {}).get('verified') is True,
             'transition':barrier,'continuation_safe':barrier.get('safe') if isinstance(barrier,dict) else None,
             'retry_policy_complete':retry_policy_complete}
@@ -427,7 +450,7 @@ def execute(ctx,driver):
                     # Preserve raw measurement checkpoint; expose the bounded
                     # analysis to checkpoint/history consumers without expansion.
                     ctx.write(window_path/'orchestration-summary.json',report)
-                generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
+                generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{}) or {}
                 unexpected=generator.get('unexpected_outcomes')
                 valid=report.get('evidence',{}).get('valid') is True
                 execution=report.get('execution',{}).get('state','incomplete')
@@ -444,16 +467,18 @@ def execute(ctx,driver):
                 if not barrier['safe']:raise SafetyFailure('attempt completion barrier failed: '+str(barrier.get('error')))
                 if spec['phase']=='arbitration' and spec['scenario']=='both-sources':arbitration_ready=setup_ok and valid
                 ctx.event('window-exported',window=attempt['id'],logical_id=spec['id'],state=item['state'])
+                if ctx.config.get('execution_profile')=='boutique-complement-v1' and failed and (number==2 or analysis_failed):
+                    raise SafetyFailure('complement operational attempts exhausted; evidence preserved, remaining windows unattempted')
                 if not failed or analysis_failed:break
                 # Do not immediately repeat explicit rediscovery against the
                 # already transitioned plan. Reconstruct its prerequisite first.
                 if number==1 and spec['phase']=='arbitration' and spec['scenario']=='replanned-trace':
                     prerequisite=next(r for r in matrix if r['phase']=='arbitration' and r['scenario']=='both-sources')
                     driver.setup({**prerequisite,'id':attempt['id']+'-prerequisite'});active_cell=None
-            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
+            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec.get('history_observation',True) and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is None:
                 history={'state':'blocked','reason':'Boutique deployment unavailable after baseline attempts','action_taken':False}
                 sequence+=1;_checkpoint(ctx,records,history,readiness,sequence)
-            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
+            if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and spec.get('history_observation',True) and spec['repeat']==1 and spec['cell']=='boutique-mesh' and spec['phase']=='baseline' and history is None and active_cell is not None:
                 history_errors=[]
                 for number in (1,2):
                     try:
@@ -507,7 +532,7 @@ def execute(ctx,driver):
     launch_ids={row['id'] for row in launch_matrix}
     segment_complete=not failure and all(row.get('retry_policy_complete') for row in records if row['id'] in launch_ids) and launch_ids<={row['id'] for row in records}
     if ctx.manifest.get('schedule') not in REPAIR_SCHEDULES and ctx.config.get('execution_segment')=='thesis' and history is None:segment_complete=False
-    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and (history is not None or ctx.manifest.get('schedule') in REPAIR_SCHEDULES)
+    study_complete=segment_complete and all(row.get('retry_policy_complete') for row in records) and (history is not None or not history_required(ctx.manifest.get('schedule'),matrix))
     report={'protocol':ctx.manifest.get('schedule','thesis-qualification-v4'),'state':('complete' if study_complete else 'segment-complete') if segment_complete else 'incomplete','execution_segment':ctx.config.get('execution_segment','all'),'segment_complete':segment_complete,'study_complete':study_complete,'planned_launch_windows':len(launch_matrix),'study_budget':ctx.manifest.get('study_budget'),
             'planned_windows':len(matrix),'attempted_windows':sum(bool(r.get('attempts')) for r in records),'attempts':sum(len(r.get('attempts',[])) for r in records),
             'records':records,'windows':records,'history':history,'readiness':readiness_report,'failure':failure,'cleanup':cleanup,

@@ -55,12 +55,14 @@ def state(checks):
 
 
 def compare(reference, observed, relative, absolute):
-    if reference is None or observed is None:
-        return dict(state='incomplete', reference=reference, observed=observed, reason='missing evidence')
+    if any(type(value) not in (int, float) or not math.isfinite(value) for value in (reference, observed)):
+        return dict(state='incomplete', reference=reference, observed=observed, reason='missing or nonfinite evidence')
     error = abs(observed-reference)
     bound = max(absolute, abs(reference)*relative)
     return dict(state='pass' if error <= bound else 'fail', reference=reference,
-                observed=observed, absolute_error=error, bound=bound)
+                observed=observed, absolute_error=error, bound=bound,
+                relative_error=error/abs(reference) if reference else None,
+                relative_tolerance=relative, absolute_tolerance=absolute)
 
 
 def counter_window(points, start, end, alignment=10, temporality="cumulative"):

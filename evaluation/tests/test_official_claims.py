@@ -163,6 +163,7 @@ class CompleteClaimMatrixTests(unittest.TestCase):
                 models.write(path/'api-edges.json',{'data':{'edges':[{'source':'frontend','target':target,'relation':'calls'}]}})
                 families={k:{'state':'pass'} for k in ('traffic_count','traffic_error','traffic_duration','container_resource_accuracy','volume_accuracy')}
                 report={'path':str(path),'spec':spec,'execution':{'state':'complete'},'evidence':{'valid':True},
+                        'structural_fidelity':{'state':'pass','scope':'synthetic independently tested structure fixture'},
                         'manifest':{'namespace':namespace,'source_id':source},'source_selection':{'state':'pass','expected_source':source},
                         'families':families,'coverage':{'contract':{'valid':True}},
                         'thesis_answers':{key:{'state':'correct'} for key in ('interval-callers','current-replicas-and-placement','container-resource-history','request-error-derivation','request-error-numerical-agreement')},

@@ -211,6 +211,20 @@ class AvailabilityCapture:
             if len(names) != 1:
                 raise ValueError('VictoriaMetrics service unavailable or ambiguous')
             self.vm = self._stack.enter_context(r.forward('service/'+names[0], KARTHOS_NAMESPACE, 28928, 8428))
+            if self._multinode():
+                from .kubelet_transport import pod_proxy, pod_request
+                self._identity_socket = self._stack.enter_context(pod_proxy(
+                    KARTHOS_NAMESPACE, [pod['metadata']['name'] for pod in self.repair.pods.values()],
+                    30, self.path/'identity-proxy.stderr'))
+                # Acquire credentials before measured polling. The persistent
+                # proxy reuses its client; every poll still reads live identity.
+                for pod in self.repair.pods.values():
+                    current = pod_request(self._identity_socket, KARTHOS_NAMESPACE, pod['metadata']['name'], 30)
+                    errors = pod_errors(pod, current)
+                    if errors:
+                        raise ValueError('; '.join(errors))
+                self.status['identity_transport'] = 'private-persistent-kubernetes-proxy-v1'
+                self.status['identity_initialization_seconds'] = time.monotonic()-started
             self._thread = threading.Thread(target=self._loop, args=(self._poll_remote,'remote') if self._multinode() else (), name='timing-availability', daemon=True)
             self._threads=[self._thread]
             if self._multinode():
@@ -515,11 +529,16 @@ printf '%s:%s\\n' "$meta" "$digest"
         if self._stop.is_set():
             return
         requested=time.time_ns();started=time.monotonic()
+        proxy = getattr(self, '_identity_socket', None)
         try:
-            current = json.loads(r.kube('get', 'pod', before['metadata']['name'], '-n', KARTHOS_NAMESPACE, '-o', 'json', '--v=8', timeout=5, quiet=True).stdout)
+            if proxy:
+                from .kubelet_transport import pod_request
+                current = pod_request(proxy, KARTHOS_NAMESPACE, before['metadata']['name'], 5)
+            else:
+                current = json.loads(r.kube('get', 'pod', before['metadata']['name'], '-n', KARTHOS_NAMESPACE, '-o', 'json', '--v=8', timeout=5, quiet=True).stdout)
         except Exception as exc:
             self._record('collector-identity',kind,requested,error=exc,
-                         stage='kubectl-identity-command',elapsed_seconds=time.monotonic()-started,
+                         stage='proxy-identity-request' if proxy else 'kubectl-identity-command',elapsed_seconds=time.monotonic()-started,
                          timeout_seconds=5,collector_uid=before['metadata'].get('uid'),
                          transport_stderr=self._identity_error_detail(exc),
                          attribution='correlate command interval with infrastructure/auth-timing.ndjson; HTTP markers distinguish reached API transport from pre-request delay')
@@ -569,7 +588,7 @@ printf '%s:%s\\n' "$meta" "$digest"
         """Consume the sealed boundary prefix with actual late observation times."""
         import hashlib
         frozen=self.repair.freeze_snapshots()
-        self.status['finalization']={'version':2,'allowance_seconds':30,'streams':{}}
+        self.status['finalization']={'version':2,'allowance_seconds':frozen.get('allowance_seconds',30),'streams':{}}
         for key,(kind,pod,filename) in self._collector_streams.items():
             try:
                 component=frozen['components'][kind]

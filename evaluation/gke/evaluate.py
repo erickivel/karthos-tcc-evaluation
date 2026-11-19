@@ -591,9 +591,10 @@ def _attach_alignment(path,observations):
 def _kubernetes_observations(path,agents,*,thesis=False):
     path=Path(path);nodes=_read(path/'structured/nodes-before.json').get('items',[])
     node_uids={node['metadata']['name']:node['metadata'].get('uid') for node in nodes}
-    roots=[dict(agent) for agent in agents.get('agents',[])]+[{'root':str(path/'structured/gateway'),'collector_uid':_read(path/'structured/gateway/pod.json').get('metadata',{}).get('uid')}]
+    roots=[dict(agent) for agent in agents.get('agents',[])]+[{'root':str(path/'structured/gateway'),'collector_uid':_read(path/'structured/gateway/pod.json').get('metadata',{}).get('uid'),'capture_valid':evidence_v4.capture_component_valid(path,'gateway')}]
     result=[]
     for origin in roots:
+        if origin.get('capture_valid') is False:continue
         for resource,metric,kind,attributes,point in evidence_v4.raw_metrics(Path(origin['root'])/'raw'):
             name=metric.get('name')
             if name not in ('k8s.volume.available','k8s.volume.capacity','k8s.container.ready','k8s.container.restarts','k8s.pod.phase'):continue
@@ -625,7 +626,8 @@ def _volume_references(path,agents):
     from ..references.kubelet import read_summary
     result=[];inputs=[]
     for agent in agents.get('agents',[]):
-        inputs.extend(iter_records(Path(agent['root'])/'raw/receiver-input.ndjson'))
+        if agent.get('capture_valid') is not False:
+            inputs.extend(iter_records(Path(agent['root'])/'raw/receiver-input.ndjson'))
         node=agent.get('node')
         if not node:continue
         for row in iter_records(Path(path)/('kubelet-'+node+'.ndjson')):
@@ -698,6 +700,7 @@ def _extra_resource_checks(path,agents,references,traffic,verification,start,end
 def _host_observations(path,agents,*,thesis=False):
     result=[]
     for agent in agents.get('agents',[]):
+        if agent.get('capture_valid') is False:continue
         for resource,metric,kind,attributes,point in evidence_v4.raw_metrics(Path(agent['root'])/'raw'):
             name=metric.get('name');dims=dict(attributes)
             if not name.startswith('system.'):continue
@@ -789,6 +792,10 @@ def _evaluate(ctx,spec,path,traffic_report=None):
         names=[name for name in ('istio-samples.ndjson','istio-samples.ndjson.gz','vm-raw.ndjson','vm-raw.ndjson.gz') if (path/name).is_file()]
         report['settled_duration_diagnostics']=settled_mesh_duration(traffic,verification,names,
             lambda name:_read(path/name),lambda name:iter_records(path/name),ctx.manifest.get('thresholds',{}))
+        from .trace_settled import from_evidence as trace_settled
+        trace_names=names+[str(file.relative_to(path)) for file in sorted((path/'structured/gateway/raw').glob('*')) if file.name.endswith(('.json','.json.gz'))]
+        report['settled_trace_population']=trace_settled(traffic,verification,trace_names,lambda name:_read(path/name),
+            lambda name:iter_records(path/name),ctx.manifest.get('thresholds',{}))
         # A complete histogram comparison cannot substitute for absent required quiet endpoints.
         report['settled_duration_diagnostics']['export_coverage']=report['evidence_horizon']['state']
         if report['evidence_horizon']['state']!='pass':
@@ -820,6 +827,10 @@ def _evaluate(ctx,spec,path,traffic_report=None):
         from .boundary_summary import summarize
         bind_comparison_inputs(report,ctx.manifest)
         report['service_graph_evidence']=service_graph_evidence(path,manifest.get('namespace'),spec.get('demo'))
+        from .independent_claims import structural_fidelity
+        report['structural_fidelity']=structural_fidelity(path,manifest.get('namespace'))
+        from .background_traffic import from_window
+        report['background_traffic']=from_window(path,manifest.get('namespace'),manifest.get('run_id'),start,end)
         report['boundary_summary']=summarize(report,verification)
     report['state']='diagnostic' if executed else 'incomplete'
     ctx.write(path/'gke-evaluation.json',report)

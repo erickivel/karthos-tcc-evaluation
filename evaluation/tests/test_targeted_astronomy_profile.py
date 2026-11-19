@@ -5,7 +5,7 @@ class TargetedProfileTests(unittest.TestCase):
  def protocol(self):return json.loads(Path('protocols/thesis-completion-v2/protocol.yaml').read_text())
  def test_exact_profile_and_original_preserved(self):
   p=self.protocol();original=build_matrix(p,schedule=COMPLETION_V2)
-  p['execution_profile']='astronomy-recovery-v1';rows=build_matrix(p,schedule=COMPLETION_V2)
+  p.update(execution_profile='astronomy-recovery-v1',combined_gross_limit_usd=240);rows=build_matrix(p,schedule=COMPLETION_V2)
   self.assertEqual([(r['cell'],r['phase']) for r in rows],[('astronomy-trace','smoke'),('astronomy-trace','baseline'),('astronomy-mesh','smoke'),('astronomy-mesh','baseline')])
   self.assertEqual(sum(r['duration_seconds'] for r in rows),720)
   self.assertFalse(any(r.get('history_observation') for r in rows));self.assertEqual(len(original),14)
@@ -56,3 +56,27 @@ class TargetedProfileTests(unittest.TestCase):
   validate_budget(m)
   c.pop('evidence_pipeline')
   with self.assertRaises(ValueError):validate_budget(m)
+
+ def test_two_failed_istio_baselines_only(self):
+  p=self.protocol();p.update(execution_profile='failed-istio-baselines-v1',combined_gross_limit_usd=270)
+  rows=build_matrix(p,schedule=COMPLETION_V2)
+  self.assertEqual([(x['cell'],x['phase'],x['duration_seconds']) for x in rows],[('astronomy-mesh','baseline',300),('boutique-mesh','baseline',300)])
+  self.assertTrue(all(not x['history_observation'] for x in rows))
+  self.assertTrue(all(x['predecessor_window'].startswith('official-') for x in rows))
+  validate_schedule({'schedule':COMPLETION_V2,'protocol_definition':p,'matrix':rows})
+  from evaluation.gke.recoverable_run import history_required
+  self.assertFalse(history_required(COMPLETION_V2,rows))
+  self.assertTrue(history_required(COMPLETION_V2,build_matrix(self.protocol(),schedule=COMPLETION_V2)))
+
+ def test_astronomy_baseline_only_preserves_other_protocols(self):
+  from evaluation.gke.models import validate_config
+  p=self.protocol();p.update(execution_profile='astronomy-istio-baseline-v1',combined_gross_limit_usd=270)
+  rows=build_matrix(p,schedule=COMPLETION_V2)
+  self.assertEqual([(r['cell'],r['phase'],r['duration_seconds'],r['rate']) for r in rows],[('astronomy-mesh','baseline',300,2)])
+  self.assertFalse(rows[0]['history_observation'])
+  self.assertEqual(rows[0]['predecessor_window'],'istio-baseline-repair-astronomy-mesh')
+  validate_schedule({'schedule':COMPLETION_V2,'protocol_definition':p,'matrix':rows})
+  self.assertEqual(len(build_matrix(self.protocol(),schedule=COMPLETION_V2)),14)
+  c=json.loads(Path('config/gke.completion-v2.example.yaml').read_text())
+  c.update(execution_profile='astronomy-istio-baseline-v1',evidence_pipeline='sealed-before-analysis-v1');c['limits']['gross_limit_usd']=270
+  validate_config(c,schedule=COMPLETION_V2)

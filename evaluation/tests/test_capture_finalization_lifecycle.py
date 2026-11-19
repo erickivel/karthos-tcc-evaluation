@@ -31,7 +31,7 @@ class FinalizationLifecycleTests(unittest.TestCase):
                 def __call__(self,offset):return {'inode':7,'size':len(data),'data':data[offset:],
                     'requested_at_ns':100,'received_at_ns':200}
             with patch('evaluation.capture_finalization.SnapshotReader',Reader), \
-                 patch.object(capture,'_pod',return_value=pod()), \
+                 patch.object(capture,'_pod',return_value=pod()), patch.object(capture,'_get',return_value={'items':[]}), \
                  patch('evaluation.structured_capture.r.kube',return_value=SimpleNamespace(stdout='file\t/diag/metrics.json\nfile\t/diag/traces.json\n')):
                 first=capture.freeze_snapshots()
                 second=capture.freeze_snapshots()
@@ -56,7 +56,7 @@ class FinalizationLifecycleTests(unittest.TestCase):
                     'requested_at_ns':100,'received_at_ns':200}
             with patch('evaluation.capture_finalization.SnapshotReader',Reader), \
                  patch('evaluation.structured_capture.MAX_BYTES',5), \
-                 patch.object(capture,'_pod',return_value=pod()), \
+                 patch.object(capture,'_pod',return_value=pod()), patch.object(capture,'_get',return_value={'items':[]}), \
                  patch('evaluation.structured_capture.r.kube',return_value=SimpleNamespace(stdout='file\t/diag/metrics.json\nfile\t/diag/traces.json\n')):
                 result=capture.freeze_snapshots()
             component=result['components']['gateway'];raw=Path(component['raw_directory'])
@@ -99,7 +99,7 @@ class FinalizationLifecycleTests(unittest.TestCase):
                 capture=RepairCapture(SimpleNamespace(namespace='app'),Path(directory),time.time()+300,
                                       {'capture_finalization_version':2})
                 capture.pods={'gateway':pod()}
-                with patch.object(capture,'_pod',return_value=pod()), \
+                with patch.object(capture,'_pod',return_value=pod()), patch.object(capture,'_get',return_value={'items':[]}), \
                      patch('evaluation.structured_capture.r.kube',return_value=SimpleNamespace(stdout=entry+'\n')):
                     result=capture.freeze_snapshots()
                 self.assertFalse(result['complete'])

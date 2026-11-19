@@ -14,7 +14,7 @@ def parser():
     build.add_argument('--product-repository',help='Authorized source URL or local committed checkout; pinned product SHA and hash still required')
     build.add_argument('--image-prefix',default='karthos-eval');build.add_argument('--build-images',action='store_true')
     prep=sub.add_parser('prepare');prep.add_argument('--config',default='config/gke.completion-v2.example.yaml');prep.add_argument('--id',required=True);prep.add_argument('--product-snapshot');prep.add_argument('--product-lock',type=Path);prep.add_argument('--local-evidence',type=Path);prep.add_argument('--benchmark',type=Path);prep.add_argument('--schedule',choices=(THESIS,REPAIR,REPAIR_V2,COMPLETION,COMPLETION_V2),default=COMPLETION_V2)
-    prep.add_argument('--matrix-profile',choices=('astronomy-recovery-v1','astronomy-istio-repair-v1'))
+    prep.add_argument('--matrix-profile',choices=('astronomy-recovery-v1','astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1','boutique-complement-v1'))
     prep.add_argument('--origin-report',type=Path);prep.add_argument('--origin-seal',type=Path);prep.add_argument('--origin-uri')
     prep.add_argument('--continuation-dir',type=Path);prep.add_argument('--continuation-receipt',type=Path)
     comparison=sub.add_parser('compare-deployments');comparison.add_argument('--left',type=Path,required=True);comparison.add_argument('--right',type=Path,required=True);comparison.add_argument('--left-sha256',required=True);comparison.add_argument('--right-sha256',required=True)

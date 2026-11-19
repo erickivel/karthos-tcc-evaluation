@@ -48,7 +48,7 @@ def recover_archive(archive,expected,destination,accuracy,*,analysis_archive=Non
         caller=_caller_scores(recovered,old)
         provenance,numeric=_error_scores(ledger,old)
         destination.mkdir(parents=True)
-        for name in ('api-nodes.json','api-edges.json','k8s-services.json','versions-after.json','generator-job-status.json','reference-setup/reference-daemonset.json'):
+        for name in ('api-nodes.json','api-edges.json','k8s-services.json','k8s-pods.json','k8s-nodes.json','versions-after.json','generator-job-status.json','reference-setup/reference-daemonset.json'):
             if name in names:
                 target=destination/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(payload(name))
         write(destination/'consumer/ledger.json',recovered)
@@ -66,9 +66,23 @@ def recover_archive(archive,expected,destination,accuracy,*,analysis_archive=Non
             report['thesis_answers']['interval-callers']={'state':'insufficient','recovered_known_caller':caller,
                 'reason':'corrected filtered-history query was not executed; retained positive observation recovered separately'}
         report['service_graph_evidence']=service_graph_evidence(destination,old['manifest']['namespace'],old['spec']['demo'])
+        from .independent_claims import structural_fidelity, single_contribution
+        report['structural_fidelity']=structural_fidelity(destination,old['manifest']['namespace'])
+        report['settled_trace_population']=accuracy.get('settled_trace_population',{})
+        report['single_contribution']=single_contribution(report,old.get('thresholds',{}))
+        import tempfile
+        from .background_traffic import from_window
+        with tempfile.TemporaryDirectory() as temporary:
+            observed=Path(temporary);namespace=old['manifest']['namespace']
+            for name in names:
+                if name=='k8s-pods.json' or name.startswith('logs/'+namespace+'__') and name.endswith('__eval-observer.log'):
+                    target=observed/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(payload(name))
+            manifest=old['manifest']
+            report['background_traffic']=from_window(observed,namespace,manifest.get('run_id'),manifest.get('start'),manifest.get('end'))
+
         write(destination/'report.json',report)
         write(destination/'inputs.json',{'archive_sha256':expected,'analysis_archive':str(analysis_archive) if analysis_archive else None,'analysis_archive_sha256':analysis_sha256,'members':used,'member_origins':{name:tar.origins[name] for name in used},'source_revision':old.get('manifest',{}).get('validated_product_revision'),
-            'verifier_hashes':{str(p):sha(p) for p in (Path(__file__),Path(__file__).with_name('thesis.py'),Path(__file__).with_name('thesis_comparison.py'))},'originals_modified':False})
+            'verifier_hashes':{str(p):sha(p) for p in (Path(__file__),Path(__file__).with_name('thesis.py'),Path(__file__).with_name('thesis_comparison.py'),Path(__file__).with_name('independent_claims.py'))},'originals_modified':False})
     return report
 
 if __name__=='__main__':

@@ -25,7 +25,7 @@
       "boutique-trace"
     ]
   ],
-  "combined_gross_limit_usd": 200,
+  "combined_gross_limit_usd": 270,
   "comparison_scope": "same-run fresh-cluster comparison with bound workload and scientific inputs",
   "demos": [
     "boutique",
@@ -48,6 +48,7 @@
   "history_observation_seconds": 720,
   "id": "thesis-completion-v2",
   "interleaving": "actual concurrent request timings may differ; compare recorded ledgers, not bit-identical order",
+  "lifecycle_observation_version": "bounded-lifecycle-v1",
   "measured_generators": [
     "k6"
   ],
@@ -71,11 +72,13 @@
   "resource_scenarios": [],
   "restart_scenarios": [],
   "restart_trigger": "after first observed generator WINDOW marker; actual restart request and completion recorded",
+  "retain_fixed_window_diagnostic": true,
   "schema_version": 1,
   "servicegraph_store_max_items": 10000,
   "smoke_seconds": 60,
   "sources": [
     "trace",
     "mesh"
-  ]
+  ],
+  "traffic_population_version": "settled-primary-v1"
 }

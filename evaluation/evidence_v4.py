@@ -124,7 +124,20 @@ def trace_accounting(spans, start, end):
         duration_semantics='selected paired checkout SERVER spans; raw structured gateway ingress')
 
 
+def capture_component_valid(path, key):
+    """Acquisition failure excludes parser input, never changes evidence validity."""
+    from .scoring import read
+    status=read(Path(path)/'structured/status.json',{})
+    component=status.get('components',{}).get(key,{})
+    frozen=component.get('finalization',status.get('finalization',{}).get('components',{}).get(key,{}))
+    return not (component.get('errors') or component.get('complete') is False or
+                frozen.get('errors') or frozen.get('complete') is False or
+                any(row.get('complete') is False for row in frozen.get('files',{}).values()))
+
+
 def trace_source(path, start, end):
+    if not capture_component_valid(path,'gateway'):
+        return dict(state='incomplete',valid=False,reason='Gateway capture incomplete; raw records excluded from scoring',requests=None,errors=None,duration_ms=None)
     return trace_accounting(raw_spans(Path(path)/'structured/gateway/raw'), start, end)
 
 
@@ -269,7 +282,9 @@ def agent_evidence(path):
     result=dict(valid=True,multinode=multi,expected_nodes=[],agents=[],errors=[])
     if not multi:
         pod=read(root/'pod.json',{})
-        result['agents']=[dict(node=pod.get('spec',{}).get('nodeName'),collector_uid=pod.get('metadata',{}).get('uid'),root=str(root))]
+        result['agents']=[dict(node=pod.get('spec',{}).get('nodeName'),collector_uid=pod.get('metadata',{}).get('uid'),root=str(root),capture_valid=capture_component_valid(path,'agent'))]
+        if not result['agents'][0]['capture_valid']:
+            result['valid']=False;result['errors'].append('Agent capture incomplete: legacy agent')
         return result
     errors=result['errors']
     expected=[node.get('metadata',{}).get('name') for node in node_inventory]
@@ -291,9 +306,17 @@ def agent_evidence(path):
         if actual_node!=node:errors.append('Agent pod node mismatch: '+node)
         seen_uids.add(uid)
         component=components.get('agent:'+node,{})
-        if component.get('collector_uid')!=uid or component.get('node_name')!=node or component.get('errors'):
+        if component.get('collector_uid')!=uid or component.get('node_name')!=node:
             errors.append('Agent capture component identity or lifecycle invalid: '+node)
         if not node_uids.get(node):errors.append('node UID unavailable: '+node)
+        if not capture_component_valid(path,'agent:'+node):
+            errors.append('Agent capture incomplete: '+node)
+            errors.extend('Agent capture incomplete: '+node+': '+str(error) for error in component.get('errors',[]))
+            result['agents'].append(dict(node=node,node_uid=node_uids.get(node),collector_uid=uid,
+                                         root=str(directory),capture_valid=False))
+            # Partial frozen records are quarantined, not parser input. Preserve
+            # the acquisition failure instead of masking it with a JSON exception.
+            continue
         for name in ('receiver-input.ndjson','metrics.json'):
             if not (directory/'raw'/name).is_file():errors.append('missing Agent raw file: '+node+'/'+name)
         metric_count=0
@@ -357,7 +380,7 @@ def resource_scores(path, nodes, cpu, memory, summaries, namespace, start, end, 
     inventory_result=dict(inventory_result,overhead_metrics=overhead_metrics,
         overhead={category:[list(key) for key in sorted(keys)] for category,keys in overhead.items()},
         overhead_semantics='Per-component observed usage during measurement. Incremental causal overhead requires a comparable uninstrumented baseline.')
-    inputs=[row for agent in agents['agents'] for row in rows(Path(agent['root'])/'raw/receiver-input.ndjson')]
+    inputs=[row for agent in agents['agents'] if agent.get('capture_valid') is not False for row in rows(Path(agent['root'])/'raw/receiver-input.ndjson')]
     entities = {};entity_identity={}
     for node in nodes:
         if str(node.get('kind')).lower() != 'container':continue
@@ -367,6 +390,7 @@ def resource_scores(path, nodes, cpu, memory, summaries, namespace, start, end, 
         entity_identity[node['id']]={'node':labels.get('k8s.node.name'),'pod_uid':labels.get('k8s.pod.uid')}
     raw = defaultdict(list)
     for agent in agents['agents']:
+        if agent.get('capture_valid') is False:continue
         uid=agent['collector_uid']
         for res,metric,kind,labels,point in raw_metrics(Path(agent['root'])/'raw'):
             name=metric['name']

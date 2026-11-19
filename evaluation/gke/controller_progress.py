@@ -6,6 +6,7 @@ from .models import identifier
 
 JSON_LIMIT=8*1024**2
 TAIL_LIMIT=64*1024
+REPORT_LIMIT=64*1024**2
 
 
 def _json(path):
@@ -13,6 +14,36 @@ def _json(path):
     with path.open('rb') as source:raw=source.read(JSON_LIMIT+1)
     if len(raw)>JSON_LIMIT:raise ValueError('progress JSON exceeds 8 MiB bound')
     return json.loads(raw)
+
+
+def _report_status(path):
+    """Stream top-level status without materializing repeated window evidence."""
+    import ijson,os
+    from ijson.common import ObjectBuilder,JSONError
+    if path.is_symlink():raise ValueError('symlink progress file refused')
+    result={};seen=set();builder=None;selected=None;depth=0
+    try:
+        with path.open('rb') as source:
+            if os.fstat(source.fileno()).st_size>REPORT_LIMIT:raise ValueError('run report exceeds 64 MiB bound')
+            events=ijson.parse(source,use_float=True)
+            if next(events,None)!=('', 'start_map', None):raise ValueError('run report must be an object')
+            for prefix,event,value in events:
+                if builder is not None:
+                    builder.event(event,value)
+                    if event in ('start_map','start_array'):depth+=1
+                    elif event in ('end_map','end_array'):depth-=1
+                    if depth==0:
+                        result[selected]=builder.value;builder=None
+                elif prefix=='' and event=='map_key' and value in ('state','failure'):
+                    if value in seen:raise ValueError('duplicate run report status field')
+                    seen.add(value)
+                elif prefix in ('state','failure') and event not in ('map_key','end_map','end_array'):
+                    if event in ('start_map','start_array'):
+                        selected=prefix;builder=ObjectBuilder();builder.event(event,value);depth=1
+                    else:result[prefix]=value
+    except JSONError as exc:
+        raise ValueError('invalid run report JSON: '+str(exc)[:1000]) from exc
+    return result
 
 
 def collect(run_id, *, base=Path('/data/results/gke-qualification-v1/runs')):
@@ -37,7 +68,7 @@ def collect(run_id, *, base=Path('/data/results/gke-qualification-v1/runs')):
                 if attempt.get('state')=='failed' or attempt.get('execution')=='incomplete':
                     failures.append({'window':row['id'],'attempt':attempt.get('attempt_id',row['id']),
                                      'state':attempt.get('state'),'execution':attempt.get('execution'),
-                                     'reason':str(attempt.get('reason',''))[:1000]})
+                                     'reason':str(attempt.get('reason') or 'failure detail unavailable; inspect attempt evidence')[:1000]})
         completed=sum(row.get('state')=='complete' for row in matrix)
         finished=sum(row.get('retry_policy_complete') is True or row.get('state')=='complete' for row in matrix)
         result.update(planned_windows=len(matrix),completed_windows=completed,finished_windows=finished,remaining_windows=len(matrix)-finished,
@@ -45,7 +76,7 @@ def collect(run_id, *, base=Path('/data/results/gke-qualification-v1/runs')):
                       failures=failures[:100],failures_truncated=len(failures)>100)
     except (OSError,ValueError,TypeError) as exc:result['errors']['matrix']=str(exc)[:1000]
     try:
-        report=_json(path/'run-report.json')
+        report=_report_status(path/'run-report.json')
         if not isinstance(report,dict):raise ValueError('run report must be an object')
         result['report_state']=str(report.get('state','unknown'))[:100]
         if report.get('failure'):result['controller_failure']=json.dumps(report['failure'],sort_keys=True)[:2000]

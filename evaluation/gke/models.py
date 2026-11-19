@@ -61,23 +61,43 @@ def validate_config(c,*,schedule=None):
     if type(reader_cpu) is not int or not 100 <= reader_cpu <= 1000:
         raise ValueError('gateway_reader_cpu_limit_m must be an integer between 100 and 1000')
     if g['region']!='us-central1' or g['zone'] not in ('us-central1-a','us-central1-b'):raise ValueError('frozen region/zone changed')
-    expected_gross=240 if schedule==COMPLETION_V2 and c.get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1') else 200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
-    if (schedule==COMPLETION_V2 and c.get('execution_profile')=='astronomy-istio-repair-v1'
+    expected_gross=240 if schedule==COMPLETION_V2 and c.get('execution_profile') in ('astronomy-recovery-v1','astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1') else 200 if schedule==COMPLETION_V2 else 150 if schedule in COMPLETION_SCHEDULES else 100
+    if (schedule==COMPLETION_V2 and c.get('execution_profile') in (None,'astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1')
             and c.get('evidence_pipeline')=='sealed-before-analysis-v1' and l['gross_limit_usd']==270):
         expected_gross=270
     expected_seconds=64800 if schedule==COMPLETION_V2 else 43200
-    if l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=(90 if schedule==COMPLETION_V2 else 80) or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
+    from .complement_budget import PROFILE, validate as validate_complement
+    if schedule==COMPLETION_V2 and c.get('execution_profile')==PROFILE:
+        validate_complement(c)
+        if l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen retention/diagnostic hold changed')
+    elif l['gross_limit_usd']!=expected_gross or l['launch_ceiling_usd']!=(90 if schedule==COMPLETION_V2 else 80) or l['infrastructure_seconds']!=expected_seconds or l['diagnostic_hold_seconds']!=1800 or l['raw_evidence_retention_days']!=90:raise ValueError('frozen budget/deadline/retention changed')
     for key,image in i.get('extra_image_lock',{}).items():
         if not re.fullmatch(r'[^\s]+@sha256:[a-f0-9]{64}',str(image)):raise ValueError('extra image lock must contain immutable digests: '+key)
     return c
 
 def build_matrix(p, *, schedule=QUALIFICATION):
+    if schedule==COMPLETION_V2:
+        for key,value in (('lifecycle_observation_version','bounded-lifecycle-v1'),('traffic_population_version','settled-primary-v1'),('retain_fixed_window_diagnostic',True)):
+            if key in p and (type(p[key]) is not type(value) or p[key]!=value):
+                raise ValueError('unsupported official observation contract: '+key)
+    from .complement_budget import PROFILE
+    if schedule==COMPLETION_V2 and p.get('execution_profile')==PROFILE:
+        full=dict(p);full.pop('execution_profile');full['combined_gross_limit_usd']=200
+        return [dict(row, id='complement-'+row['phase']+'-'+row['cell'], repeat=1,
+                     predecessor_window=row['id'], history_observation=False)
+                for row in build_matrix(full,schedule=schedule) if row['repeat']==2]
     if schedule==COMPLETION_V2 and p.get('execution_profile'):
-        if p['execution_profile'] not in ('astronomy-recovery-v1','astronomy-istio-repair-v1'):raise ValueError('unknown completion execution profile')
-        allowed_ceilings=(200,240,270) if p['execution_profile']=='astronomy-istio-repair-v1' else (200,240)
+        if p['execution_profile'] not in ('astronomy-recovery-v1','astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1'):raise ValueError('unknown completion execution profile')
+        allowed_ceilings=(200,240,270) if p['execution_profile'] in ('astronomy-istio-repair-v1','failed-istio-baselines-v1','astronomy-istio-baseline-v1') else (200,240)
         if p.get('combined_gross_limit_usd') not in allowed_ceilings:raise ValueError('targeted combined ceiling changed')
         full=dict(p);full.pop('execution_profile');full['combined_gross_limit_usd']=200
         rows=build_matrix(full,schedule=schedule)
+        if p['execution_profile']=='astronomy-istio-baseline-v1':
+            return [dict(row,id='astronomy-baseline-repair-'+row['cell'],predecessor_window='istio-baseline-repair-'+row['cell'],history_observation=False)
+                    for row in rows if row['repeat']==1 and row['phase']=='baseline' and row['cell']=='astronomy-mesh']
+        if p['execution_profile']=='failed-istio-baselines-v1':
+            return [dict(row,id='istio-baseline-repair-'+row['cell'],predecessor_window=row['id'],history_observation=False)
+                    for row in rows if row['repeat']==1 and row['phase']=='baseline' and row['cell'] in ('astronomy-mesh','boutique-mesh')]
         repair=p['execution_profile']=='astronomy-istio-repair-v1'
         cells=('astronomy-mesh',) if repair else ('astronomy-trace','astronomy-mesh')
         return [dict(row,id=('istio-repair-' if repair else 'targeted-')+row['phase']+'-'+row['cell'],predecessor_window=('targeted-'+row['phase']+'-'+row['cell']) if repair else row['id'],history_observation=False)
@@ -86,7 +106,7 @@ def build_matrix(p, *, schedule=QUALIFICATION):
         groups=[['boutique-trace','astronomy-trace','astronomy-mesh','boutique-mesh'],['boutique-mesh','boutique-trace']]
         if (p.get('id')!=COMPLETION_V2 or type(p.get('repetitions')) is not int or p['repetitions']!=2
                 or p.get('rebuild_cluster') is not True or p.get('cluster_cell_order')!=groups
-                or p.get('combined_gross_limit_usd')!=200 or p.get('origin_run_id') or p.get('origin_protocol')):
+                or p.get('combined_gross_limit_usd') not in (200,270) or p.get('origin_run_id') or p.get('origin_protocol')):
             raise ValueError('official completion requires two fresh clusters without historical prerequisites')
         original=dict(p,id=COMPLETION,combined_gross_limit_usd=150,repetitions=1,rebuild_cluster=False,cluster_cell_order=groups[:1])
         rows=[dict(row,id='official-'+row['id']) for row in build_matrix(original,schedule=COMPLETION)]

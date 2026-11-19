@@ -94,6 +94,8 @@ def freeze_prefix(read, destination, *, timeout_seconds=DEFAULT_FINALIZATION_SEC
                         raise ValueError('snapshot JSON record byte bound exceeded')
                 receipt.update(sealed_bytes=offset, sha256=digest.hexdigest(),
                                completed_at_ns=frame['received_at_ns'])
+                if time.monotonic() >= expires:
+                    raise ValueError('snapshot finalization deadline exhausted after read')
                 if offset >= cutoff and not pending:
                     receipt['complete'] = True
                     return receipt

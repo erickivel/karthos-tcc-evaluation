@@ -12,7 +12,7 @@ from .models import read,write,identifier,canonical_sha,sha
 
 OWNER='gke-qualification-v1'
 COMPUTE_CLI_PATHS={'instance':('instances',),'disk':('disks',),'router':('routers',),'network':('networks',),'subnetwork':('networks','subnets'),'firewall':('firewall-rules',)}
-APIS={'cloudbilling.googleapis.com','compute.googleapis.com','container.googleapis.com','storage.googleapis.com',
+APIS={'cloudresourcemanager.googleapis.com','logging.googleapis.com','cloudbilling.googleapis.com','compute.googleapis.com','container.googleapis.com','storage.googleapis.com',
       'artifactregistry.googleapis.com','run.googleapis.com','cloudscheduler.googleapis.com','iam.googleapis.com','iamcredentials.googleapis.com'}
 OUTPUTS={
  'foundation':{'quarantine_bucket','backup_bucket','evidence_bucket','state_bucket','artifact_repository','controller_service_account','node_service_account','watchdog_service_account','scheduler_service_account'},
@@ -135,7 +135,7 @@ def live_preflight(ctx):
     enabled=doc(ctx,['gcloud','services','list','--enabled','--project='+project,'--format=json'])
     names={item.get('config',{}).get('name') for item in enabled}
     if not APIS <= names:
-        raise ValueError('required cloud APIs are not already enabled')
+        raise ValueError('required cloud APIs are not already enabled: '+', '.join(sorted(APIS-names)))
     region=doc(ctx,['gcloud','compute','regions','describe',g['region'],'--project='+project,'--format=json'])
     quotas={q['metric']:float(q['limit'])-float(q.get('usage',0)) for q in region.get('quotas',[])}
     # Includes transient default GKE node pool while the three fixed pools start.

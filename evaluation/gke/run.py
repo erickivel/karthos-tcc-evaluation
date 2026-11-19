@@ -99,7 +99,7 @@ def execute_matrix(ctx,driver,*,gate=None):
                  'execution':report.get('execution',{}).get('state','incomplete'),
                  'numerical_agreement':report.get('numerical_agreement',{}).get('state','insufficient'),
                  'reason':error or report.get('reason'),'path':report.get('path')}
-            generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{})
+            generator=report.get('traffic',{}).get('report',{}).get('generator_contract',{}).get('retained_generator',{}) or {}
             unexpected=generator.get('unexpected_outcomes')
             row['application_outcomes']=('unknown' if unexpected is None else
                                          'unexpected ('+str(unexpected)+')' if unexpected else 'no unexpected outcomes')
@@ -829,16 +829,30 @@ def run(ctx):
         receipt=exports.upload(ctx,summary,bucket=ctx.state['terraform']['foundation']['evidence_bucket'],prefix='gke-qualification-v1/runs/'+ctx.run_id+'/final-summary')
     receipt['export_timing']=dict(export_timing)
     ctx.write(ctx.result/'final-summary-export.json',receipt)
+    secondary,cleanup_request=finalize_preservation(ctx,receipt)
+    receipt['secondary_export_verified']=secondary.get('verified') is True
+    ctx.write(ctx.result/'final-summary-export.json',receipt)
+    ctx.write(ctx.result/'final-cleanup-request.json',cleanup_request)
+    result=dict(report,final_cleanup_request=cleanup_request,final_summary_export=receipt,secondary_export=secondary,
+                preservation_complete=secondary.get('verified') is True)
+    if cleanup_request.get('cleanup_requested') is not True or secondary.get('verified') is not True:result['state']='incomplete'
+    elif result['state']=='complete':result['state']='awaiting-cleanup-confirmation'
+    ctx.write(ctx.result/'runtime-result.json',result)
+    ctx.event('execution-finished',state=result['state'],summary_export=receipt,controller_retained=not cleanup_request.get('completion_confirmed',False))
+    return result
+
+
+def finalize_preservation(ctx,receipt):
+    """Secondary preservation failure never prevents ownership-safe cleanup."""
+    from .secondary_backup import backup_run
     from .provision import request_final_cleanup
+    try:
+        secondary=backup_run(ctx,receipt)
+    except Exception as exc:
+        secondary={'verified':False,'errors':[{'error':type(exc).__name__+': '+str(exc)[:1000]}]}
     try:
         cleanup_request=request_final_cleanup(ctx,receipt)
         if cleanup_request.get('cleanup_requested') is not True:raise RuntimeError('external final cleanup activation not verified')
     except Exception as exc:
         cleanup_request={'state':'cleanup-request-unverified','cleanup_requested':False,'completion_confirmed':False,'error':str(exc),'independent_deadline_remains_required':True}
-    ctx.write(ctx.result/'final-cleanup-request.json',cleanup_request)
-    result=dict(report,final_cleanup_request=cleanup_request,final_summary_export=receipt)
-    if cleanup_request.get('cleanup_requested') is not True:result['state']='incomplete'
-    elif result['state']=='complete':result['state']='awaiting-cleanup-confirmation'
-    ctx.write(ctx.result/'runtime-result.json',result)
-    ctx.event('execution-finished',state=result['state'],summary_export=receipt,controller_retained=not cleanup_request.get('completion_confirmed',False))
-    return result
+    return secondary,cleanup_request

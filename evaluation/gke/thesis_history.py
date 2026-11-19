@@ -71,14 +71,43 @@ def capture(ctx,cell,spec):
 def _capture(ctx,cell,spec,path,deadline,report):
     service='checkoutservice'
     namespace=cell.namespace
+
+    from . import bounded_lifecycle as lifecycle
+    lifecycle_enabled=ctx.manifest.get('protocol_definition',{}).get('lifecycle_observation_version')==lifecycle.VERSION
+    lifecycle_references={};lifecycle_polls=[];lifecycle_trigger={}
+    def update_lifecycle():
+        if lifecycle_enabled:
+            report['lifecycle_observation']=dict(
+                lifecycle.bounds(lifecycle_references.get('before',{}),lifecycle_references.get('after',{}),
+                                 lifecycle_trigger,lifecycle_polls),
+                reference_ledger='lifecycle-reference.ndjson',api_ledger='lifecycle-api.ndjson',
+                trigger_record='lifecycle-trigger.json')
+    def inventory(phase):
+        if not lifecycle_enabled:
+            return replica_inventory(ctx,namespace,service)
+        rows,record=lifecycle.acquire(replica_inventory,ctx,namespace,service,phase=phase)
+        lifecycle.append_record(path/'lifecycle-reference.ndjson',record)
+        lifecycle_references[phase]=record
+        update_lifecycle()
+        return rows
+    update_lifecycle()
     def remaining(reserve=0):
         seconds=deadline-time.monotonic()-reserve
         if seconds<=0:
             raise TimeoutError('checkout history observation deadline reached')
         return seconds
 
-    def graph_contains(client,stamp,expected,excluded=()):
+    def graph_contains(client,stamp,expected,excluded=(),*,expected_rows=None,phase='after'):
+        begin=time.time();begin_mono=time.monotonic()
         graph=client.graph(at=stamp)
+        if lifecycle_enabled:
+            record=lifecycle.graph_observation(graph,expected_rows or [],namespace=namespace,service=service,
+                started_at=begin,completed_at=time.time(),started_monotonic=begin_mono,completed_monotonic=time.monotonic())
+            record['phase']=phase
+            lifecycle.append_record(path/'lifecycle-api.ndjson',record)
+            if phase=='after':lifecycle_polls.append(record)
+            update_lifecycle()
+            if not record['matches_expected']:return None
         if graph.get('state')!='observed':
             return None
         nodes={n.get('name') for n in graph['nodes'] if n.get('kind')=='pod' and n.get('namespace')==namespace}
@@ -87,7 +116,7 @@ def _capture(ctx,cell,spec,path,deadline,report):
     deployment=ctx.json('get','deployment',service,'-n',namespace)
     selector=','.join(k+'='+v for k,v in sorted(deployment['spec']['selector']['matchLabels'].items()))
     original=ctx.json('get','pods','-n',namespace,'-l',selector)
-    before=replica_inventory(ctx,namespace,service)
+    before=inventory('before')
     ctx.write(path/'kubernetes-before.json',before)
     original_uids={p['metadata']['uid'] for p in original['items'] if not p['metadata'].get('deletionTimestamp')}
     if not before or original_uids!={p['uid'] for p in before}:
@@ -96,7 +125,7 @@ def _capture(ctx,cell,spec,path,deadline,report):
         old_names={p['pod'] for p in before}
         client=APIConsumer(base,timeout=5,max_pages=20,timeout_cap=lambda:remaining(8))
         before_at=datetime.now(timezone.utc).isoformat()
-        earlier=graph_contains(client,before_at,old_names)
+        earlier=graph_contains(client,before_at,old_names,expected_rows=before,phase='before')
         if not earlier:
             raise ValueError('pre-replacement retained snapshot does not contain the observed checkout replicas')
         ctx.write(path/'snapshot-before.json',earlier)
@@ -106,10 +135,18 @@ def _capture(ctx,cell,spec,path,deadline,report):
             return ctx.kube(*args,**kwargs)
         remaining(CONSUMER_RESERVE_SECONDS+30)
         local=SimpleNamespace(kube=restart_kube,write=ctx.write,evidence_dir=path)
-        report['restart']=restart_target(local,namespace,service,ctx.run_id)
+        if lifecycle_enabled:
+            lifecycle_trigger.update(started_at=time.time(),started_monotonic=time.monotonic())
+        try:
+            report['restart']=restart_target(local,namespace,service,ctx.run_id)
+        finally:
+            if lifecycle_enabled:
+                lifecycle_trigger.update(completed_at=time.time(),completed_monotonic=time.monotonic())
+                ctx.write(path/'lifecycle-trigger.json',lifecycle_trigger)
+                update_lifecycle()
         _,replacements=observe_restart(restart_kube,namespace,service,selector,ctx.run_id,deployment,original,
                                       timeout=min(180,remaining(CONSUMER_RESERVE_SECONDS)))
-        after=replica_inventory(ctx,namespace,service)
+        after=inventory('after')
         ctx.write(path/'kubernetes-after.json',after)
         new_uids={p['metadata']['uid'] for p in replacements['items'] if not p['metadata'].get('deletionTimestamp')}
         if (not after or {row['uid'] for row in after}!=new_uids
@@ -120,7 +157,7 @@ def _capture(ctx,cell,spec,path,deadline,report):
         latest=None
         while time.monotonic()<deadline-CONSUMER_RESERVE_SECONDS:
             after_at=datetime.now(timezone.utc).isoformat()
-            candidate=graph_contains(client,after_at,{p['pod'] for p in after},old_names)
+            candidate=graph_contains(client,after_at,{p['pod'] for p in after},old_names,expected_rows=after)
             if candidate and candidate['snapshot']['id']!=earlier['snapshot']['id']:
                 latest=candidate
                 break
@@ -129,7 +166,7 @@ def _capture(ctx,cell,spec,path,deadline,report):
             ctx.write(path/'snapshot-after.json',latest)
 
     def verify_stable_replacement():
-        if replica_inventory(ctx,namespace,service)!=after:
+        if inventory('stability')!=after:
             raise ValueError('healthy checkout inventory changed during the history observation')
         remaining()
 
