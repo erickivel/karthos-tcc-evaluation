@@ -1,0 +1,40 @@
+baseline,metric,comparison,unit,reference,observed,absolute_error,relative_error,bound,state,source_path
+B1,requests,população pareada → armazenamento,count,360,360.0,0.0,0.0,0,pass,settled_trace_population.requests
+B1,errors,população pareada → armazenamento,count,60,60.0,0.0,0.0,0,pass,settled_trace_population.errors
+B1,duration,spans pareados → fonte,ms,14.244125286738077,14.244123474999988,1.811738089330106e-06,1.2719195126828292e-07,5,pass,settled_trace_population.duration.checks[0]
+B1,duration,fonte → armazenamento,ms,14.244123474999988,14.244123475000002,1.4210854715202004e-14,9.976643870115018e-16,5,pass,settled_trace_population.duration.checks[1]
+B1,errors,referência → API na janela fixa,count,60,56,4,0.06666666666666667,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B1,container.cpu,primeira comparação registrada,cores,0.00481355,0.00481355,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B1,container.memory,primeira comparação registrada,bytes,87515136.0,87515136.0,0.0,0.0,17503027.2,pass,resources.checks[294].independent_agreement
+B2,requests,população pareada → armazenamento,count,360,360.0,0.0,0.0,0,pass,settled_trace_population.requests
+B2,errors,população pareada → armazenamento,count,60,60.0,0.0,0.0,0,pass,settled_trace_population.errors
+B2,duration,spans pareados → fonte,ms,31.852624813715618,31.85263769999999,1.288628437023931e-05,4.0455957540712703e-07,6.370524962743124,pass,settled_trace_population.duration.checks[0]
+B2,duration,fonte → armazenamento,ms,31.85263769999999,31.852637700000002,1.4210854715202004e-14,4.461437338108426e-16,6.370527539999998,pass,settled_trace_population.duration.checks[1]
+B2,errors,referência → API na janela fixa,count,60,56,4,0.06666666666666667,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B2,container.cpu,primeira comparação registrada,cores,0.011584784,0.011584784,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B2,container.memory,primeira comparação registrada,bytes,231780352.0,231780352.0,0.0,0.0,46356070.400000006,pass,resources.checks[588].independent_agreement
+B3,requests,referência de checkout → total selecionado,count,360,360.0,0.0,0.0,54.0,pass,claim-matrix:source-independence-astronomy.details.accounting.per_run[1]
+B3,duration,fonte → armazenamento congelado,ms,52.43333333333333,52.43333333333333,0.0,0.0,10.486666666666666,pass,settled_duration_diagnostics.native_settled_to_frozen_store
+B3,duration,fonte → exportação de drain,ms,52.43333333333333,52.43333333333333,0.0,0.0,10.486666666666666,pass,settled_duration_diagnostics.native_settled_to_declared_drain_export
+B3,errors,referência → API na janela fixa,count,60,59,1,0.016666666666666666,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B3,container.cpu,primeira comparação registrada,cores,0.007609812,0.007609812,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B3,container.memory,primeira comparação registrada,bytes,56860672.0,56860672.0,0.0,0.0,11372134.4,pass,resources.checks[588].independent_agreement
+B4,requests,referência de checkout → total selecionado,count,360,360.0,0.0,0.0,54.0,pass,claim-matrix:clean-rebuild-boutique-mesh.details.accounting.per_run[0]
+B4,duration,fonte → armazenamento congelado,ms,37.18194444444445,37.18194444444445,0.0,0.0,7.43638888888889,pass,settled_duration_diagnostics.native_settled_to_frozen_store
+B4,duration,fonte → exportação de drain,ms,37.18194444444445,37.18194444444445,0.0,0.0,7.43638888888889,pass,settled_duration_diagnostics.native_settled_to_declared_drain_export
+B4,errors,referência → API na janela fixa,count,60,57,3,0.05,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B4,container.cpu,primeira comparação registrada,cores,0.003220571,0.003220571,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B4,container.memory,primeira comparação registrada,bytes,8085504.0,8085504.0,0.0,0.0,1617100.8,pass,resources.checks[294].independent_agreement
+B5,requests,referência de checkout → total selecionado,count,360,360.0,0.0,0.0,54.0,pass,claim-matrix:clean-rebuild-boutique-mesh.details.accounting.per_run[1]
+B5,duration,fonte → armazenamento congelado,ms,30.054166666666667,30.054166666666667,0.0,0.0,6.010833333333334,pass,settled_duration_diagnostics.native_settled_to_frozen_store
+B5,duration,fonte → exportação de drain,ms,30.054166666666667,30.054166666666667,0.0,0.0,6.010833333333334,pass,settled_duration_diagnostics.native_settled_to_declared_drain_export
+B5,errors,referência → API na janela fixa,count,60,58,2,0.03333333333333333,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B5,container.cpu,primeira comparação registrada,cores,0.019871302,0.019871302,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B5,container.memory,primeira comparação registrada,bytes,52674560.0,52674560.0,0.0,0.0,10534912.0,pass,resources.checks[294].independent_agreement
+B6,requests,população pareada → armazenamento,count,360,360.0,0.0,0.0,0,pass,settled_trace_population.requests
+B6,errors,população pareada → armazenamento,count,60,60.0,0.0,0.0,0,pass,settled_trace_population.errors
+B6,duration,spans pareados → fonte,ms,12.350451946258545,12.350446527777775,5.418480769847633e-06,4.3872732701811063e-07,5,pass,settled_trace_population.duration.checks[0]
+B6,duration,fonte → armazenamento,ms,12.350446527777775,12.350446527777779,3.552713678800501e-15,2.8765872317328623e-16,5,pass,settled_trace_population.duration.checks[1]
+B6,errors,referência → API na janela fixa,count,60,56,4,0.06666666666666667,9.0,pass,thesis_answers.request-error-numerical-agreement.independent_agreement.comparison
+B6,container.cpu,primeira comparação registrada,cores,0.02492062,0.02492062,0.0,0.0,0.01,pass,resources.checks[0].independent_agreement
+B6,container.memory,primeira comparação registrada,bytes,60141568.0,60141568.0,0.0,0.0,12028313.600000001,pass,resources.checks[294].independent_agreement

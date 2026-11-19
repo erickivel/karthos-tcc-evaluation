@@ -1,12 +1,22 @@
 {
   "run_id": "thesis-robustness-full-20261119-v2",
-  "checked_at": "2026-11-19T13:14:41.903063+00:00",
-  "state": "running-application-setup",
-  "watchdog_armed": true,
-  "started_at": "2026-11-19T12:48:12.545976+00:00",
-  "deadline": "2026-11-20T08:48:12.545976+00:00",
-  "measurement_windows_completed": 0,
-  "runtime_started": true,
-  "authorization_live_gate": "verified-first-cluster",
-  "quarantine_probe_verified": true
+  "report_state": "final",
+  "planned_windows": 14,
+  "completed_windows": 14,
+  "attempts": 14,
+  "failed_attempts": 0,
+  "baseline_count": 6,
+  "top_level_claims": {
+    "pass": 24,
+    "not-applicable": 1
+  },
+  "detailed_inconclusive_comparisons_preserved": true,
+  "secondary_backup_verified": true,
+  "compute_network_absence_verified": true,
+  "lease_released": true,
+  "scheduler_paused": true,
+  "cloud_run_definition_retained": true,
+  "active_instances_verified": false,
+  "invoice_verified": false,
+  "evidence": "INDICE-EVIDENCIAS.md"
 }

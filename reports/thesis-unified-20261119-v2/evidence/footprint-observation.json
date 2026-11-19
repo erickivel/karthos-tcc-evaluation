@@ -1,0 +1,1007 @@
+{
+  "firewall": "karthos-iap-recovery-59d632b40bbc4acc80fd",
+  "project": "karthos",
+  "description": "{\"controller_uid\": \"5942886374361485174\", \"evaluation-owner\": \"gke-qualification-v1\", \"evaluation-run\": \"thesis-robustness-full-20261119-v2\", \"recovery\": \"karthos-iap-recovery-59d632b40bbc4acc80fd\"}",
+  "temporary_removal_confirmed": true,
+  "observation": {
+    "run_id": "thesis-robustness-full-20261119-v2",
+    "source_matrix_sha256": "cbe4108bb591474a8e8eff7dd473cc26142fe2d6346b9af67f3cdaeed7933949",
+    "scope": "derived descriptive snapshots from retained sealed files; no new measurements; no causal overhead inference",
+    "windows": [
+      {
+        "window": "official-completion-baseline-boutique-trace",
+        "attempt_id": "official-completion-baseline-boutique-trace-a1",
+        "export": {
+          "analysis_export": {
+            "archive_index": "window-index.json",
+            "export_timing": {
+              "archive_bytes": 27651206,
+              "archive_parts": 1,
+              "case": "gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-trace-a1/analysis",
+              "child_peak_rss": 2185916,
+              "controller_peak_rss": 1792692,
+              "cpu_seconds": 124.93246499999941,
+              "elapsed_seconds": 97.67909893899969,
+              "member_count": 16,
+              "phase": "analysis-export",
+              "rss_units": "KiB on Linux",
+              "started_at": 1795097197.7030492,
+              "state": "complete"
+            },
+            "files": 4,
+            "format": "indexed-bundle-v1",
+            "members": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 240,
+                "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 1420,
+                "sha256": "f1e8ed20c9f5cb0ae16de3fdc079e74eb5c25ad3ef0a9a9ad82b2b69acd9b699"
+              },
+              "analysis-status.json": {
+                "bytes": 257151,
+                "sha256": "81f71df52eccc22106ee11b6e77a16820bcdafa3f219709ff6a3b1e401041db5"
+              },
+              "boundary-summary.html": {
+                "bytes": 58652,
+                "sha256": "d88788a69ae26c8481243ad8183ffa2715ab5c2392b55713e48d455940685f96"
+              },
+              "diagnostic-cleanup.json": {
+                "bytes": 36,
+                "sha256": "aa1a41325f81a324a6e591e718bb614b014b2d2f5d15e34b2beed9515cb77e72"
+              },
+              "gke-evaluation.e9a85e3d563445689e98354c5b8e76b2.comparisons.jsonl": {
+                "bytes": 32406803,
+                "sha256": "40ba02e7af4b934c1fe8fea3466a1ca8094934007b1e1b164997592b0e138473"
+              },
+              "gke-evaluation.e9a85e3d563445689e98354c5b8e76b2.reference_sets.jsonl": {
+                "bytes": 19215010,
+                "sha256": "d329a4a8cd089d481eff5a1c3cb54212d771c732269b2e63e65d6f4cf55b96b1"
+              },
+              "gke-evaluation.e9a85e3d563445689e98354c5b8e76b2.references.jsonl": {
+                "bytes": 77857518,
+                "sha256": "396d3ca4d16415cdecc6a6dc9c344a5a413bcb5906a0529b83a052d563ac7da7"
+              },
+              "gke-evaluation.json": {
+                "bytes": 379012239,
+                "sha256": "ba0c5c16251f54d3ad27e04db7fbf1b2ed59cc3b2264cc5355d33964aef9bce6"
+              },
+              "input-binding.json": {
+                "bytes": 152352,
+                "sha256": "93eaba8a01229e6b369c98b22035f3faf30c3a78a1eccd5938e69a4d8b592d88"
+              },
+              "orchestration-summary.json": {
+                "bytes": 257125,
+                "sha256": "9044078637530265c606388be0bdd2b1ff2b1d1aac17c1867752c6b75c7675e1"
+              },
+              "transition.json": {
+                "bytes": 1469,
+                "sha256": "fa4fb448df2fb1a1377b0597d176287b288c00647c2ce1248152d8157500d947"
+              },
+              "usage.json": {
+                "bytes": 123,
+                "sha256": "3cfb044028b42a306bb5d7602ffc295f759e3c903de005facb27580467c4432e"
+              },
+              "worker-status.json": {
+                "bytes": 259,
+                "sha256": "b5399a87deb9d34655f1d6c0482f297fb00c8893e7fc0ffe0c034073155136c3"
+              },
+              "worker.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "worker.stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "objects": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 1025,
+                "sha256": "b838d2aa33bb8106489770e3f0f80200048a35d33cdb6216c84c8c287ab43dcd"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 253,
+                "sha256": "e0556df65086c69c8fcd506f3cd3e8372eb4b88318612c915cdca529cb759a58"
+              },
+              "window-index.json": {
+                "bytes": 287,
+                "sha256": "106ef210434ba20168203339c806cb8a76b6f6791ad4a79695b3cc8198ef1df1"
+              },
+              "window.tar.gz": {
+                "bytes": 27651206,
+                "sha256": "dbe76126d80dc46a85c6374a0e4f203666137d8da068609a556bb977a3bda1db"
+              }
+            },
+            "parts": [
+              {
+                "bytes": 27651206,
+                "name": "window.tar.gz",
+                "sha256": "dbe76126d80dc46a85c6374a0e4f203666137d8da068609a556bb977a3bda1db"
+              }
+            ],
+            "retention_days": 90,
+            "secondary_export_verified": false,
+            "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-trace-a1/analysis/",
+            "verified": true
+          },
+          "archive": "window.tar.gz",
+          "archive_bytes": 115574648,
+          "archive_index": "window-index.json",
+          "archive_parts": 1,
+          "archive_sha256": "664712c6ada96ca5714f712b83d74bc5015b342711f60123ca9992e82194c4e8",
+          "export_timing": {
+            "case": "official-completion-baseline-boutique-trace-a1",
+            "child_peak_rss": 1570104,
+            "controller_peak_rss": 1431200,
+            "cpu_seconds": 299.04738499999985,
+            "elapsed_seconds": 260.4970974930002,
+            "phase": "window-export",
+            "rss_units": "KiB on Linux",
+            "started_at": 1795096692.7149513,
+            "state": "complete"
+          },
+          "files": 4,
+          "objects": {
+            "EXPORT-PROJECTION.json": {
+              "bytes": 66037,
+              "sha256": "bc06c3a38f95aa7434b4072ba0aba31d28ffa6ca45e60f1c2a6350463bf09fd9"
+            },
+            "GKE-SHA256SUMS": {
+              "bytes": 253,
+              "sha256": "2d97818c7fc0fcd8c28da8a9bfb4beb1b589b1372c008f780b2e2094b6b2a7ab"
+            },
+            "window-index.json": {
+              "bytes": 288,
+              "sha256": "075d655fa456a559d1ac035c3044358b0ddb402b7ca5303e534ae78c087863b4"
+            },
+            "window.tar.gz": {
+              "bytes": 115574648,
+              "sha256": "664712c6ada96ca5714f712b83d74bc5015b342711f60123ca9992e82194c4e8"
+            }
+          },
+          "original_window_seal_sha256": "91c19512a930af216152652efadbfe841404dfc08287a9a9083f859cfe33ec7b",
+          "redacted_projection": true,
+          "retained_members": {
+            "generator-artifact-status.json": {
+              "bytes": 612,
+              "sha256": "4b977f14dc5d9004116e1ea13973880954a86630b762358355301eb2613a5107",
+              "source_sha256": "4b977f14dc5d9004116e1ea13973880954a86630b762358355301eb2613a5107"
+            },
+            "gke-evaluation.json": {
+              "bytes": 1613,
+              "sha256": "daaad2b8e7a808593a1d18a857ed5335930d0c17ba5d837cddb504ed2cb003d1",
+              "source_sha256": "daaad2b8e7a808593a1d18a857ed5335930d0c17ba5d837cddb504ed2cb003d1"
+            },
+            "manifest.json": {
+              "bytes": 194164,
+              "sha256": "410acb3327af95f177e79834d8a28c37f8936f36ee7ca59bd929ff48001d90dd",
+              "source_sha256": "410acb3327af95f177e79834d8a28c37f8936f36ee7ca59bd929ff48001d90dd"
+            },
+            "structured/status.json": {
+              "bytes": 66441,
+              "sha256": "3f9778cad35e227616d4bab6babaf7c60c4afa48f41b6f0929775cddb3715345",
+              "source_sha256": "3f9778cad35e227616d4bab6babaf7c60c4afa48f41b6f0929775cddb3715345"
+            },
+            "transition.json": {
+              "bytes": 1469,
+              "sha256": "fa4fb448df2fb1a1377b0597d176287b288c00647c2ce1248152d8157500d947",
+              "source_sha256": "fa4fb448df2fb1a1377b0597d176287b288c00647c2ce1248152d8157500d947"
+            }
+          },
+          "retention_days": 90,
+          "secondary_export_verified": false,
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-trace-a1/",
+          "verified": true
+        },
+        "members": {
+          "api-nodes.json": {
+            "sha256": "73f15dda52f02eef1e50eb6c8b6a9c559cd015d4914c95c03046aa620d7c7854",
+            "bytes": 309747
+          },
+          "api-cpu.json": {
+            "sha256": "6fbcd8a3349b39b8df34a5f32d9b0f96190d69bb6b627fba810f803983bca38b",
+            "bytes": 741245
+          },
+          "api-memory.json": {
+            "sha256": "501b84a670458867257ec777e83bfe35119e56dcad1b8283570f89eb6d500f25",
+            "bytes": 742741
+          }
+        },
+        "seal_sha256": "91c19512a930af216152652efadbfe841404dfc08287a9a9083f859cfe33ec7b",
+        "state": "derived",
+        "components": {
+          "watchdog": {
+            "containers": 1,
+            "cpu_cores": 6.096e-06,
+            "memory_bytes": 15339520
+          },
+          "postgresql": {
+            "containers": 1,
+            "cpu_cores": 0.023719271,
+            "memory_bytes": 111235072
+          },
+          "agent": {
+            "containers": 1,
+            "cpu_cores": 0.003415796,
+            "memory_bytes": 76386304
+          },
+          "diag-kubelet-proxy": {
+            "containers": 1,
+            "cpu_cores": 0.000157425,
+            "memory_bytes": 29298688
+          },
+          "vmsingle": {
+            "containers": 1,
+            "cpu_cores": 0.021149189,
+            "memory_bytes": 81952768
+          },
+          "frontend": {
+            "containers": 1,
+            "cpu_cores": 9.5717e-05,
+            "memory_bytes": 5054464
+          },
+          "diag-reader": {
+            "containers": 1,
+            "cpu_cores": 0.002037109,
+            "memory_bytes": 479232
+          },
+          "backend": {
+            "containers": 1,
+            "cpu_cores": 0.058870102,
+            "memory_bytes": 17219584
+          }
+        },
+        "timestamps": {
+          "cpu_cores": "2026-11-19T13:50:18.782000065Z",
+          "memory_bytes": "2026-11-19T13:50:18.782000065Z"
+        },
+        "unmatched_containers": 0
+      },
+      {
+        "window": "official-completion-baseline-astronomy-trace",
+        "attempt_id": "official-completion-baseline-astronomy-trace-a1",
+        "export": {
+          "analysis_export": {
+            "archive_index": "window-index.json",
+            "export_timing": {
+              "archive_bytes": 32408964,
+              "archive_parts": 1,
+              "case": "gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-trace-a1/analysis",
+              "child_peak_rss": 2520096,
+              "controller_peak_rss": 2296608,
+              "cpu_seconds": 137.36965799999962,
+              "elapsed_seconds": 109.81415852599912,
+              "member_count": 16,
+              "phase": "analysis-export",
+              "rss_units": "KiB on Linux",
+              "started_at": 1795100540.1520753,
+              "state": "complete"
+            },
+            "files": 4,
+            "format": "indexed-bundle-v1",
+            "members": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 240,
+                "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 1420,
+                "sha256": "85c394bea2777fa4adfda6c6e849bacc58b22d96373b1ecfe4db4831bbc225e0"
+              },
+              "analysis-status.json": {
+                "bytes": 281177,
+                "sha256": "eb0d8a253d6dffb92d4fe58ce805f6488cdbd6d3ac7bf60d83d34523b9d3e6fd"
+              },
+              "boundary-summary.html": {
+                "bytes": 58611,
+                "sha256": "5ac458a31d9d152543c38277cd30262a85c46ec652e4e451c0722b82a46fe9de"
+              },
+              "diagnostic-cleanup.json": {
+                "bytes": 36,
+                "sha256": "aa1a41325f81a324a6e591e718bb614b014b2d2f5d15e34b2beed9515cb77e72"
+              },
+              "gke-evaluation.50e9cd5d99d74e129a8cc90dba4f1373.comparisons.jsonl": {
+                "bytes": 37994111,
+                "sha256": "1f974aff4b68a180b8ce189fdda13b6c1d64d3d8683e3ffd3c40e53c28147a1c"
+              },
+              "gke-evaluation.50e9cd5d99d74e129a8cc90dba4f1373.reference_sets.jsonl": {
+                "bytes": 22349914,
+                "sha256": "3edf668d1d6a48ac9cb04916aa0eecdb31135240fd34b002275e2b698cf1221e"
+              },
+              "gke-evaluation.50e9cd5d99d74e129a8cc90dba4f1373.references.jsonl": {
+                "bytes": 90764102,
+                "sha256": "8378d4520a52bc390826ac0d4dd1f29ba15fbb01a8ca9ad4e02b8810dfa7c199"
+              },
+              "gke-evaluation.json": {
+                "bytes": 442587489,
+                "sha256": "a848e670f5d550990f876be78dfab279f4a8d5868679b6df712ada6df5eb01a6"
+              },
+              "input-binding.json": {
+                "bytes": 152347,
+                "sha256": "6ae745223b58b527b077b7565e51f8de73b5702b3064779c6ac4ada9962998cb"
+              },
+              "orchestration-summary.json": {
+                "bytes": 281151,
+                "sha256": "85afc8c907f93e687beadc40a87ee751a0eca5572993a6780b5a46defc40222e"
+              },
+              "transition.json": {
+                "bytes": 1472,
+                "sha256": "97e4b3e4144ba3343d440927240e8adaf80b22091a06080c971f4fb68e890d3b"
+              },
+              "usage.json": {
+                "bytes": 123,
+                "sha256": "13bc986ebc0bd0de81f5b0d0e940fdc9d15378332b100e76e8c6bf6775c95852"
+              },
+              "worker-status.json": {
+                "bytes": 260,
+                "sha256": "8b32ee9ec49095612033b69ad32d38d1137db7bdd4cc7718098fc7b0dbca48f3"
+              },
+              "worker.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "worker.stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "objects": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 1025,
+                "sha256": "44494121053b27a2c0dfd35ce231a726fa7f5c9180dc0cb30d0f602c350ce866"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 253,
+                "sha256": "48457c229b2082ec87c286e36f14987b880b0284c21cdf0d4a45dce44cabc997"
+              },
+              "window-index.json": {
+                "bytes": 287,
+                "sha256": "5637ce91109eb9ab78be5dedef3d2c121114ab5e740d0e4990e62574891b7bfa"
+              },
+              "window.tar.gz": {
+                "bytes": 32408964,
+                "sha256": "9e807244e396a0eda12bad0eda19e2ee4d4b7937dbe8608fb7826359d62a948e"
+              }
+            },
+            "parts": [
+              {
+                "bytes": 32408964,
+                "name": "window.tar.gz",
+                "sha256": "9e807244e396a0eda12bad0eda19e2ee4d4b7937dbe8608fb7826359d62a948e"
+              }
+            ],
+            "retention_days": 90,
+            "secondary_export_verified": false,
+            "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-trace-a1/analysis/",
+            "verified": true
+          },
+          "archive": "window.tar.gz",
+          "archive_bytes": 149992170,
+          "archive_index": "window-index.json",
+          "archive_parts": 1,
+          "archive_sha256": "84db130dc3c4b0336c41a52c101d3d86d577bcce7082dcd437ac132a00a0c11a",
+          "export_timing": {
+            "case": "official-completion-baseline-astronomy-trace-a1",
+            "child_peak_rss": 2185916,
+            "controller_peak_rss": 1914548,
+            "cpu_seconds": 360.79756,
+            "elapsed_seconds": 322.0447513479994,
+            "phase": "window-export",
+            "rss_units": "KiB on Linux",
+            "started_at": 1795099868.9435563,
+            "state": "complete"
+          },
+          "files": 4,
+          "objects": {
+            "EXPORT-PROJECTION.json": {
+              "bytes": 71361,
+              "sha256": "fa4c77a4f06119bd64de5602df6033301eb677352b1e6dede55ad54c1e834c03"
+            },
+            "GKE-SHA256SUMS": {
+              "bytes": 253,
+              "sha256": "3de3bada1baf2fd291330b7f75fbbd1df0ba82fef314ded37e56f74e1eccde80"
+            },
+            "window-index.json": {
+              "bytes": 288,
+              "sha256": "1a5478af0d24ce24a90b9e319cf995abff6bc934cc1f8b66c97ed70f2a9c39bc"
+            },
+            "window.tar.gz": {
+              "bytes": 149992170,
+              "sha256": "84db130dc3c4b0336c41a52c101d3d86d577bcce7082dcd437ac132a00a0c11a"
+            }
+          },
+          "original_window_seal_sha256": "f3141b19ea61841f0806744638b4aa9642cd85240079bd34deeb317d1630990f",
+          "redacted_projection": true,
+          "retained_members": {
+            "generator-artifact-status.json": {
+              "bytes": 614,
+              "sha256": "fdedf43c2ca193b1a4108a75ea23a99fd9a67c369148bd84c9784fc3ea26b3d9",
+              "source_sha256": "fdedf43c2ca193b1a4108a75ea23a99fd9a67c369148bd84c9784fc3ea26b3d9"
+            },
+            "gke-evaluation.json": {
+              "bytes": 1619,
+              "sha256": "e8ea8aa19a3b9f82812efb4c38f9f2d4fc5c5ac8907d893666752d29939cf606",
+              "source_sha256": "e8ea8aa19a3b9f82812efb4c38f9f2d4fc5c5ac8907d893666752d29939cf606"
+            },
+            "manifest.json": {
+              "bytes": 197429,
+              "sha256": "869a242878ff726638ac0229027d1e85e16a8f273c2bf8bdea09bd2167ece458",
+              "source_sha256": "869a242878ff726638ac0229027d1e85e16a8f273c2bf8bdea09bd2167ece458"
+            },
+            "structured/status.json": {
+              "bytes": 69587,
+              "sha256": "124d7f0ef0c77667041baaea60b48fe6f3813b67860379f0b1b8ed0af766e6ff",
+              "source_sha256": "124d7f0ef0c77667041baaea60b48fe6f3813b67860379f0b1b8ed0af766e6ff"
+            },
+            "transition.json": {
+              "bytes": 1472,
+              "sha256": "97e4b3e4144ba3343d440927240e8adaf80b22091a06080c971f4fb68e890d3b",
+              "source_sha256": "97e4b3e4144ba3343d440927240e8adaf80b22091a06080c971f4fb68e890d3b"
+            }
+          },
+          "retention_days": 90,
+          "secondary_export_verified": false,
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-trace-a1/",
+          "verified": true
+        },
+        "members": {
+          "api-nodes.json": {
+            "sha256": "4487769d2ac2883cd696c915268ac89166ce43e126a01b33ee831122d78533df",
+            "bytes": 405260
+          },
+          "api-cpu.json": {
+            "sha256": "04fcaaca0dcc0877240376fa22b4d958be6a67df3c99c30a15d08e17b4101a9b",
+            "bytes": 849463
+          },
+          "api-memory.json": {
+            "sha256": "07cc1d8ca01e6cd0b155eb758fb130fcf20ed7b803a39710401ddc22547487d2",
+            "bytes": 851501
+          }
+        },
+        "seal_sha256": "f3141b19ea61841f0806744638b4aa9642cd85240079bd34deeb317d1630990f",
+        "state": "derived",
+        "components": {
+          "postgresql": {
+            "containers": 1,
+            "cpu_cores": 0.023724749,
+            "memory_bytes": 180924416
+          },
+          "diag-reader": {
+            "containers": 4,
+            "cpu_cores": 0.01732972,
+            "memory_bytes": 2052096
+          },
+          "frontend": {
+            "containers": 1,
+            "cpu_cores": 4.5975e-05,
+            "memory_bytes": 6787072
+          },
+          "backend": {
+            "containers": 1,
+            "cpu_cores": 0.073837935,
+            "memory_bytes": 19451904
+          },
+          "gateway": {
+            "containers": 1,
+            "cpu_cores": 0.027342898,
+            "memory_bytes": 141643776
+          },
+          "agent": {
+            "containers": 3,
+            "cpu_cores": 0.031111957000000003,
+            "memory_bytes": 243261440
+          },
+          "diag-kubelet-proxy": {
+            "containers": 3,
+            "cpu_cores": 0.004369714,
+            "memory_bytes": 114302976
+          },
+          "watchdog": {
+            "containers": 1,
+            "cpu_cores": 4.214e-06,
+            "memory_bytes": 16318464
+          },
+          "vmsingle": {
+            "containers": 1,
+            "cpu_cores": 0.02560206,
+            "memory_bytes": 76546048
+          }
+        },
+        "timestamps": {
+          "cpu_cores": "2026-11-19T14:42:20.720999956Z",
+          "memory_bytes": "2026-11-19T14:42:20.720999956Z"
+        },
+        "unmatched_containers": 0
+      },
+      {
+        "window": "official-completion-baseline-astronomy-mesh",
+        "attempt_id": "official-completion-baseline-astronomy-mesh-a1",
+        "export": {
+          "analysis_export": {
+            "archive_index": "window-index.json",
+            "export_timing": {
+              "archive_bytes": 56546391,
+              "archive_parts": 1,
+              "case": "gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-mesh-a1/analysis",
+              "child_peak_rss": 3716892,
+              "controller_peak_rss": 3365664,
+              "cpu_seconds": 202.94941500000095,
+              "elapsed_seconds": 164.81068749299993,
+              "member_count": 16,
+              "phase": "analysis-export",
+              "rss_units": "KiB on Linux",
+              "started_at": 1795104734.0467525,
+              "state": "complete"
+            },
+            "files": 4,
+            "format": "indexed-bundle-v1",
+            "members": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 240,
+                "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 1420,
+                "sha256": "6c7fe982094b531c276fd1d02756af9c452b8311ad0b7e75756aa4cda5073bba"
+              },
+              "analysis-status.json": {
+                "bytes": 300513,
+                "sha256": "2bf7cb6ca30fa6129de945bff07cf8037a65727fbfaa53cd8dec3233c8364c0e"
+              },
+              "boundary-summary.html": {
+                "bytes": 78634,
+                "sha256": "ab143f8dd280ec572f91daea2a6d1faa29338978c6c615c279f192ba027b428f"
+              },
+              "diagnostic-cleanup.json": {
+                "bytes": 36,
+                "sha256": "aa1a41325f81a324a6e591e718bb614b014b2d2f5d15e34b2beed9515cb77e72"
+              },
+              "gke-evaluation.2fa1fdd411994536bda7c2a5d8fee6f8.comparisons.jsonl": {
+                "bytes": 60896727,
+                "sha256": "372885855306f6ec65056f374bd59d498e2c5800ae77b3fb8b50ea9c17539b43"
+              },
+              "gke-evaluation.2fa1fdd411994536bda7c2a5d8fee6f8.reference_sets.jsonl": {
+                "bytes": 49670034,
+                "sha256": "e7b7466720b5a9c7c48c0483fc6536313ea452620d3424379a11ed6dc5b3b262"
+              },
+              "gke-evaluation.2fa1fdd411994536bda7c2a5d8fee6f8.references.jsonl": {
+                "bytes": 201214558,
+                "sha256": "24ebaad2a9dfddf3955ca36f54f01ddd27d7d05659cff208dbee01c40583d4f7"
+              },
+              "gke-evaluation.json": {
+                "bytes": 678841967,
+                "sha256": "f36619c4e1118ba739742474a732718247838a64c2191efd0438f4f77938f3cd"
+              },
+              "input-binding.json": {
+                "bytes": 152351,
+                "sha256": "e459b257ce8b1c7fd480572bf6f75348767bdbdc5f0adbb38eb3a922bed507e6"
+              },
+              "orchestration-summary.json": {
+                "bytes": 300487,
+                "sha256": "d1d0a7134bba0e2d59e4a37fa4ce1515ab2d32d846af83ba29eab656b1de1efe"
+              },
+              "transition.json": {
+                "bytes": 1704,
+                "sha256": "961d56821656796ea673b588bb7803e43a02fa4e52ddec5a4e15ec0bf1b5580b"
+              },
+              "usage.json": {
+                "bytes": 123,
+                "sha256": "0a3e824ee380e64ff8f1fc3c9ed1513328652ee63b885d0a3bb4a158cdac000f"
+              },
+              "worker-status.json": {
+                "bytes": 260,
+                "sha256": "362a616bf0f794e0fdea0279a38490eb6b6182acf38799638c22b7feb86d8ed3"
+              },
+              "worker.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "worker.stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "objects": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 1025,
+                "sha256": "e93ec5745e7c5cfdabec7a8d290f4287a153914289f8329723f167ec69fb4e14"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 253,
+                "sha256": "9ea3e12158d073f1f4ac643806521a85475e348fd0d7e516791db7015d6780d9"
+              },
+              "window-index.json": {
+                "bytes": 287,
+                "sha256": "fcf9a55de1db370d29a10a598d6e0de0d49c466887df6e15c646ad499dea23ce"
+              },
+              "window.tar.gz": {
+                "bytes": 56546391,
+                "sha256": "a59f9f0fd373f5609b9e574fd0bfaf5f385c20574ceb6daa87c4ea8f61c3992a"
+              }
+            },
+            "parts": [
+              {
+                "bytes": 56546391,
+                "name": "window.tar.gz",
+                "sha256": "a59f9f0fd373f5609b9e574fd0bfaf5f385c20574ceb6daa87c4ea8f61c3992a"
+              }
+            ],
+            "retention_days": 90,
+            "secondary_export_verified": false,
+            "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-mesh-a1/analysis/",
+            "verified": true
+          },
+          "archive": "window.tar.gz",
+          "archive_bytes": 205509854,
+          "archive_index": "window-index.json",
+          "archive_parts": 1,
+          "archive_sha256": "f17393e872159f659d5e9c6eb05bda52f63ba39895a7199c59b357706f0c4240",
+          "export_timing": {
+            "case": "official-completion-baseline-astronomy-mesh-a1",
+            "child_peak_rss": 2931636,
+            "controller_peak_rss": 2931636,
+            "cpu_seconds": 528.3243889999994,
+            "elapsed_seconds": 490.04399100199953,
+            "phase": "window-export",
+            "rss_units": "KiB on Linux",
+            "started_at": 1795103579.297308,
+            "state": "complete"
+          },
+          "files": 4,
+          "objects": {
+            "EXPORT-PROJECTION.json": {
+              "bytes": 81787,
+              "sha256": "1bb8b26eac8f5dd7c290d1ad0380f579376b5492e085f7234c3858f7773140ac"
+            },
+            "GKE-SHA256SUMS": {
+              "bytes": 253,
+              "sha256": "d7a922c2801f61dd4aee2cfe1e2b3a16908c342574a217f3d06cb2a55efc21fa"
+            },
+            "window-index.json": {
+              "bytes": 288,
+              "sha256": "05864ff3ae58d955ba17e0ddcb26dda10731b511904315ceddbb7418b8c5ff05"
+            },
+            "window.tar.gz": {
+              "bytes": 205509854,
+              "sha256": "f17393e872159f659d5e9c6eb05bda52f63ba39895a7199c59b357706f0c4240"
+            }
+          },
+          "original_window_seal_sha256": "2ba2e145e24fac645d1cdd59f426ba54f799ff132d060858fbbf5d12f7031774",
+          "redacted_projection": true,
+          "retained_members": {
+            "generator-artifact-status.json": {
+              "bytes": 612,
+              "sha256": "c7fa70fa5e75de0237d900ae5ffd90be9403aeb002555cd12f4ed63a0abd0e31",
+              "source_sha256": "c7fa70fa5e75de0237d900ae5ffd90be9403aeb002555cd12f4ed63a0abd0e31"
+            },
+            "gke-evaluation.json": {
+              "bytes": 1578,
+              "sha256": "a163831554e2b14eb58781a742f63c3ca544039a4adf85dccc1313330d15c48b",
+              "source_sha256": "a163831554e2b14eb58781a742f63c3ca544039a4adf85dccc1313330d15c48b"
+            },
+            "manifest.json": {
+              "bytes": 202799,
+              "sha256": "3d47fddc3526f0b129484becbb8b82050ff5e1bf48b8591c489b50acd50d64d0",
+              "source_sha256": "3d47fddc3526f0b129484becbb8b82050ff5e1bf48b8591c489b50acd50d64d0"
+            },
+            "structured/status.json": {
+              "bytes": 73703,
+              "sha256": "1a87e13330853aeae1a64bec8a434c2ca3e5ba32d2e9c95f9524e34c99c42c01",
+              "source_sha256": "1a87e13330853aeae1a64bec8a434c2ca3e5ba32d2e9c95f9524e34c99c42c01"
+            },
+            "transition.json": {
+              "bytes": 1704,
+              "sha256": "961d56821656796ea673b588bb7803e43a02fa4e52ddec5a4e15ec0bf1b5580b",
+              "source_sha256": "961d56821656796ea673b588bb7803e43a02fa4e52ddec5a4e15ec0bf1b5580b"
+            }
+          },
+          "retention_days": 90,
+          "secondary_export_verified": false,
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-astronomy-mesh-a1/",
+          "verified": true
+        },
+        "members": {
+          "api-nodes.json": {
+            "sha256": "84e8b773fe9b927b30ccbae12421fb043fab2d44b1ad92194147aeb67fc08e39",
+            "bytes": 459500
+          },
+          "api-cpu.json": {
+            "sha256": "2034b11f8e68d6e6986bffa8ae31a54a900283e4f2d8de4787b946b6426d6b46",
+            "bytes": 1038912
+          },
+          "api-memory.json": {
+            "sha256": "322bfd8858ae6bcff3a3fb7780ac6ce6fffc023c7d9187ae96de64dfb490aeca",
+            "bytes": 1041032
+          }
+        },
+        "seal_sha256": "2ba2e145e24fac645d1cdd59f426ba54f799ff132d060858fbbf5d12f7031774",
+        "state": "derived",
+        "components": {
+          "postgresql": {
+            "containers": 1,
+            "cpu_cores": 0.034283963,
+            "memory_bytes": 192806912
+          },
+          "agent": {
+            "containers": 3,
+            "cpu_cores": 0.054961774000000005,
+            "memory_bytes": 391299072
+          },
+          "diag-reader": {
+            "containers": 4,
+            "cpu_cores": 0.026152755,
+            "memory_bytes": 2064384
+          },
+          "watchdog": {
+            "containers": 1,
+            "cpu_cores": 4.796e-06,
+            "memory_bytes": 15286272
+          },
+          "frontend": {
+            "containers": 1,
+            "cpu_cores": 6.5015e-05,
+            "memory_bytes": 4976640
+          },
+          "vmsingle": {
+            "containers": 1,
+            "cpu_cores": 0.055449193,
+            "memory_bytes": 107188224
+          },
+          "diag-kubelet-proxy": {
+            "containers": 3,
+            "cpu_cores": 0.0009752179999999999,
+            "memory_bytes": 127549440
+          },
+          "backend": {
+            "containers": 1,
+            "cpu_cores": 0.096859808,
+            "memory_bytes": 19931136
+          },
+          "gateway": {
+            "containers": 1,
+            "cpu_cores": 0.032936252,
+            "memory_bytes": 162959360
+          }
+        },
+        "timestamps": {
+          "cpu_cores": "2026-11-19T15:42:39.013000011Z",
+          "memory_bytes": "2026-11-19T15:42:39.013000011Z"
+        },
+        "unmatched_containers": 0
+      },
+      {
+        "window": "official-completion-baseline-boutique-mesh",
+        "attempt_id": "official-completion-baseline-boutique-mesh-a1",
+        "export": {
+          "analysis_export": {
+            "archive_index": "window-index.json",
+            "export_timing": {
+              "archive_bytes": 39084669,
+              "archive_parts": 1,
+              "case": "gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-mesh-a1/analysis",
+              "child_peak_rss": 3716892,
+              "controller_peak_rss": 3365664,
+              "cpu_seconds": 161.82569499999954,
+              "elapsed_seconds": 133.83614028599914,
+              "member_count": 16,
+              "phase": "analysis-export",
+              "rss_units": "KiB on Linux",
+              "started_at": 1795108351.5012176,
+              "state": "complete"
+            },
+            "files": 4,
+            "format": "indexed-bundle-v1",
+            "members": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 240,
+                "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 1420,
+                "sha256": "2365a373f200deb6b9b6312e094d4faec2e4a9d4b4b07cde1c9dd0e1270fb2c2"
+              },
+              "analysis-status.json": {
+                "bytes": 276797,
+                "sha256": "f12aa333be3766aabf1ed7640f4de14f12c59606f5e4b943f0dd778dbdcea064"
+              },
+              "boundary-summary.html": {
+                "bytes": 78798,
+                "sha256": "1786341030eaa4babbdba08faf5dedda6da7dc772a263c8518d9676f40bedff2"
+              },
+              "diagnostic-cleanup.json": {
+                "bytes": 36,
+                "sha256": "aa1a41325f81a324a6e591e718bb614b014b2d2f5d15e34b2beed9515cb77e72"
+              },
+              "gke-evaluation.99ee6c532979452bb04ae6c5d707b530.comparisons.jsonl": {
+                "bytes": 43584761,
+                "sha256": "c945ca9eb058adb9e6698c556391f82b1b2b3a8e7925f8ad7d10caac5912e81b"
+              },
+              "gke-evaluation.99ee6c532979452bb04ae6c5d707b530.reference_sets.jsonl": {
+                "bytes": 31912921,
+                "sha256": "880cbe908af42b58e5f65f24ed4215e1050c30c1c5e4220124f45f9c2b7642e8"
+              },
+              "gke-evaluation.99ee6c532979452bb04ae6c5d707b530.references.jsonl": {
+                "bytes": 129580481,
+                "sha256": "2a1e0d57d7df5406ff921c81098ecff909c3038205764d4f1645568f43c1fdd1"
+              },
+              "gke-evaluation.json": {
+                "bytes": 489183524,
+                "sha256": "f6380c1f6e3fc050222194279f4473142a0bc0b244012b900efb1d8ad32afa9a"
+              },
+              "input-binding.json": {
+                "bytes": 152347,
+                "sha256": "2443740a0736a8c17272065c8c22887d29b5d3c512891fee1cf60b22f6fd47e6"
+              },
+              "orchestration-summary.json": {
+                "bytes": 276771,
+                "sha256": "87c190e5d2e91ec1041eadaa8d5b618d156cc96678b6bce1329e47c8dc0a797a"
+              },
+              "transition.json": {
+                "bytes": 1701,
+                "sha256": "fc42344d204df9cb42165c08af3611fee847efff23f425e0658f45390abe5eb5"
+              },
+              "usage.json": {
+                "bytes": 123,
+                "sha256": "2c283cebaeae7f01a1255a5798d87a477e0b153aca7c891455206063a8d7f570"
+              },
+              "worker-status.json": {
+                "bytes": 261,
+                "sha256": "388a6694fdaaf5ce40a63627da7086767e2cb12e55259fd43877c2bd48d10445"
+              },
+              "worker.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "worker.stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "objects": {
+              "EXPORT-PROJECTION.json": {
+                "bytes": 1025,
+                "sha256": "d04d9bf9fc07089ce4a972f410a14f3c8c19c36a034b5eeffac847ac876bd086"
+              },
+              "GKE-SHA256SUMS": {
+                "bytes": 253,
+                "sha256": "6f47c215aabcf86eb1319d78a809b468eef159b6449f85b67561d1cfff3674e4"
+              },
+              "window-index.json": {
+                "bytes": 287,
+                "sha256": "c265eda66460756d70fc006edec3f94ca76da51c326a544359e1019a66f1b29b"
+              },
+              "window.tar.gz": {
+                "bytes": 39084669,
+                "sha256": "0d9ec587bc3040f9747b96d335f3193f4d6078ecc6e6a7c94cc69a4f6f44b394"
+              }
+            },
+            "parts": [
+              {
+                "bytes": 39084669,
+                "name": "window.tar.gz",
+                "sha256": "0d9ec587bc3040f9747b96d335f3193f4d6078ecc6e6a7c94cc69a4f6f44b394"
+              }
+            ],
+            "retention_days": 90,
+            "secondary_export_verified": false,
+            "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-mesh-a1/analysis/",
+            "verified": true
+          },
+          "archive": "window.tar.gz",
+          "archive_bytes": 152183789,
+          "archive_index": "window-index.json",
+          "archive_parts": 1,
+          "archive_sha256": "9775d35bee848eccfa57077445cdd614752bc301860ec53576ac2d2aad3befd5",
+          "export_timing": {
+            "case": "official-completion-baseline-boutique-mesh-a1",
+            "child_peak_rss": 3716892,
+            "controller_peak_rss": 3365664,
+            "cpu_seconds": 438.59078000000045,
+            "elapsed_seconds": 400.7976095520007,
+            "phase": "window-export",
+            "rss_units": "KiB on Linux",
+            "started_at": 1795107567.594625,
+            "state": "complete"
+          },
+          "files": 4,
+          "objects": {
+            "EXPORT-PROJECTION.json": {
+              "bytes": 72117,
+              "sha256": "c6693ebce86cbde5e0367b3aca613af2248cd146976e0fd4e9c4476c2fb89dee"
+            },
+            "GKE-SHA256SUMS": {
+              "bytes": 253,
+              "sha256": "3b90f41aa6f36b94c03b0267cab1d6032fd4b2201af39f32e937632f4b145139"
+            },
+            "window-index.json": {
+              "bytes": 288,
+              "sha256": "1ecae7ad3bc8c918cf0d0865bb0930650fd241fef542b8541b10c3c2524a615b"
+            },
+            "window.tar.gz": {
+              "bytes": 152183789,
+              "sha256": "9775d35bee848eccfa57077445cdd614752bc301860ec53576ac2d2aad3befd5"
+            }
+          },
+          "original_window_seal_sha256": "8aff0364ab752f7aabbd4290cc3e51ca38f136aa86880841ad78e6758facf152",
+          "redacted_projection": true,
+          "retained_members": {
+            "generator-artifact-status.json": {
+              "bytes": 610,
+              "sha256": "7bdd6d93f52ec48027d197b757884ac0010770c3938947af04b416d288b109da",
+              "source_sha256": "7bdd6d93f52ec48027d197b757884ac0010770c3938947af04b416d288b109da"
+            },
+            "gke-evaluation.json": {
+              "bytes": 1571,
+              "sha256": "57ac91a05c72e82e6bc75e7b3d80ebfa96854271201670063580c025a7fd4eda",
+              "source_sha256": "57ac91a05c72e82e6bc75e7b3d80ebfa96854271201670063580c025a7fd4eda"
+            },
+            "manifest.json": {
+              "bytes": 196560,
+              "sha256": "aa93d19bb93ad58abe086f8fbd2b3cb275c86786bb9858dd827390b8de1c4329",
+              "source_sha256": "aa93d19bb93ad58abe086f8fbd2b3cb275c86786bb9858dd827390b8de1c4329"
+            },
+            "structured/status.json": {
+              "bytes": 68169,
+              "sha256": "6ba3bcc46be28ae19b4c0197a5c1a7a38855de22068d660d2140dabdc11e72c2",
+              "source_sha256": "6ba3bcc46be28ae19b4c0197a5c1a7a38855de22068d660d2140dabdc11e72c2"
+            },
+            "transition.json": {
+              "bytes": 1701,
+              "sha256": "fc42344d204df9cb42165c08af3611fee847efff23f425e0658f45390abe5eb5",
+              "source_sha256": "fc42344d204df9cb42165c08af3611fee847efff23f425e0658f45390abe5eb5"
+            }
+          },
+          "retention_days": 90,
+          "secondary_export_verified": false,
+          "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/thesis-robustness-full-20261119-v2/repeat-1/baseline/official-completion-baseline-boutique-mesh-a1/",
+          "verified": true
+        },
+        "members": {
+          "api-nodes.json": {
+            "sha256": "56540d4302b40f5b6998da05a4032e0e5d145a70062834ceda2f0af86ea9f9c0",
+            "bytes": 337944
+          },
+          "api-cpu.json": {
+            "sha256": "32074fad26dcaf86d9f06bb8f96179e756546a039253bf370b15215157073aaa",
+            "bytes": 829561
+          },
+          "api-memory.json": {
+            "sha256": "b451208471aa80cc8d5b15b93dca1ac0e89ca53281042a663da1bd3b94cefcc1",
+            "bytes": 831168
+          }
+        },
+        "seal_sha256": "8aff0364ab752f7aabbd4290cc3e51ca38f136aa86880841ad78e6758facf152",
+        "state": "derived",
+        "components": {
+          "postgresql": {
+            "containers": 1,
+            "cpu_cores": 0.022935853,
+            "memory_bytes": 179585024
+          },
+          "backend": {
+            "containers": 1,
+            "cpu_cores": 0.079968687,
+            "memory_bytes": 18735104
+          },
+          "vmsingle": {
+            "containers": 1,
+            "cpu_cores": 0.030047596,
+            "memory_bytes": 90062848
+          },
+          "frontend": {
+            "containers": 1,
+            "cpu_cores": 3.5574e-05,
+            "memory_bytes": 6795264
+          }
+        },
+        "timestamps": {
+          "cpu_cores": "2026-11-19T16:50:28.292000055Z",
+          "memory_bytes": "2026-11-19T16:50:28.292000055Z"
+        },
+        "unmatched_containers": 0
+      }
+    ]
+  }
+}
