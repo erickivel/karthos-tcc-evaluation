@@ -1,0 +1,20 @@
+{
+  "report_commit": "eef5c37",
+  "objects": [
+    {
+      "uri": "gs://karthos-karthos-eval-evidence/reanalyses/thesis-unified-20261119/eef5c37/report-and-failed-campaign-closure.tar.gz",
+      "bytes": 18998,
+      "generation": "1795077152202122",
+      "sha256": "7262425340654a0801ac6aa6701059fbc6b96d058bf4225aea10f25d7b5cf750",
+      "verified": true
+    },
+    {
+      "uri": "gs://karthos-karthos-eval-evidence-backup/reanalyses/thesis-unified-20261119/eef5c37/report-and-failed-campaign-closure.tar.gz",
+      "bytes": 18998,
+      "generation": "1795077152921824",
+      "sha256": "7262425340654a0801ac6aa6701059fbc6b96d058bf4225aea10f25d7b5cf750",
+      "verified": true
+    }
+  ],
+  "scope": "Portuguese unified campaign failure report, structured results, verified research evidence index and final cleanup receipts; no cloud measurement windows completed"
+}
