@@ -394,3 +394,20 @@ still measure at least 220 GiB free before accepting the full bounded run; nomin
 disk size is not a free-space or quota measurement.
 
 Official thesis-completion-v2 inventories explicitly set `infrastructure_seconds: 64800` for the approved 18-hour limit. The `thesis-robustness-full-v1` profile additionally records `execution_profile: thesis-robustness-full-v1`; only this explicit marker permits a positive integer limit up to 86,400 seconds (the reviewed full-run configuration uses 72,000 seconds). Without that marker, explicit limits remain restricted to 43,200 or 64,800 seconds. Legacy inventories without the limit field retain the 43,200-second cap. The pinned watchdog validates the declared limit and never extends the immutable recorded deadline.
+
+
+The controller VM requests both `cloud-platform` and `userinfo-email` OAuth
+scopes. GKE otherwise authenticates a VM service account by numeric unique ID,
+which does not match email-based RBAC subjects. This scope does not grant RBAC
+permissions: deployment must still verify the actual controller's authorization
+for Helm installation, updates and removal on every cluster generation. See
+[GKE VM identity and RBAC](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control#forbidden_error_for_service_accounts_on_google_cloud_vm_instances).
+
+The watchdog's custom cleanup role includes `compute.networks.updatePolicy`
+in addition to `compute.firewalls.delete`: the live provider rejected deletion
+of the owned firewall without the network-policy permission on 19 November 2026.
+The UID, ownership and lease guards still restrict cleanup decisions. This source
+correction is not proof that a reused foundation's IAM role was updated; reusing
+foundation outputs requires verifying the effective deployed permissions. The
+failed `thesis-robustness-full-20261119` campaign used the earlier frozen image and
+was cleaned with an identity-checked operator fallback for this firewall.

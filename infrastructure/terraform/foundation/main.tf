@@ -46,7 +46,7 @@ resource "google_service_account" "runtime" {
 resource "google_project_iam_custom_role" "watchdog" {
   role_id     = "karthosEvaluationWatchdog"
   title       = "Karthos evaluation deadline cleanup"
-  permissions = ["compute.instances.get", "compute.instances.delete", "container.clusters.get", "container.clusters.delete", "container.operations.get", "compute.disks.get", "compute.disks.list", "compute.disks.delete", "compute.routers.get", "compute.routers.update", "compute.routers.delete", "cloudscheduler.jobs.pause", "cloudscheduler.jobs.enable", "compute.networks.get", "compute.networks.delete", "compute.subnetworks.get", "compute.subnetworks.delete", "compute.firewalls.get", "compute.firewalls.delete"]
+  permissions = ["compute.instances.get", "compute.instances.delete", "container.clusters.get", "container.clusters.delete", "container.operations.get", "compute.disks.get", "compute.disks.list", "compute.disks.delete", "compute.routers.get", "compute.routers.update", "compute.routers.delete", "cloudscheduler.jobs.pause", "cloudscheduler.jobs.enable", "compute.networks.get", "compute.networks.delete", "compute.networks.updatePolicy", "compute.subnetworks.get", "compute.subnetworks.delete", "compute.firewalls.get", "compute.firewalls.delete"]
 }
 resource "google_project_iam_member" "watchdog" {
   project = var.project_id

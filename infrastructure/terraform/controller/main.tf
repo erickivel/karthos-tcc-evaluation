@@ -69,7 +69,7 @@ resource "google_compute_instance" "controller" {
   }
   service_account {
     email  = var.controller_service_account
-    scopes = ["cloud-platform"]
+    scopes = ["cloud-platform", "userinfo-email"]
   }
   shielded_instance_config {
     enable_secure_boot          = true
