@@ -1,0 +1,320 @@
+[
+  {
+    "components": {
+      "agent": {
+        "containers": 3,
+        "cpu_cores": 0.023724026000000002,
+        "memory_bytes": 231866368
+      },
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.067158551,
+        "memory_bytes": 16396288
+      },
+      "diag-kubelet-proxy": {
+        "containers": 3,
+        "cpu_cores": 0.000520835,
+        "memory_bytes": 123015168
+      },
+      "diag-reader": {
+        "containers": 4,
+        "cpu_cores": 0.013461134,
+        "memory_bytes": 2080768
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 5.6141e-05,
+        "memory_bytes": 5033984
+      },
+      "gateway": {
+        "containers": 1,
+        "cpu_cores": 0.015877823,
+        "memory_bytes": 124792832
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.025016874,
+        "memory_bytes": 87293952
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.026303621,
+        "memory_bytes": 88817664
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 4.464e-06,
+        "memory_bytes": 15314944
+      }
+    },
+    "evidence_valid": true,
+    "members": {
+      "api-cpu.json": "b71a1eab035280b7ff1ae1ee44e03c3d3ba669fadfd527f035b13bf0e2f7f610",
+      "api-memory.json": "73676632592663ce0de0e26223c9f8a79cd30e13ef655346eab7898dd164b8f6",
+      "api-nodes.json": "e174a6187105342df1731b06122bb3cd62c7d1d400de3f458ead5ba950eeb3ca"
+    },
+    "raw_sha256": "19cb2f11c895a30871bdbd7cdc26b14228ef1bc0386ce0f18ca6316b32628a92",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-completion-baseline-boutique-trace"
+  },
+  {
+    "components": {
+      "agent": {
+        "containers": 3,
+        "cpu_cores": 0.033490308999999996,
+        "memory_bytes": 240156672
+      },
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.094680798,
+        "memory_bytes": 16044032
+      },
+      "diag-kubelet-proxy": {
+        "containers": 3,
+        "cpu_cores": 0.002892989,
+        "memory_bytes": 110174208
+      },
+      "diag-reader": {
+        "containers": 4,
+        "cpu_cores": 0.016814057,
+        "memory_bytes": 1994752
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 2.7776e-05,
+        "memory_bytes": 5963776
+      },
+      "gateway": {
+        "containers": 1,
+        "cpu_cores": 0.024064528,
+        "memory_bytes": 142000128
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.026189179,
+        "memory_bytes": 180375552
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.024342718,
+        "memory_bytes": 87396352
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 8.187e-06,
+        "memory_bytes": 16748544
+      }
+    },
+    "evidence_valid": true,
+    "members": {
+      "api-cpu.json": "22ebcac452eeb092bf71a75f309585caba6bbeb0fd516038281f81c3f7407845",
+      "api-memory.json": "42aedb4a1dd4702091e413182e558c9ef13f67bd04e20cb543c4fba7c5a82fac",
+      "api-nodes.json": "767adec15c68e7624c5980f5dc90fddf628c06b0f714002ac54ebd3867fb8897"
+    },
+    "raw_sha256": "cf1532e926ff375da77c54651fd6e4ac8cfefdf32db18c68b7bfeaf21f68352a",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-completion-baseline-astronomy-trace"
+  },
+  {
+    "components": {
+      "agent": {
+        "containers": 1,
+        "cpu_cores": 0.034853427,
+        "memory_bytes": 143478784
+      },
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.09226538,
+        "memory_bytes": 18386944
+      },
+      "diag-kubelet-proxy": {
+        "containers": 1,
+        "cpu_cores": 0.001009894,
+        "memory_bytes": 48246784
+      },
+      "diag-reader": {
+        "containers": 1,
+        "cpu_cores": 0.003544704,
+        "memory_bytes": 479232
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 7.1265e-05,
+        "memory_bytes": 5988352
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.026998664,
+        "memory_bytes": 154927104
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.047379878,
+        "memory_bytes": 86151168
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 0,
+        "memory_bytes": 17739776
+      }
+    },
+    "evidence_valid": true,
+    "members": {
+      "api-cpu.json": "be440587e7bedb878653b7bb461de3a054067dfd15768690d39bbf589be8ccc0",
+      "api-memory.json": "d4257095acfbec50daedd36d64d1da5d3e55541e377e081a81641a54dffdf02d",
+      "api-nodes.json": "07d91eed50ef644db38cc8ffbfb0ec560216f418475d0dacde8d337c701ae7b1"
+    },
+    "raw_sha256": "81433bb48080665aaf861fcf98684cc3a78db1fa7648065ab79137a14fb89c6a",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-completion-baseline-astronomy-mesh"
+  },
+  {
+    "components": {
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.085528354,
+        "memory_bytes": 14979072
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 8.4772e-05,
+        "memory_bytes": 4980736
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.022293077,
+        "memory_bytes": 172396544
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.048666635,
+        "memory_bytes": 95592448
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 5.255e-06,
+        "memory_bytes": 17244160
+      }
+    },
+    "evidence_valid": true,
+    "members": {
+      "api-cpu.json": "247721c263a6b50cb62e2bf36630034d08aea28cd57c154bd2955d51640e8d36",
+      "api-memory.json": "43c21651a6ed3555f05820268240ea3ba95fe6142885b004948885c71b3f335f",
+      "api-nodes.json": "ad29c4da84d2d6bb09a59f64f554448f9b5840e901a4005183c1225277ed23d8"
+    },
+    "raw_sha256": "aa22273e03337ac7d08b1233e568a4ca29bafc0e8c0540f913af6a164fec2e3c",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-completion-baseline-boutique-mesh"
+  },
+  {
+    "components": {
+      "agent": {
+        "containers": 1,
+        "cpu_cores": 0.013780465,
+        "memory_bytes": 131821568
+      },
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.056899274,
+        "memory_bytes": 14786560
+      },
+      "diag-kubelet-proxy": {
+        "containers": 1,
+        "cpu_cores": 0.000146094,
+        "memory_bytes": 41574400
+      },
+      "diag-reader": {
+        "containers": 1,
+        "cpu_cores": 0.003796444,
+        "memory_bytes": 466944
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 6.379e-05,
+        "memory_bytes": 4919296
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.009165458,
+        "memory_bytes": 151928832
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.019132103,
+        "memory_bytes": 82386944
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 4.159e-06,
+        "memory_bytes": 15294464
+      }
+    },
+    "evidence_valid": false,
+    "members": {
+      "api-cpu.json": "a4ce5a1cab950a5b3e95d8d18f32dc6ae2a66d278614ce5d8dbcbcbea529b1c4",
+      "api-memory.json": "9334564705c7e48acefae6def44331213bb2347cac6af5412c33a6028f1b0559",
+      "api-nodes.json": "1cf9312364c7dd4d286aaef07f69214168f1297f4a4ce96adb8986152075d21c"
+    },
+    "raw_sha256": "5e06e5cea937771b09022d8de1a97021d7a87ae9f485336985da29049cc84814",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-r2-baseline-boutique-mesh"
+  },
+  {
+    "components": {
+      "agent": {
+        "containers": 2,
+        "cpu_cores": 0.011161231,
+        "memory_bytes": 155017216
+      },
+      "backend": {
+        "containers": 1,
+        "cpu_cores": 0.056153398,
+        "memory_bytes": 17698816
+      },
+      "diag-kubelet-proxy": {
+        "containers": 2,
+        "cpu_cores": 0.0029285,
+        "memory_bytes": 70057984
+      },
+      "diag-reader": {
+        "containers": 3,
+        "cpu_cores": 0.009867138000000001,
+        "memory_bytes": 1523712
+      },
+      "frontend": {
+        "containers": 1,
+        "cpu_cores": 3.6187e-05,
+        "memory_bytes": 4935680
+      },
+      "gateway": {
+        "containers": 1,
+        "cpu_cores": 0.014780107,
+        "memory_bytes": 120471552
+      },
+      "postgresql": {
+        "containers": 1,
+        "cpu_cores": 0.02165088,
+        "memory_bytes": 146538496
+      },
+      "vmsingle": {
+        "containers": 1,
+        "cpu_cores": 0.024389247,
+        "memory_bytes": 71770112
+      },
+      "watchdog": {
+        "containers": 1,
+        "cpu_cores": 5.689e-06,
+        "memory_bytes": 15282176
+      }
+    },
+    "evidence_valid": true,
+    "members": {
+      "api-cpu.json": "e1008d066a25b52be3d2399c7da693dc81ecc64a6afc4211a102fd307179b990",
+      "api-memory.json": "8a4f69ca4e2b7bb67f92859437b02cda92a22a71b4920d8d3ed44239f39c8db0",
+      "api-nodes.json": "1ba76268aea2f884e6fe9befa035ce84796344902fc386f1b3f2c3a42ab33ca7"
+    },
+    "raw_sha256": "8eb26fef84bd73e03048d1a4ed6ed31bfe95d271bfea38f12a04137d6aa46ce9",
+    "scope": "retained API latest samples for matched containers in karthos-system; descriptive snapshot, not a time average or causal overhead",
+    "window": "official-r2-baseline-boutique-trace"
+  }
+]

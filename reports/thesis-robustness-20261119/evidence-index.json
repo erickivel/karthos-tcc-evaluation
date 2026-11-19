@@ -1,0 +1,1312 @@
+{
+  "derived_files": [
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/accuracy/SHA256SUMS",
+      "sha256": "c4df9261b3dc71ffa0706a0b78863b22392b6457953a0909a2772b3b1795272b"
+    },
+    {
+      "bytes": 8201,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/accuracy/analysis-manifest.json",
+      "sha256": "d891d8d406471aee4c24eb803e78c9b7d79cd571fa0d9114fad2ef875248e45a"
+    },
+    {
+      "bytes": 25100040,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/accuracy/comparison-changes.json",
+      "sha256": "972665d52bbf1bb73fe690909ecd07d645fb6602ae51df40457971ea7975dfaa"
+    },
+    {
+      "bytes": 278152,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "829d46d3da713d620b81495b1eca43357762a0a34527de2998380bac5d7a2f2c"
+    },
+    {
+      "bytes": 167474,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/accuracy/summary.json",
+      "sha256": "ee4d8cc59c851ffdf61242303f339564534853f938893dc83c281fc318bc9571"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/SHA256SUMS",
+      "sha256": "8254648e1ea30aaedbc689df3c2cc6ed2e217d91c601eeef0e859f8b940326d4"
+    },
+    {
+      "bytes": 280707,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/api-edges.json",
+      "sha256": "3b8eb52c1d68b2502ea3b8d3ad603e08747d619878a6f8c92b5a33aae0b37219"
+    },
+    {
+      "bytes": 311126,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/api-nodes.json",
+      "sha256": "e174a6187105342df1731b06122bb3cd62c7d1d400de3f458ead5ba950eeb3ca"
+    },
+    {
+      "bytes": 1169875,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/consumer/ledger.json",
+      "sha256": "7891479de1fad2aa2438f77b9316951a34e14450392266ae5696a447d2d2431a"
+    },
+    {
+      "bytes": 10542,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/generator-job-status.json",
+      "sha256": "ec997244ddf21eef334af35ce6b84a193c74653da7a514b8fbfd1ed61570fecc"
+    },
+    {
+      "bytes": 3720,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/inputs.json",
+      "sha256": "ac37139afa5984086242be5bfbf881c3931f086f8242c0f9e196e698fd39f0af"
+    },
+    {
+      "bytes": 63386,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/k8s-nodes.json",
+      "sha256": "e3dacfb0b6a98c5e8866197a1a4d26dcb353352fd01f4ca8770e8450a00d3c17"
+    },
+    {
+      "bytes": 149802,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/k8s-pods.json",
+      "sha256": "341e94ad16e1f13a6e5fef7533b551ed9a07937ea3a36936326e0bbf36f2a04b"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/k8s-services.json",
+      "sha256": "725e509dc0d5f017ed57adefd7e0a1178f51867f1ae63dbf065ea7e0de6fecc6"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/reference-setup/reference-daemonset.json",
+      "sha256": "aeed4cd831c11c3d08ce65769e849415d18429c3493bd71080b5199a0523de9f"
+    },
+    {
+      "bytes": 15616494,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/report.json",
+      "sha256": "c366a508ebc1679b161825670fdd9484491a65e1b28b201f4dc086674775d751"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims/versions-after.json",
+      "sha256": "93fa552cfc3818e4cf10780c459a21cdb12193368a650ef05eb1b8964f48bf10"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/SHA256SUMS",
+      "sha256": "452630004fc168e1ac1c8030498d1e5e68ef15e48df80e3b93166fde068fd0ea"
+    },
+    {
+      "bytes": 280707,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/api-edges.json",
+      "sha256": "3b8eb52c1d68b2502ea3b8d3ad603e08747d619878a6f8c92b5a33aae0b37219"
+    },
+    {
+      "bytes": 311126,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/api-nodes.json",
+      "sha256": "e174a6187105342df1731b06122bb3cd62c7d1d400de3f458ead5ba950eeb3ca"
+    },
+    {
+      "bytes": 1169875,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/consumer/ledger.json",
+      "sha256": "7891479de1fad2aa2438f77b9316951a34e14450392266ae5696a447d2d2431a"
+    },
+    {
+      "bytes": 10542,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/generator-job-status.json",
+      "sha256": "ec997244ddf21eef334af35ce6b84a193c74653da7a514b8fbfd1ed61570fecc"
+    },
+    {
+      "bytes": 3720,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/inputs.json",
+      "sha256": "aab743fa5fd4f7ef1f1707b4ac1dc56828aa0b62b8280b6249f6142698389be1"
+    },
+    {
+      "bytes": 63386,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/k8s-nodes.json",
+      "sha256": "e3dacfb0b6a98c5e8866197a1a4d26dcb353352fd01f4ca8770e8450a00d3c17"
+    },
+    {
+      "bytes": 149802,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/k8s-pods.json",
+      "sha256": "341e94ad16e1f13a6e5fef7533b551ed9a07937ea3a36936326e0bbf36f2a04b"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/k8s-services.json",
+      "sha256": "725e509dc0d5f017ed57adefd7e0a1178f51867f1ae63dbf065ea7e0de6fecc6"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "aeed4cd831c11c3d08ce65769e849415d18429c3493bd71080b5199a0523de9f"
+    },
+    {
+      "bytes": 15616500,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/report.json",
+      "sha256": "85e493ae00bec9aa833c22afa737f1f4e93d3d21bce2c37bc780f298be89765f"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-trace/claims-final/versions-after.json",
+      "sha256": "93fa552cfc3818e4cf10780c459a21cdb12193368a650ef05eb1b8964f48bf10"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/accuracy/SHA256SUMS",
+      "sha256": "a4b568af28f6f8fb6f283219734f5bcc256e5dd9d1a4438214bb21bf9a80fc60"
+    },
+    {
+      "bytes": 8210,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/accuracy/analysis-manifest.json",
+      "sha256": "bb9593cfc2666027a473508dccbfb7bc77e544d1da92829d90b205888bbf8013"
+    },
+    {
+      "bytes": 28742001,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/accuracy/comparison-changes.json",
+      "sha256": "7f7d859efeb18f5cc07ca0306b62438ac6ec52dfc989fdd540bd8b01881a452d"
+    },
+    {
+      "bytes": 325229,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "a3f7d53813c5d693cdfe6b55183e302ee9cdf586d76a0f36a2a55b1fc0cea531"
+    },
+    {
+      "bytes": 168120,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/accuracy/summary.json",
+      "sha256": "cbc78d8876c4b281b9ceba3937fb95f846fb442166491835ab7df5bb72fd75a8"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/SHA256SUMS",
+      "sha256": "5aced0b78a25fa5a1157df82d973146baa40a0040709b18d19023d818b16acc3"
+    },
+    {
+      "bytes": 328707,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/api-edges.json",
+      "sha256": "736c090e36d8e250dfcd4158d13fd8c8bb6d6e2d9fa3d4466e95a2f4df49aa75"
+    },
+    {
+      "bytes": 397728,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/api-nodes.json",
+      "sha256": "767adec15c68e7624c5980f5dc90fddf628c06b0f714002ac54ebd3867fb8897"
+    },
+    {
+      "bytes": 1439638,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/consumer/ledger.json",
+      "sha256": "4532afab7def33d4e4b0a7e827b8f860a9fe511682bd4f97ff23368bf199f958"
+    },
+    {
+      "bytes": 10558,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/generator-job-status.json",
+      "sha256": "47f60f8fbe7277bfaf9a3859cf10769f54e6a57285d8fbbe59a7bd2d86965b46"
+    },
+    {
+      "bytes": 3723,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/inputs.json",
+      "sha256": "3ec990e423ba9321c309f1767bab1c3d2e2cbf99d8e93a0da5d51608f6cf1b75"
+    },
+    {
+      "bytes": 62475,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/k8s-nodes.json",
+      "sha256": "3d1d3490ba24b857feaa3fc4c9a8d38bb0d60ca373720f7d78f2e5c5b4a493b9"
+    },
+    {
+      "bytes": 341324,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/k8s-pods.json",
+      "sha256": "83f48eeca748ef902c1c85aa605369cb14bf0a171bc3f7f5510faf49ab6d1cbe"
+    },
+    {
+      "bytes": 39960,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/k8s-services.json",
+      "sha256": "ba4154df4b97ea2535a197ab3a00842a4897483fb74c62810168c6913a81ffbf"
+    },
+    {
+      "bytes": 5380,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/reference-setup/reference-daemonset.json",
+      "sha256": "80e45494db6258697cca437dce94d3d0db342f4d5eda625c109ed46cfa82360c"
+    },
+    {
+      "bytes": 18416645,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/report.json",
+      "sha256": "524c81657af490f30b786a4de13f893e3d7162fe573e131d5b073156080456e2"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims/versions-after.json",
+      "sha256": "0d95e2ea90653fcb1f2ccb71a83b8a50269a434922ca404efee09365ba51662d"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/SHA256SUMS",
+      "sha256": "548b8564d0c306f17d1ead2142d592b01672c81e9359f2a5a4335c267a93cf90"
+    },
+    {
+      "bytes": 328707,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/api-edges.json",
+      "sha256": "736c090e36d8e250dfcd4158d13fd8c8bb6d6e2d9fa3d4466e95a2f4df49aa75"
+    },
+    {
+      "bytes": 397728,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/api-nodes.json",
+      "sha256": "767adec15c68e7624c5980f5dc90fddf628c06b0f714002ac54ebd3867fb8897"
+    },
+    {
+      "bytes": 1439638,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/consumer/ledger.json",
+      "sha256": "4532afab7def33d4e4b0a7e827b8f860a9fe511682bd4f97ff23368bf199f958"
+    },
+    {
+      "bytes": 10558,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/generator-job-status.json",
+      "sha256": "47f60f8fbe7277bfaf9a3859cf10769f54e6a57285d8fbbe59a7bd2d86965b46"
+    },
+    {
+      "bytes": 3723,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/inputs.json",
+      "sha256": "3ec990e423ba9321c309f1767bab1c3d2e2cbf99d8e93a0da5d51608f6cf1b75"
+    },
+    {
+      "bytes": 62475,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/k8s-nodes.json",
+      "sha256": "3d1d3490ba24b857feaa3fc4c9a8d38bb0d60ca373720f7d78f2e5c5b4a493b9"
+    },
+    {
+      "bytes": 341324,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/k8s-pods.json",
+      "sha256": "83f48eeca748ef902c1c85aa605369cb14bf0a171bc3f7f5510faf49ab6d1cbe"
+    },
+    {
+      "bytes": 39960,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/k8s-services.json",
+      "sha256": "ba4154df4b97ea2535a197ab3a00842a4897483fb74c62810168c6913a81ffbf"
+    },
+    {
+      "bytes": 5380,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "80e45494db6258697cca437dce94d3d0db342f4d5eda625c109ed46cfa82360c"
+    },
+    {
+      "bytes": 18416651,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/report.json",
+      "sha256": "8011adea673e759b042d8fe61183ab5a2e7d9867c58e085e2c8bdc35b06c303c"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-trace/claims-final/versions-after.json",
+      "sha256": "0d95e2ea90653fcb1f2ccb71a83b8a50269a434922ca404efee09365ba51662d"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/accuracy/SHA256SUMS",
+      "sha256": "2108367ddf23ba91d5dc8d026d13ed34f537c15eed144568df20366b10c62d05"
+    },
+    {
+      "bytes": 8178,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/accuracy/analysis-manifest.json",
+      "sha256": "a73ba04d31044104b950d2c013b8472ad49400a805504b2594cc797b1cf325ef"
+    },
+    {
+      "bytes": 52797586,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/accuracy/comparison-changes.json",
+      "sha256": "3c29a027f6d3bf8ca00afbcda4a2812b09e31bf51e75c4c99ff46b92a0ecfa73"
+    },
+    {
+      "bytes": 448563,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "bc738ab6249bdef32a341983e36cdd036763d784c7c5b96e696061a422b447fb"
+    },
+    {
+      "bytes": 109608,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/accuracy/summary.json",
+      "sha256": "feac2e22309e0b3a467533062e77b6a760d8500068550bfcb8c6ef050cc6d827"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/SHA256SUMS",
+      "sha256": "06deb0170ce56acdd84ac2482ee11f4a024ee241292b0d2750336a231c6632e1"
+    },
+    {
+      "bytes": 355433,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/api-edges.json",
+      "sha256": "907a9ec00e0316d36e85ed54ed7f9eab9ed03dc7639a1f0aa852b6ffc2bda049"
+    },
+    {
+      "bytes": 442397,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/api-nodes.json",
+      "sha256": "07d91eed50ef644db38cc8ffbfb0ec560216f418475d0dacde8d337c701ae7b1"
+    },
+    {
+      "bytes": 1654716,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/consumer/ledger.json",
+      "sha256": "78db27adad46c00935a11cde81fa08debc7218607a81b7f3b6a6f6502c2293a3"
+    },
+    {
+      "bytes": 10551,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/generator-job-status.json",
+      "sha256": "3250525237fe4d914fd49cad4fa265311b9d9a5e219adfe4bd0b29be05e89cfe"
+    },
+    {
+      "bytes": 3722,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/inputs.json",
+      "sha256": "99b980b4b6fac5f4a696614a4a3b49b97d766be707e6b1d2d9794514eebe62ee"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/k8s-nodes.json",
+      "sha256": "6d70a29b8f9777b008f3c01908773dc6f517e19460cbd73bfeab2fc0cdda4962"
+    },
+    {
+      "bytes": 799606,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/k8s-pods.json",
+      "sha256": "8a639cf8803fb8a3d7f3f42ebb4d526aa75fc0b6e4e71c75e64b8d6cf6e7a38d"
+    },
+    {
+      "bytes": 39956,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/k8s-services.json",
+      "sha256": "4f93c23c0393285afb38dd3bc940b99964d0b7ff3a7f3df660fe21be6905a488"
+    },
+    {
+      "bytes": 5380,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/reference-setup/reference-daemonset.json",
+      "sha256": "c96a38207a5e0e43ad97a2a9ae6ae2c0eb9e9f8093820ed01c22d4707bc66cc5"
+    },
+    {
+      "bytes": 23558119,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/report.json",
+      "sha256": "489065ce8185f9900a65835af58945302e85cd68585f01b895c9629a4f0405bb"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims/versions-after.json",
+      "sha256": "b2284f6a0b000c220364827649a1f99d2bc477e02a73156be03ca871dda8bdfa"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/SHA256SUMS",
+      "sha256": "ec3a24f3c79b45c3ccdb3a0653c68b04a4649aedea669666e46c1909186d3bd2"
+    },
+    {
+      "bytes": 355433,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/api-edges.json",
+      "sha256": "907a9ec00e0316d36e85ed54ed7f9eab9ed03dc7639a1f0aa852b6ffc2bda049"
+    },
+    {
+      "bytes": 442397,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/api-nodes.json",
+      "sha256": "07d91eed50ef644db38cc8ffbfb0ec560216f418475d0dacde8d337c701ae7b1"
+    },
+    {
+      "bytes": 1654716,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/consumer/ledger.json",
+      "sha256": "78db27adad46c00935a11cde81fa08debc7218607a81b7f3b6a6f6502c2293a3"
+    },
+    {
+      "bytes": 10551,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/generator-job-status.json",
+      "sha256": "3250525237fe4d914fd49cad4fa265311b9d9a5e219adfe4bd0b29be05e89cfe"
+    },
+    {
+      "bytes": 3722,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/inputs.json",
+      "sha256": "99b980b4b6fac5f4a696614a4a3b49b97d766be707e6b1d2d9794514eebe62ee"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/k8s-nodes.json",
+      "sha256": "6d70a29b8f9777b008f3c01908773dc6f517e19460cbd73bfeab2fc0cdda4962"
+    },
+    {
+      "bytes": 799606,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/k8s-pods.json",
+      "sha256": "8a639cf8803fb8a3d7f3f42ebb4d526aa75fc0b6e4e71c75e64b8d6cf6e7a38d"
+    },
+    {
+      "bytes": 39956,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/k8s-services.json",
+      "sha256": "4f93c23c0393285afb38dd3bc940b99964d0b7ff3a7f3df660fe21be6905a488"
+    },
+    {
+      "bytes": 5380,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "c96a38207a5e0e43ad97a2a9ae6ae2c0eb9e9f8093820ed01c22d4707bc66cc5"
+    },
+    {
+      "bytes": 23558125,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/report.json",
+      "sha256": "6a7ef096647861542b325fd936a794456504a598182ec90e6e804024f8e88a35"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-astronomy-mesh/claims-final/versions-after.json",
+      "sha256": "b2284f6a0b000c220364827649a1f99d2bc477e02a73156be03ca871dda8bdfa"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/accuracy/SHA256SUMS",
+      "sha256": "a933224d1b96515b443a23c2b58a9dfd5f3e1cdd92fb5c194bed809e8c2b7b99"
+    },
+    {
+      "bytes": 8170,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/accuracy/analysis-manifest.json",
+      "sha256": "71968e92b4b9cee162a13667fd1dcba157a6822954a3bcb00c66000e50f12f7c"
+    },
+    {
+      "bytes": 36178081,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/accuracy/comparison-changes.json",
+      "sha256": "9652b84ce850e6a62bb4e508883db55b5004391463e020a19f722b8ee625027b"
+    },
+    {
+      "bytes": 338257,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "ab05ffd21da77504b2aea49a54f8dca9e05355f8e371702efd46120c555c2c81"
+    },
+    {
+      "bytes": 105517,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/accuracy/summary.json",
+      "sha256": "f4aa3e7d230d2cf7aede5c5bad43b4834d81fc4fc46b93946c8c2e8d1b4ef483"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/SHA256SUMS",
+      "sha256": "667c5dd3f2edf82af3fe6f0e55766a800e8e0b8e352d8ce58058e4ad9cb85396"
+    },
+    {
+      "bytes": 310757,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/api-edges.json",
+      "sha256": "313f0557c9edc00b15097cf6afb37973af13f079e89c1b70b010bcd1d6063369"
+    },
+    {
+      "bytes": 333074,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/api-nodes.json",
+      "sha256": "ad29c4da84d2d6bb09a59f64f554448f9b5840e901a4005183c1225277ed23d8"
+    },
+    {
+      "bytes": 1342917,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/consumer/ledger.json",
+      "sha256": "f4456b10425ec9f181ff86c51e941e27a9ba820f1a36d3ed835dfa8e37546bee"
+    },
+    {
+      "bytes": 10535,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/generator-job-status.json",
+      "sha256": "1cfab040f6ec2c2db028c20c5e22a3c11357c6dc1844f5857f25330687fff281"
+    },
+    {
+      "bytes": 3719,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/inputs.json",
+      "sha256": "4d47bd7b37df1ad2ca040819241ef92c5ac549b14524f8594e23564d81cc2606"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/k8s-nodes.json",
+      "sha256": "5e420e466d7d4f267873d1860aeeba71387eab70f692b58031b450ce3313498b"
+    },
+    {
+      "bytes": 357625,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/k8s-pods.json",
+      "sha256": "a14f273308b8c37c30d8c6c3afc4f162f1085f549592e31e42ab255c2213e7c9"
+    },
+    {
+      "bytes": 16362,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/k8s-services.json",
+      "sha256": "c5aa093817f4be42b39dcbca0f1c7ae22011b280a78057fa8a0333471e7b2f80"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/reference-setup/reference-daemonset.json",
+      "sha256": "c8159d317f1aa71c0e85df8d7a22011b29acd0e13c582c956ccce38845f1e673"
+    },
+    {
+      "bytes": 18506280,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/report.json",
+      "sha256": "9292f76c0476028aeaf367e05cfe0da4d3202512bdef14b85a9f84ed5c123172"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims/versions-after.json",
+      "sha256": "94b06d39fe5e0d75bebd678dda729b198098a9ce643d31373c9233ea2c9a702f"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/SHA256SUMS",
+      "sha256": "76cd65745c272fa3372087ef14bdb6c28052fb77ea0387dac511c41b4455407b"
+    },
+    {
+      "bytes": 310757,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/api-edges.json",
+      "sha256": "313f0557c9edc00b15097cf6afb37973af13f079e89c1b70b010bcd1d6063369"
+    },
+    {
+      "bytes": 333074,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/api-nodes.json",
+      "sha256": "ad29c4da84d2d6bb09a59f64f554448f9b5840e901a4005183c1225277ed23d8"
+    },
+    {
+      "bytes": 1342917,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/consumer/ledger.json",
+      "sha256": "f4456b10425ec9f181ff86c51e941e27a9ba820f1a36d3ed835dfa8e37546bee"
+    },
+    {
+      "bytes": 10535,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/generator-job-status.json",
+      "sha256": "1cfab040f6ec2c2db028c20c5e22a3c11357c6dc1844f5857f25330687fff281"
+    },
+    {
+      "bytes": 3719,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/inputs.json",
+      "sha256": "4d47bd7b37df1ad2ca040819241ef92c5ac549b14524f8594e23564d81cc2606"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/k8s-nodes.json",
+      "sha256": "5e420e466d7d4f267873d1860aeeba71387eab70f692b58031b450ce3313498b"
+    },
+    {
+      "bytes": 357625,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/k8s-pods.json",
+      "sha256": "a14f273308b8c37c30d8c6c3afc4f162f1085f549592e31e42ab255c2213e7c9"
+    },
+    {
+      "bytes": 16362,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/k8s-services.json",
+      "sha256": "c5aa093817f4be42b39dcbca0f1c7ae22011b280a78057fa8a0333471e7b2f80"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "c8159d317f1aa71c0e85df8d7a22011b29acd0e13c582c956ccce38845f1e673"
+    },
+    {
+      "bytes": 18506286,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/report.json",
+      "sha256": "7560456a1bee3f7a3197a989048c3cf71965c8024baf63aa29e0b6940400432d"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-baseline-boutique-mesh/claims-final/versions-after.json",
+      "sha256": "94b06d39fe5e0d75bebd678dda729b198098a9ce643d31373c9233ea2c9a702f"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/accuracy/SHA256SUMS",
+      "sha256": "c61a06fab2cfdc73bc8d5d1c60318aa600add0d1590e6c1f9bb805448541d6bf"
+    },
+    {
+      "bytes": 8168,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/accuracy/analysis-manifest.json",
+      "sha256": "94998222032181d79b79b42d29bb5bb42424176bf9164b584aa25f6418a5b0f0"
+    },
+    {
+      "bytes": 7229997,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/accuracy/comparison-changes.json",
+      "sha256": "8f7433f41401ca4dbdb887a569a70e7333d6f317ecc214e05fa680da78dbb756"
+    },
+    {
+      "bytes": 68209,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "9df468f628cdc71fc242b22d43c6e7ee6e7692daf4dde851223727b74600da45"
+    },
+    {
+      "bytes": 110065,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/accuracy/summary.json",
+      "sha256": "5eaa3681fdc9f36b89ffa0c11e9656f1f9702ddce10f721c1f10e0b3c2bed0f1"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/SHA256SUMS",
+      "sha256": "52a0efbde9e825660f085805fdc32e1993ebefd9f76359924708750f54ef3d0a"
+    },
+    {
+      "bytes": 312279,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/api-edges.json",
+      "sha256": "410e1c592f2d8517baa5373cf5693a21618e388b13f687753fb679044392b52a"
+    },
+    {
+      "bytes": 336142,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/api-nodes.json",
+      "sha256": "e000f50109c75cec6d705801b84596afb4aa7b42ca777181b7e880917b3dedfb"
+    },
+    {
+      "bytes": 1313672,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/consumer/ledger.json",
+      "sha256": "09cb29b0250a35db03a38c0e25b49e8ddc8021384fc8c49729a16f8600c22e74"
+    },
+    {
+      "bytes": 10544,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/generator-job-status.json",
+      "sha256": "8bcf1ba85dba7f8cbe33a243e8a7add9e597a3b2e0f13e922ac8ef522ec357f8"
+    },
+    {
+      "bytes": 3721,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/inputs.json",
+      "sha256": "18d0297f082cbb532dd3a5f7b2434e7b0c41236f9579f8d182871bf9238f7be3"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/k8s-nodes.json",
+      "sha256": "286b0df91b960f9a9caecd4e1711ad79a8224070ac75dbd92af7e1a6db795678"
+    },
+    {
+      "bytes": 358010,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/k8s-pods.json",
+      "sha256": "a2e9ceb5d07399e83eee41147f371f5615b5b4357482bda94001105b8898864a"
+    },
+    {
+      "bytes": 16366,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/k8s-services.json",
+      "sha256": "0d4cf3c3b6bb3dbfaaf61af4e8fc642508b296eaf945d934237be64ae80d6ec5"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/reference-setup/reference-daemonset.json",
+      "sha256": "bddbc5eb82d72afbfdea883a2150f0cb5994763a761d8c6148c160fb8e8bd3f4"
+    },
+    {
+      "bytes": 4580876,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/report.json",
+      "sha256": "8bfd76cbeb82677d3789c91b7b9b4c8fc552719ad4d61097afab7f20c451030e"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims/versions-after.json",
+      "sha256": "6ef489430f90ca823a57105b99caa272c1a88058e46d13fdc5dfb0b8c1f426dc"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/SHA256SUMS",
+      "sha256": "66de0ac55086ee055b433bbaf5f33af4a0ef2f29d965c0d262993f063fdc6a28"
+    },
+    {
+      "bytes": 312279,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/api-edges.json",
+      "sha256": "410e1c592f2d8517baa5373cf5693a21618e388b13f687753fb679044392b52a"
+    },
+    {
+      "bytes": 336142,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/api-nodes.json",
+      "sha256": "e000f50109c75cec6d705801b84596afb4aa7b42ca777181b7e880917b3dedfb"
+    },
+    {
+      "bytes": 1313672,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/consumer/ledger.json",
+      "sha256": "09cb29b0250a35db03a38c0e25b49e8ddc8021384fc8c49729a16f8600c22e74"
+    },
+    {
+      "bytes": 10544,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/generator-job-status.json",
+      "sha256": "8bcf1ba85dba7f8cbe33a243e8a7add9e597a3b2e0f13e922ac8ef522ec357f8"
+    },
+    {
+      "bytes": 3721,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/inputs.json",
+      "sha256": "18d0297f082cbb532dd3a5f7b2434e7b0c41236f9579f8d182871bf9238f7be3"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/k8s-nodes.json",
+      "sha256": "286b0df91b960f9a9caecd4e1711ad79a8224070ac75dbd92af7e1a6db795678"
+    },
+    {
+      "bytes": 358010,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/k8s-pods.json",
+      "sha256": "a2e9ceb5d07399e83eee41147f371f5615b5b4357482bda94001105b8898864a"
+    },
+    {
+      "bytes": 16366,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/k8s-services.json",
+      "sha256": "0d4cf3c3b6bb3dbfaaf61af4e8fc642508b296eaf945d934237be64ae80d6ec5"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "bddbc5eb82d72afbfdea883a2150f0cb5994763a761d8c6148c160fb8e8bd3f4"
+    },
+    {
+      "bytes": 4580882,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/report.json",
+      "sha256": "0d26a41c8f7775d90d288b3394ab5dc6f241b3b7256ffe2abadf1167c9e7b2f1"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-both-sources/claims-final/versions-after.json",
+      "sha256": "6ef489430f90ca823a57105b99caa272c1a88058e46d13fdc5dfb0b8c1f426dc"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/accuracy/SHA256SUMS",
+      "sha256": "5b0b7274764c46892850536ce53304b58f8bad3e00c616b0850b1ff06bd17560"
+    },
+    {
+      "bytes": 8202,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/accuracy/analysis-manifest.json",
+      "sha256": "1765d3a17087bc54b4e069b255e2051185c591e0a41bf13502e1726f7a73252e"
+    },
+    {
+      "bytes": 5010353,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/accuracy/comparison-changes.json",
+      "sha256": "0625cac3dfefdb2b79ee8e17d311afcbf8b9def5f642bf91764d4cd17cac8323"
+    },
+    {
+      "bytes": 56917,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "fdf38a846c2217b8567d11509a9506280a5faefd4b46fd1d714d744a907c185d"
+    },
+    {
+      "bytes": 80587,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/accuracy/summary.json",
+      "sha256": "148fb5c23b4218a498f5ffee79e73e05fda189734bac2058c4c615081beca425"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/SHA256SUMS",
+      "sha256": "253500c15a638e39c24cf488b1376545166fcf1a9ac4f3514a20b8c7adf2a492"
+    },
+    {
+      "bytes": 274651,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/api-edges.json",
+      "sha256": "9e613dc9e2145ecf7ac5bbfa1a084377bb6740ca0dcb7c7588c2c65945d24c62"
+    },
+    {
+      "bytes": 306497,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/api-nodes.json",
+      "sha256": "60d4848e21d9da669435f64ae6731c3dde7ee0dc5124a2605b6beb03d1590b02"
+    },
+    {
+      "bytes": 1177777,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/consumer/ledger.json",
+      "sha256": "d8343a9fe59a285f95b30a3b0105191f6fba0c3c3b95da47170325d77b34fea8"
+    },
+    {
+      "bytes": 10561,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/generator-job-status.json",
+      "sha256": "8bc0a932805508e509d68be180a6bcf141bd6ab37580f96e178e6ffaa2aaef04"
+    },
+    {
+      "bytes": 3724,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/inputs.json",
+      "sha256": "06d9d206d1a470a970e57392fe90e8dce817f8373ddf16c0ef299922f92a61f4"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/k8s-nodes.json",
+      "sha256": "6ebe0fa3008abc08bb529bebfe02744d8eeb98d99515bbb025048a029cefc1b2"
+    },
+    {
+      "bytes": 149508,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/k8s-pods.json",
+      "sha256": "6b5ae50f29bba72cca51295a4e5ad92916c0756abd5ebea5cf991cd4d5775010"
+    },
+    {
+      "bytes": 16366,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/k8s-services.json",
+      "sha256": "805c01f22e0f303a23c3ec089cb0d1004a813113f2872745cd1e292349be9be1"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/reference-setup/reference-daemonset.json",
+      "sha256": "b9b72974207a81c788834a5f04b4368cf31f8615cd610118283b075b72839a46"
+    },
+    {
+      "bytes": 3903015,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/report.json",
+      "sha256": "338cdeb5cffcff0947d969a69bffda1c0ccb9904fc3d3e969292cc1126ed8720"
+    },
+    {
+      "bytes": 1489,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims/versions-after.json",
+      "sha256": "d560f4c561cc846116a61b5905a0ce684a0cde59e674d2a4fc21d180b831596f"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/SHA256SUMS",
+      "sha256": "1fa119d94cf1e45b2adcb8e841d4ba59cf0cff8e69489260fe7e7972ee9e8c6c"
+    },
+    {
+      "bytes": 274651,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/api-edges.json",
+      "sha256": "9e613dc9e2145ecf7ac5bbfa1a084377bb6740ca0dcb7c7588c2c65945d24c62"
+    },
+    {
+      "bytes": 306497,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/api-nodes.json",
+      "sha256": "60d4848e21d9da669435f64ae6731c3dde7ee0dc5124a2605b6beb03d1590b02"
+    },
+    {
+      "bytes": 1177777,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/consumer/ledger.json",
+      "sha256": "d8343a9fe59a285f95b30a3b0105191f6fba0c3c3b95da47170325d77b34fea8"
+    },
+    {
+      "bytes": 10561,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/generator-job-status.json",
+      "sha256": "8bc0a932805508e509d68be180a6bcf141bd6ab37580f96e178e6ffaa2aaef04"
+    },
+    {
+      "bytes": 3724,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/inputs.json",
+      "sha256": "06d9d206d1a470a970e57392fe90e8dce817f8373ddf16c0ef299922f92a61f4"
+    },
+    {
+      "bytes": 62247,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/k8s-nodes.json",
+      "sha256": "6ebe0fa3008abc08bb529bebfe02744d8eeb98d99515bbb025048a029cefc1b2"
+    },
+    {
+      "bytes": 149508,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/k8s-pods.json",
+      "sha256": "6b5ae50f29bba72cca51295a4e5ad92916c0756abd5ebea5cf991cd4d5775010"
+    },
+    {
+      "bytes": 16366,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/k8s-services.json",
+      "sha256": "805c01f22e0f303a23c3ec089cb0d1004a813113f2872745cd1e292349be9be1"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "b9b72974207a81c788834a5f04b4368cf31f8615cd610118283b075b72839a46"
+    },
+    {
+      "bytes": 3903021,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/report.json",
+      "sha256": "f0f4e4aa4d51bc5ed494b1ade635b4801a0815b07eef87344b3b263f96a11b14"
+    },
+    {
+      "bytes": 1489,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-completion-arbitration-replanned-trace/claims-final/versions-after.json",
+      "sha256": "d560f4c561cc846116a61b5905a0ce684a0cde59e674d2a4fc21d180b831596f"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/accuracy/SHA256SUMS",
+      "sha256": "7dd6574010946449a61804f6413a5f1e31da9376c2dc938dbc7c93bf99beac0b"
+    },
+    {
+      "bytes": 8154,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/accuracy/analysis-manifest.json",
+      "sha256": "3bd56afc4e61e8f8dcceb6f2474f72862cd24f156f5e3c5514cf5de35227d728"
+    },
+    {
+      "bytes": 36217207,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/accuracy/comparison-changes.json",
+      "sha256": "15abdc55a0d26998072a3b64bc493639c41914b4a85f579f6697067f4aa5d752"
+    },
+    {
+      "bytes": 336372,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "05c2e6674d64ceb74274f91bc14f8da83ce45261d14b4f69e0bcd92200aa8127"
+    },
+    {
+      "bytes": 63235,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/accuracy/summary.json",
+      "sha256": "c85743cc344c7cce18eb7969059914f606236c0858ee05e8d9e2118bcf7c875e"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/SHA256SUMS",
+      "sha256": "ed3b89b62c4ddc4947afd98a8a0dac9e6a9e1e4515f942b8e961bf2c575e7281"
+    },
+    {
+      "bytes": 309143,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/api-edges.json",
+      "sha256": "83b02e1fe04e661f4982f6d9a152a0619d691ff5bd47a2377fce79166d4da0f1"
+    },
+    {
+      "bytes": 332082,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/api-nodes.json",
+      "sha256": "1cf9312364c7dd4d286aaef07f69214168f1297f4a4ce96adb8986152075d21c"
+    },
+    {
+      "bytes": 1338980,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/consumer/ledger.json",
+      "sha256": "284bc8c087df15c07391fb2b0f03bb49f32e0d24515adefcb9e39beb6f28bde2"
+    },
+    {
+      "bytes": 10495,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/generator-job-status.json",
+      "sha256": "f6b33439003727b69c839206ea41c414c3c17b66c875d2648c5a143052ead254"
+    },
+    {
+      "bytes": 3711,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/inputs.json",
+      "sha256": "d1766d1102e7ea1943fd9da9a734e8a15ea724e68bf7a5cb92defeac6d919885"
+    },
+    {
+      "bytes": 63231,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/k8s-nodes.json",
+      "sha256": "c773f67e87923dabf9061c8fbdc3e57e2b7a9d8086832fe364aaf531503ee095"
+    },
+    {
+      "bytes": 357633,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/k8s-pods.json",
+      "sha256": "06f8aeae86382a1da4234ab61c5640e34f9c22a681e8042b73e19ef7da8c6591"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/k8s-services.json",
+      "sha256": "e274115be95be8f90d0e8d32db416cb370cea1dc56d1bb096735c3b1f0f4f0ec"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/reference-setup/reference-daemonset.json",
+      "sha256": "583a8c62df8d353728c41431ccdc77e1e52dd097badea96c81aad342985e9d57"
+    },
+    {
+      "bytes": 18511369,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/report.json",
+      "sha256": "8d3d550705bafc640b50f55e3b5e4233d87249d7b402ebadbd0ebc2afe8160db"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims/versions-after.json",
+      "sha256": "6d39d9a9f2807f4b713fb890e1b2e44c81202dc74245fa5874cddd80b9ef9467"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/SHA256SUMS",
+      "sha256": "b4c141dbfa237ad5b655090e51840a22e0fd5d134296a48ce0c4143b65c2abf9"
+    },
+    {
+      "bytes": 309143,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/api-edges.json",
+      "sha256": "83b02e1fe04e661f4982f6d9a152a0619d691ff5bd47a2377fce79166d4da0f1"
+    },
+    {
+      "bytes": 332082,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/api-nodes.json",
+      "sha256": "1cf9312364c7dd4d286aaef07f69214168f1297f4a4ce96adb8986152075d21c"
+    },
+    {
+      "bytes": 1338980,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/consumer/ledger.json",
+      "sha256": "284bc8c087df15c07391fb2b0f03bb49f32e0d24515adefcb9e39beb6f28bde2"
+    },
+    {
+      "bytes": 10495,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/generator-job-status.json",
+      "sha256": "f6b33439003727b69c839206ea41c414c3c17b66c875d2648c5a143052ead254"
+    },
+    {
+      "bytes": 3711,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/inputs.json",
+      "sha256": "d1766d1102e7ea1943fd9da9a734e8a15ea724e68bf7a5cb92defeac6d919885"
+    },
+    {
+      "bytes": 63231,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/k8s-nodes.json",
+      "sha256": "c773f67e87923dabf9061c8fbdc3e57e2b7a9d8086832fe364aaf531503ee095"
+    },
+    {
+      "bytes": 357633,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/k8s-pods.json",
+      "sha256": "06f8aeae86382a1da4234ab61c5640e34f9c22a681e8042b73e19ef7da8c6591"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/k8s-services.json",
+      "sha256": "e274115be95be8f90d0e8d32db416cb370cea1dc56d1bb096735c3b1f0f4f0ec"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "583a8c62df8d353728c41431ccdc77e1e52dd097badea96c81aad342985e9d57"
+    },
+    {
+      "bytes": 18511375,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/report.json",
+      "sha256": "84d877f8457a5acf2e0a98d4c7f6a45cd2c6c17cdce88c0d881e8824f72f8108"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-mesh/claims-final/versions-after.json",
+      "sha256": "6d39d9a9f2807f4b713fb890e1b2e44c81202dc74245fa5874cddd80b9ef9467"
+    },
+    {
+      "bytes": 355,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/accuracy/SHA256SUMS",
+      "sha256": "8590a0fe0b522024faaa9376257237245906325ff97494115a7fc39718bbac63"
+    },
+    {
+      "bytes": 8185,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/accuracy/analysis-manifest.json",
+      "sha256": "a76920ecdc182e604bf5aef1de979d808f7af8612d824f10946a8a4ebbe7e89a"
+    },
+    {
+      "bytes": 25092393,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/accuracy/comparison-changes.json",
+      "sha256": "1c9088ec934b5ca21b54139b3022bfe967e81b278e2ba6dd85e26d38587e555e"
+    },
+    {
+      "bytes": 277846,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/accuracy/resource-comparisons.ndjson.gz",
+      "sha256": "f136207f94fca8961bb67592b9fc0c6fbbf132d6cfd77ad7d5e1c58ae028182c"
+    },
+    {
+      "bytes": 168321,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/accuracy/summary.json",
+      "sha256": "5e5d63923a14f689d9badd7405ad2dc06ebd1b7b2422805becdee13afa4a3e66"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/SHA256SUMS",
+      "sha256": "b6aaa0a95cb29eaf57e5cabe74986469b54ea221aed230d644aba0a3c84a7e48"
+    },
+    {
+      "bytes": 277078,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/api-edges.json",
+      "sha256": "66a341a569e49f43d5293a1151c3ade8a347c13fee1035a6185b352246f8a347"
+    },
+    {
+      "bytes": 308986,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/api-nodes.json",
+      "sha256": "1ba76268aea2f884e6fe9befa035ce84796344902fc386f1b3f2c3a42ab33ca7"
+    },
+    {
+      "bytes": 1193894,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/consumer/ledger.json",
+      "sha256": "a9e66da9844ec427f4360d8b1307b96c94b5a56bc482c88660d4179263979476"
+    },
+    {
+      "bytes": 10502,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/generator-job-status.json",
+      "sha256": "4bfcae40480e4d7756b709153dac8c1764426db5d686e9b59ba3a3e4e4bc0b5b"
+    },
+    {
+      "bytes": 3712,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/inputs.json",
+      "sha256": "2843cd690bb9cab5588c802c119f2024ad12a20303e91f9b6edd66b802867b17"
+    },
+    {
+      "bytes": 63231,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/k8s-nodes.json",
+      "sha256": "b09bf42603d6a11abd4c7cf856ce9d69cc32cd42d5d169457366729955276740"
+    },
+    {
+      "bytes": 148826,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/k8s-pods.json",
+      "sha256": "46487d55f8042cd64160971b4c49d36e056c2bc2bc17840f5fb6894e733eea2b"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/k8s-services.json",
+      "sha256": "5a491c763d8a357b646ff96ad5571095cc2f2c104c89fdf5c8a9ca63bb109b1f"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/reference-setup/reference-daemonset.json",
+      "sha256": "4ebc7d5732cca7f7613d4bd307f83249ce536352e72a0039668dafb754aad1b7"
+    },
+    {
+      "bytes": 15653227,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/report.json",
+      "sha256": "ed1f145362ef8b648e2a141277048e1133b0b479cbda7b02bcf7e0ae32c6f2f1"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims/versions-after.json",
+      "sha256": "63b1ffcf17b4fc1e9e7a9843a0e1f3c3060ba13acd798b298505c212427846ee"
+    },
+    {
+      "bytes": 935,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/SHA256SUMS",
+      "sha256": "b9c5ea7539dbb105f8b1399459385a9d00a44b0fd898ed4d2bce72084c457703"
+    },
+    {
+      "bytes": 277078,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/api-edges.json",
+      "sha256": "66a341a569e49f43d5293a1151c3ade8a347c13fee1035a6185b352246f8a347"
+    },
+    {
+      "bytes": 308986,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/api-nodes.json",
+      "sha256": "1ba76268aea2f884e6fe9befa035ce84796344902fc386f1b3f2c3a42ab33ca7"
+    },
+    {
+      "bytes": 1193894,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/consumer/ledger.json",
+      "sha256": "a9e66da9844ec427f4360d8b1307b96c94b5a56bc482c88660d4179263979476"
+    },
+    {
+      "bytes": 10502,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/generator-job-status.json",
+      "sha256": "4bfcae40480e4d7756b709153dac8c1764426db5d686e9b59ba3a3e4e4bc0b5b"
+    },
+    {
+      "bytes": 3712,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/inputs.json",
+      "sha256": "2843cd690bb9cab5588c802c119f2024ad12a20303e91f9b6edd66b802867b17"
+    },
+    {
+      "bytes": 63231,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/k8s-nodes.json",
+      "sha256": "b09bf42603d6a11abd4c7cf856ce9d69cc32cd42d5d169457366729955276740"
+    },
+    {
+      "bytes": 148826,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/k8s-pods.json",
+      "sha256": "46487d55f8042cd64160971b4c49d36e056c2bc2bc17840f5fb6894e733eea2b"
+    },
+    {
+      "bytes": 16360,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/k8s-services.json",
+      "sha256": "5a491c763d8a357b646ff96ad5571095cc2f2c104c89fdf5c8a9ca63bb109b1f"
+    },
+    {
+      "bytes": 5379,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/reference-setup/reference-daemonset.json",
+      "sha256": "4ebc7d5732cca7f7613d4bd307f83249ce536352e72a0039668dafb754aad1b7"
+    },
+    {
+      "bytes": 15653233,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/report.json",
+      "sha256": "5d7e6151f5435c29f3ea43f25535cdbb5d44ca3d59290ae6d98190e70e69eff9"
+    },
+    {
+      "bytes": 1490,
+      "path": "analyses/thesis-robustness-20261119/sealed-v4/official-r2-baseline-boutique-trace/claims-final/versions-after.json",
+      "sha256": "63b1ffcf17b4fc1e9e7a9843a0e1f3c3060ba13acd798b298505c212427846ee"
+    }
+  ],
+  "input_archives": {
+    "objects": [
+      {
+        "bytes": 116130919,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-boutique-trace/raw.tar.gz",
+        "sha256": "19cb2f11c895a30871bdbd7cdc26b14228ef1bc0386ce0f18ca6316b32628a92",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-boutique-trace-a1/window.tar.gz",
+        "window": "official-completion-baseline-boutique-trace"
+      },
+      {
+        "bytes": 27569568,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-boutique-trace/analysis.tar.gz",
+        "sha256": "420de4bc493ec517f65e6d95bebb70447698c38ddeb356c4c9c50ab664698f4b",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-boutique-trace-a1/analysis/window.tar.gz",
+        "window": "official-completion-baseline-boutique-trace"
+      },
+      {
+        "bytes": 150420577,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-astronomy-trace/raw.tar.gz",
+        "sha256": "cf1532e926ff375da77c54651fd6e4ac8cfefdf32db18c68b7bfeaf21f68352a",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-astronomy-trace-a1/window.tar.gz",
+        "window": "official-completion-baseline-astronomy-trace"
+      },
+      {
+        "bytes": 32227822,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-astronomy-trace/analysis.tar.gz",
+        "sha256": "1780bd25cc1123879f23f3882bf8a4dd5a2d33ea1a3dbe39a22e051517c49376",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-astronomy-trace-a1/analysis/window.tar.gz",
+        "window": "official-completion-baseline-astronomy-trace"
+      },
+      {
+        "bytes": 203910424,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-astronomy-mesh/raw.tar.gz",
+        "sha256": "81433bb48080665aaf861fcf98684cc3a78db1fa7648065ab79137a14fb89c6a",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-astronomy-mesh-a2/window.tar.gz",
+        "window": "official-completion-baseline-astronomy-mesh"
+      },
+      {
+        "bytes": 55662772,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-astronomy-mesh/analysis.tar.gz",
+        "sha256": "34ddd51c8946ed68d090a2b4ecbc3797f4077385a38eabc23dafc78c4a70b638",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-astronomy-mesh-a2/analysis/window.tar.gz",
+        "window": "official-completion-baseline-astronomy-mesh"
+      },
+      {
+        "bytes": 154191883,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-boutique-mesh/raw.tar.gz",
+        "sha256": "aa22273e03337ac7d08b1233e568a4ca29bafc0e8c0540f913af6a164fec2e3c",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-boutique-mesh-a1/window.tar.gz",
+        "window": "official-completion-baseline-boutique-mesh"
+      },
+      {
+        "bytes": 39203298,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-baseline-boutique-mesh/analysis.tar.gz",
+        "sha256": "7625a245e5565c41dbb889da9ae51d81feb4cd645805df189d579bf581db1056",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/baseline/official-completion-baseline-boutique-mesh-a1/analysis/window.tar.gz",
+        "window": "official-completion-baseline-boutique-mesh"
+      },
+      {
+        "bytes": 78857615,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-arbitration-both-sources/raw.tar.gz",
+        "sha256": "f0a703361afdc3a81b577bdc80837704dc287de072865ab80536fdd7a7a86637",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/diagnostics/arbitration/official-completion-arbitration-both-sources-a1/window.tar.gz",
+        "window": "official-completion-arbitration-both-sources"
+      },
+      {
+        "bytes": 14697612,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-arbitration-both-sources/analysis.tar.gz",
+        "sha256": "9852a8cbaf6967a6b9855bd3d8ac1e2d916313743e64962af6cbf551047d9d84",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/diagnostics/arbitration/official-completion-arbitration-both-sources-a1/analysis/window.tar.gz",
+        "window": "official-completion-arbitration-both-sources"
+      },
+      {
+        "bytes": 60301799,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-arbitration-replanned-trace/raw.tar.gz",
+        "sha256": "3d4a1d8dfcf67f4e69770ded8c6843f84deab8fab3c00f48aed88bb41d4b4f35",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/diagnostics/arbitration/official-completion-arbitration-replanned-trace-a1/window.tar.gz",
+        "window": "official-completion-arbitration-replanned-trace"
+      },
+      {
+        "bytes": 10501466,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-completion-arbitration-replanned-trace/analysis.tar.gz",
+        "sha256": "3e258497d1c6084bd6cd8b78fc5af3dc5a37c7b05d98455ac452126d9c432d64",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-1/diagnostics/arbitration/official-completion-arbitration-replanned-trace-a1/analysis/window.tar.gz",
+        "window": "official-completion-arbitration-replanned-trace"
+      },
+      {
+        "bytes": 153939103,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-r2-baseline-boutique-mesh/raw.tar.gz",
+        "sha256": "5e06e5cea937771b09022d8de1a97021d7a87ae9f485336985da29049cc84814",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-2/baseline/official-r2-baseline-boutique-mesh-a2/window.tar.gz",
+        "window": "official-r2-baseline-boutique-mesh"
+      },
+      {
+        "bytes": 38961010,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-r2-baseline-boutique-mesh/analysis.tar.gz",
+        "sha256": "8674f567bb4c54909393a1a75ac110646a336afe363da0f20f46dcda10b1d5dd",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-2/baseline/official-r2-baseline-boutique-mesh-a2/analysis/window.tar.gz",
+        "window": "official-r2-baseline-boutique-mesh"
+      },
+      {
+        "bytes": 115155187,
+        "kind": "raw",
+        "path": "/private/tmp/karthos-robustness-evidence/official-r2-baseline-boutique-trace/raw.tar.gz",
+        "sha256": "8eb26fef84bd73e03048d1a4ed6ed31bfe95d271bfea38f12a04137d6aa46ce9",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-2/baseline/official-r2-baseline-boutique-trace-a1/window.tar.gz",
+        "window": "official-r2-baseline-boutique-trace"
+      },
+      {
+        "bytes": 28008002,
+        "kind": "analysis",
+        "path": "/private/tmp/karthos-robustness-evidence/official-r2-baseline-boutique-trace/analysis.tar.gz",
+        "sha256": "7e438e68d67279bab655fd5fdddc1435e68c689c3dfa4ed1b708442b919ce9d7",
+        "uri": "gs://karthos-karthos-eval-evidence/gke-qualification-v1/runs/full-bounded-study-20261117/repeat-2/baseline/official-r2-baseline-boutique-trace-a1/analysis/window.tar.gz",
+        "window": "official-r2-baseline-boutique-trace"
+      }
+    ],
+    "originals_modified": false,
+    "source_matrix_sha256": "4de0da3e5a6b93668747bd65920d1504d3240fc2223896dd0c7bbad6cfe80bcf"
+  },
+  "original_summary": {
+    "GKE-SHA256SUMS": "d7091d7d437fccc2b3cad5b0d9b9e98ef0d77acc10aa58082749fbb497389a25",
+    "attempts.csv": "1fff69cf4571352f64eed2b06ec42ad83654b099245a80d1a6a307ec24d51529",
+    "attempts.json": "56e3844baf50adb2e37bfc15b02bb776cf32f1514c87267eca7aaf19a200b9dc",
+    "claim-matrix.json": "da8a15c482b1c77b86ca8b50010cf04002df50539d37567359792cc53c6c47b8",
+    "matrix.csv": "d46b22a315601a7d2f3e85d31831bcb9a907e4943636110614aa880718dce66e",
+    "matrix.html": "52b27991846db7cff11248acd5644d14d9475bc41525f9a9c4d1ce2814f516fe",
+    "matrix.json": "4de0da3e5a6b93668747bd65920d1504d3240fc2223896dd0c7bbad6cfe80bcf",
+    "phase-timings.ndjson": "48d2ce87e780e66c9f598bc5b76eea1034acba44b1c319154e8ab4d0f33398f4",
+    "progress.ndjson": "e8d72ae4c58431400d247168d24b8f338d341968a338b426ce066adca8d1c9a5",
+    "readback-receipt.json": "660f1306ffb4111d0b6c14915314b121846987902247aeec11708ce5959e1dea",
+    "run-report.json": "f6ab83df7430865f6bee966f62081c79b21245bfefe504897c155fabf9a008f0"
+  },
+  "verification": "archive and consumed member hashes checked; original readback receipt separately verified; no originals modified"
+}

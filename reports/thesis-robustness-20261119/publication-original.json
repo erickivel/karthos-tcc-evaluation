@@ -1,0 +1,19 @@
+{
+  "scope": "original-study reanalysis; complementary execution separate",
+  "objects": [
+    {
+      "uri": "gs://karthos-karthos-eval-evidence/reanalyses/thesis-robustness-20261119/7d9190e/study-original.tar.gz",
+      "generation": "1795068667219208",
+      "sha256": "2d1b60d8649dd7aa24c4dc5d9278188d7909cb67c152dac01eaf6f2852f41690",
+      "bytes": 26313875,
+      "readback_verified": true
+    },
+    {
+      "uri": "gs://karthos-karthos-eval-evidence-backup/reanalyses/thesis-robustness-20261119/7d9190e/study-original.tar.gz",
+      "generation": "1795068738967574",
+      "sha256": "2d1b60d8649dd7aa24c4dc5d9278188d7909cb67c152dac01eaf6f2852f41690",
+      "bytes": 26313875,
+      "readback_verified": true
+    }
+  ]
+}
