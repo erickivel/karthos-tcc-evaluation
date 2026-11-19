@@ -37,6 +37,36 @@ def verified_reports(path, window, receipt, claims_subdir='claims'):
     return report,accuracy
 
 
+def campaign_metadata(run_id, runtime_commit, role, receipt, readback):
+    """Bind explicit campaign labels to offline evidence; never infer runtime identity."""
+    if run_id is None and runtime_commit is None and role is None:
+        return dict(original_run='full-bounded-study-20261117',runtime_frozen_commit='6e9304e',
+                    complement=dict(state='preparing',measurements_started=False))
+    import re
+    from urllib.parse import urlsplit
+    if not run_id or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*',run_id) or role!='primary' or not runtime_commit or not re.fullmatch(r'[0-9a-f]{40}',runtime_commit):
+        raise ValueError('explicit campaign requires run ID, full runtime commit and primary role')
+    def belongs(uri):
+        parsed=urlsplit(uri)
+        return parsed.scheme=='gs' and bool(parsed.netloc) and ('/runs/'+run_id+'/') in parsed.path and '..' not in parsed.path.split('/')
+    # The caller already verifies this digest against the local summary seal.
+    seals=[o for o in readback.get('objects',[]) if o.get('uri','').endswith('/final-summary/GKE-SHA256SUMS')]
+    if not seals or any(not belongs(o['uri']) or o.get('sha256')!=readback.get('seal_sha256') for o in seals):
+        raise ValueError('campaign readback must bind the summary seal to the requested run')
+    if readback.get('run_id',run_id)!=run_id:
+        raise ValueError('campaign readback run identity differs')
+    if not receipt.get('objects'):
+        raise ValueError('campaign archives unavailable')
+    for item in receipt['objects']:
+        if not belongs(item['uri']):raise ValueError('archive campaign differs from requested run')
+        path=Path(item['path'])
+        if not path.is_file() or path.stat().st_size!=item['bytes'] or sha(path)!=item['sha256']:
+            raise ValueError('campaign archive unavailable or changed')
+    return dict(original_run=run_id,runtime_frozen_commit=runtime_commit,
+                campaign=dict(run_id=run_id,role=role,summary_seal_sha256=readback['seal_sha256'],
+                              runtime_commit_evidence='caller-supplied; not runtime attestation'))
+
+
 def main():
     import argparse
     parser=argparse.ArgumentParser(description='Build thesis support outputs from sealed offline reanalysis; no cloud access.')
@@ -44,6 +74,9 @@ def main():
     parser.add_argument('--original-summary',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--claims-subdir',default='claims',choices=('claims','claims-final'))
+    parser.add_argument('--campaign-run-id',help='Explicit primary campaign ID; requires matching verified archive and readback URIs.')
+    parser.add_argument('--runtime-frozen-commit',help='Full runtime commit supplied by the operator; metadata, not runtime attestation.')
+    parser.add_argument('--campaign-role',choices=('primary',),help='Use primary for a new full campaign; omit all campaign arguments for legacy reanalysis.')
     args=parser.parse_args()
     base=args.analysis_root;original=args.original_summary
     receipt=read(base/'download-receipt.json')
@@ -60,6 +93,8 @@ def main():
         expected=export['objects']['window.tar.gz']
         if item['sha256']!=expected['sha256'] or item['bytes']!=expected['bytes'] or item['uri']!=export['uri'].rstrip('/')+'/window.tar.gz':
             raise ValueError('download receipt differs from original sealed export')
+
+    metadata=campaign_metadata(args.campaign_run_id,args.runtime_frozen_commit,args.campaign_role,receipt,readback)
 
     reports={};details=[];index=[];footprints=[]
     for item in read(base/'index.json'):
@@ -103,7 +138,7 @@ def main():
       row['attempt_ids']=[a.get('attempt_id') for a in attempts if a.get('logical_id')==row['id']]
       row.pop('attempts',None)
     out=args.output;out.mkdir(parents=True,exist_ok=False)
-    write(out/'results.json',dict(original_run='full-bounded-study-20261117',analysis_rules=a['analysis_version'],runtime_frozen_commit='6e9304e',historical_results_modified=False,baseline_claims=claims,details=details,no_double_counting=no_double_counting(matrix,reports),original_attempts=[{k:r.get(k) for k in ('logical_id','attempt_id','state','execution','evidence_valid')} for r in attempts],complement=dict(state='preparing',measurements_started=False)))
+    write(out/'results.json',dict(**metadata,analysis_rules=a['analysis_version'],historical_results_modified=False,baseline_claims=claims,details=details,no_double_counting=no_double_counting(matrix,reports),original_attempts=[{k:r.get(k) for k in ('logical_id','attempt_id','state','execution','evidence_valid')} for r in attempts]))
     write(out/'component-footprint.json',footprints)
     write(out/'evidence-index.json',dict(input_archives=receipt,derived_files=index,original_summary={f.name:sha(f) for f in original.iterdir() if f.is_file()},verification='archive and consumed member hashes checked; original readback receipt separately verified; no originals modified'))
     print('wrote',out)
