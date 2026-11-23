@@ -1,0 +1,78 @@
+{
+  "history_sealed_members_verified": [
+    {
+      "path": "EXPORT-PROJECTION.json",
+      "sha256": "285bd6604309e0400cfa5d0f233da10c78c466c1815067ee68a97ae50233cd18"
+    },
+    {
+      "path": "consumer/ledger.json",
+      "sha256": "e3e89fa3d068aa6247b6ae63b73dffddeebe59a82570bdb99f6ba0cf10e0d38c"
+    },
+    {
+      "path": "consumer/manifests.json",
+      "sha256": "41247fff3cddc878255b3c7537fa002cd55e38127700b93176662a2ab40c777d"
+    },
+    {
+      "path": "consumer/questions.json",
+      "sha256": "3128ec735c9a6632f6af135b6c25c71f48b19156d0fb9d164c6a0ff972f9cf6f"
+    },
+    {
+      "path": "consumer/requested-queries.json",
+      "sha256": "6f51897c282faa532af029dd2dc5380b2249398eb7f9bc25e2c7f1b77e6e3674"
+    },
+    {
+      "path": "consumer/snapshot-ids.json",
+      "sha256": "fa9508fdf816e427cc5c2f461c3d8f3f079fabb087aa0dcfbd1a3df758c159d0"
+    },
+    {
+      "path": "consumer/status.json",
+      "sha256": "6eee64a958d7e11c19c5cf1bac3291bc83567372adc9e756201a9769cf78a6ab"
+    },
+    {
+      "path": "consumer/stdout.json",
+      "sha256": "8fd691679f2eee30a20d8e9956056669ef7f442f67d11cc8afbb3565f27321c6"
+    },
+    {
+      "path": "kubernetes-after.json",
+      "sha256": "a10221f4165ed4921ce26dbefa51e9956d299e9cd6f95444ead34d72301ef701"
+    },
+    {
+      "path": "kubernetes-before.json",
+      "sha256": "4312b053cbbe09b05af131c8b1c562267bdccd2bd7ea801efc56098cfaba924d"
+    },
+    {
+      "path": "lifecycle-api.ndjson",
+      "sha256": "04fd79f5c52b150898db4e2033c5b6fe260d5c257e2a7411c7275841e1da862e"
+    },
+    {
+      "path": "lifecycle-reference.ndjson",
+      "sha256": "230e44c1cdc37b1c5ef37411a8b67021b5911ca8c1d482369336fff18dbdf9a7"
+    },
+    {
+      "path": "lifecycle-trigger.json",
+      "sha256": "5971f3a78aab48148642c9b06a04d5a96cecb88521a1495258192d314bc806bc"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "aa2ea88469d0eda673390a987c7318b5412166cd97b67900ce16da7017e6e864"
+    },
+    {
+      "path": "report.json",
+      "sha256": "810bfeec85009e785d5b404a7b394aea627c69981b828ff47f688a29bb95d975"
+    },
+    {
+      "path": "restart-thesis-robustness-full-20261119-v2-checkoutservice.json",
+      "sha256": "0d8b5753ed7445816d74356355a2c0403f86e6584e2a9007fd1978cba76f4636"
+    },
+    {
+      "path": "snapshot-after.json",
+      "sha256": "7a04e421adeb652812b4a604335f0f991e3cbc6eb94b65c9d5c5b035eba735b3"
+    },
+    {
+      "path": "snapshot-before.json",
+      "sha256": "8845aa2d3ab03fa00fc791de8c605cb4078c260834541605e76b18978f3184d1"
+    }
+  ],
+  "owned_replay_containers_remaining": [],
+  "scope": "offline investigation resources only; cloud closeout remains in original report"
+}

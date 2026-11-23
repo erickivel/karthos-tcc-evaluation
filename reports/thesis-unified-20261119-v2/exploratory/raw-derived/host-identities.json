@@ -1,0 +1,23 @@
+{
+  "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v.ndjson": [
+    [
+      "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "a8af3723-565d-4bec-a392-5749bdbd712e",
+      "ed011c56-c952-4475-b4e2-8abed2be1a32"
+    ]
+  ],
+  "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw.ndjson": [
+    [
+      "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+      "d0b16303-1c90-450c-99f9-50fd8fab95b4",
+      "2eb6588a-b64a-430f-97ba-1a3abeba53f8"
+    ]
+  ],
+  "gke-karthos-eval-1bad98771cbffa-app-a-da026b9e-w4rc.ndjson": [
+    [
+      "gke-karthos-eval-1bad98771cbffa-app-a-da026b9e-w4rc",
+      "44815b0a-4e3b-4e9f-9e9e-dab1870e0cf3",
+      "2f0fed7c-d036-4f62-84b7-d22aaeac7a11"
+    ]
+  ]
+}

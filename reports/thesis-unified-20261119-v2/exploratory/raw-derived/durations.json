@@ -1,0 +1,863 @@
+[
+  {
+    "label": "B1",
+    "quiet_before": 1795095915.907933,
+    "quiet_after": 1795096333.1745572,
+    "count": 360.0,
+    "mean_ms": 14.244123475,
+    "server_span_ms": 14.244123475,
+    "client_span_ms": 16.133411319444445,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "false",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795095906.271,
+          10
+        ],
+        "after": [
+          1795096326.271,
+          310
+        ],
+        "delta": 300
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "false",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795095906.271,
+          0.152479908
+        ],
+        "after": [
+          1795096326.271,
+          4.543086586
+        ],
+        "delta": 4.390606678
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "true",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795095906.271,
+          2
+        ],
+        "after": [
+          1795096326.271,
+          62
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "true",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795095906.271,
+          0.020297793
+        ],
+        "after": [
+          1795096326.271,
+          0.757575566
+        ],
+        "delta": 0.737277773
+      }
+    ]
+  },
+  {
+    "label": "B2",
+    "quiet_before": 1795099037.8573012,
+    "quiet_after": 1795099456.4281702,
+    "count": 360.0,
+    "mean_ms": 31.852637700000002,
+    "server_span_ms": 31.8526377,
+    "client_span_ms": 35.39647513055556,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "failed": "false",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795099027.543,
+          0.385655807
+        ],
+        "after": [
+          1795099447.543,
+          10.72295674
+        ],
+        "delta": 10.337300933000002
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "failed": "false",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795099027.543,
+          10
+        ],
+        "after": [
+          1795099447.543,
+          310
+        ],
+        "delta": 300
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "failed": "true",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795099027.543,
+          0.034773642
+        ],
+        "after": [
+          1795099447.543,
+          1.164422281
+        ],
+        "delta": 1.129648639
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "failed": "true",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795099027.543,
+          2
+        ],
+        "after": [
+          1795099447.543,
+          62
+        ],
+        "delta": 60
+      }
+    ]
+  },
+  {
+    "label": "B3",
+    "quiet_before": 1795102655.6501195,
+    "quiet_after": 1795103075.0649238,
+    "count": 360.0,
+    "mean_ms": 52.43333333333332,
+    "server_span_ms": 50.11132343333333,
+    "client_span_ms": 56.80964498888889,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795102654.294,
+          7.2055
+        ],
+        "after": [
+          1795103074.294,
+          24.1905
+        ],
+        "delta": 16.985
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795102654.294,
+          16
+        ],
+        "after": [
+          1795103074.294,
+          76
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795102654.294,
+          0.529
+        ],
+        "after": [
+          1795103074.294,
+          2.42
+        ],
+        "delta": 1.891
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-astronomy",
+          "edge_client": "frontend",
+          "edge_client_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "edge_server": "checkout",
+          "edge_server_id": "4dc967e717fdd2412b01c70fefad8e3339ffe76477bda7c1fcfafcc67b96b874",
+          "entity_id": "ce7b91364c73fbe2762454e0393f865fc88cf3b295813642a76763e2d015d010",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-astronomy/sa/eval-astronomy",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-astronomy",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795102654.294,
+          80
+        ],
+        "after": [
+          1795103074.294,
+          380
+        ],
+        "delta": 300
+      }
+    ]
+  },
+  {
+    "label": "B4",
+    "quiet_before": 1795106725.2499328,
+    "quiet_after": 1795107143.368444,
+    "count": 360.0,
+    "mean_ms": 37.18194444444445,
+    "server_span_ms": 35.07707154444444,
+    "client_span_ms": 39.75369361388889,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795106716.77,
+          12.4515
+        ],
+        "after": [
+          1795107136.77,
+          24.16
+        ],
+        "delta": 11.7085
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795106716.77,
+          16
+        ],
+        "after": [
+          1795107136.77,
+          76
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795106716.77,
+          0.5
+        ],
+        "after": [
+          1795107136.77,
+          2.177
+        ],
+        "delta": 1.677
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795106716.77,
+          80
+        ],
+        "after": [
+          1795107136.77,
+          380
+        ],
+        "delta": 300
+      }
+    ]
+  },
+  {
+    "label": "B5",
+    "quiet_before": 1795115676.7925382,
+    "quiet_after": 1795116094.9655519,
+    "count": 360.0,
+    "mean_ms": 30.054166666666667,
+    "server_span_ms": 28.332122558333335,
+    "client_span_ms": 32.07691212777778,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795115672.587,
+          6.8065
+        ],
+        "after": [
+          1795116092.587,
+          16.375
+        ],
+        "delta": 9.5685
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795115672.587,
+          16
+        ],
+        "after": [
+          1795116092.587,
+          76
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795115672.587,
+          0.5005
+        ],
+        "after": [
+          1795116092.587,
+          1.7515
+        ],
+        "delta": 1.2510000000000001
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795115672.587,
+          80
+        ],
+        "after": [
+          1795116092.587,
+          380
+        ],
+        "delta": 300
+      }
+    ]
+  },
+  {
+    "label": "B6",
+    "quiet_before": 1795119093.4279737,
+    "quiet_after": 1795119512.2508998,
+    "count": 360.0,
+    "mean_ms": 12.350446527777779,
+    "server_span_ms": 12.350446527777779,
+    "client_span_ms": 14.033430533333334,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "false",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795119082.553,
+          0.129611005
+        ],
+        "after": [
+          1795119502.553,
+          4.063741252
+        ],
+        "delta": 3.9341302469999997
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "false",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795119082.553,
+          10
+        ],
+        "after": [
+          1795119502.553,
+          310
+        ],
+        "delta": 300
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "true",
+          "karthos_unit": "count",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795119082.553,
+          2
+        ],
+        "after": [
+          1795119502.553,
+          62
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "failed": "true",
+          "karthos_unit": "seconds",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "traces.servicegraph"
+        },
+        "before": [
+          1795119082.553,
+          0.019218473
+        ],
+        "after": [
+          1795119502.553,
+          0.531248976
+        ],
+        "delta": 0.512030503
+      }
+    ]
+  },
+  {
+    "label": "arbitration",
+    "quiet_before": 1795109748.3457694,
+    "quiet_after": 1795109925.733046,
+    "count": 72.0,
+    "mean_ms": 42.381944444444436,
+    "server_span_ms": 40.301265416666666,
+    "client_span_ms": 45.100976458333335,
+    "partitions": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795109747.287,
+          0.9105
+        ],
+        "after": [
+          1795109912.287,
+          1.2625
+        ],
+        "delta": 0.352
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795109747.287,
+          10
+        ],
+        "after": [
+          1795109912.287,
+          70
+        ],
+        "delta": 60
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795109747.287,
+          4.4625
+        ],
+        "after": [
+          1795109912.287,
+          7.162
+        ],
+        "delta": 2.6994999999999996
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "before": [
+          1795109747.287,
+          2
+        ],
+        "after": [
+          1795109912.287,
+          14
+        ],
+        "delta": 12
+      }
+    ]
+  }
+]

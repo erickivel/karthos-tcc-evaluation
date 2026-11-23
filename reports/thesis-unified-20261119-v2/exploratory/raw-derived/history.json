@@ -1,0 +1,3417 @@
+{
+  "trigger": {
+    "completed_at": 1795108526.747962,
+    "completed_monotonic": 14690.930233817,
+    "started_at": 1795108526.142552,
+    "started_monotonic": 14690.324822926
+  },
+  "restart_record": {
+    "completed_at": 1795108526.7471662,
+    "completion": "not observed by this request function",
+    "kind": "deployment",
+    "name": "checkoutservice",
+    "namespace": "karthos-eval-boutique",
+    "requested_at": 1795108526.5139475,
+    "resource_version": "1795105164643087011",
+    "restart_count_requested": 1,
+    "returncode": 0,
+    "run_id": "thesis-robustness-full-20261119-v2",
+    "state": "requested",
+    "stderr": "",
+    "uid": "ab7f5d72-17bd-489b-b184-ec5b0b15eae9"
+  },
+  "references": [
+    {
+      "acquisition": {
+        "completed_at": 1795108525.3342044,
+        "completed_monotonic": 14689.516474028,
+        "started_at": 1795108525.1290271,
+        "started_monotonic": 14689.311297971
+      },
+      "list_resource_version": "",
+      "namespace": "karthos-eval-boutique",
+      "phase": "before",
+      "pods": [
+        {
+          "metadata": {
+            "name": "checkoutservice-7b4fd8cf86-v6nnb",
+            "namespace": "karthos-eval-boutique",
+            "resourceVersion": "1795105163969375015",
+            "uid": "f3f176a9-45f9-450a-9dce-dd3fa3380b5c"
+          },
+          "spec": {
+            "nodeName": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw"
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T16:19:20Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T16:19:22Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T16:19:23Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T16:19:23Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T16:19:19Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "25m",
+                  "memory": "32Mi"
+                },
+                "containerID": "containerd://5442e4ce5d8a80d948e90d62e986e19f0e4f9b6a4dce962aa049d7c3b4c42163",
+                "image": "sha256:c318e336065b17ff460aeac6d14bce5d0b13e35f25d5cb1843b635359fc00c9a",
+                "imageID": "docker.io/library/nginx@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+                "lastState": {},
+                "name": "eval-observer",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T16:19:23Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/eval",
+                    "name": "eval-observer",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-6cfrz",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "64Mi"
+                },
+                "containerID": "containerd://c2f57f8b118abfbebc9576f60ea7d7f04a2629cb1c56975357ea89bdc9db581d",
+                "image": "sha256:3d6fcb0f00fa05c8f40b1eff35b365ace0222ac2e22ae63f13cc5a20c73d3798",
+                "imageID": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+                "lastState": {},
+                "name": "server",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "200m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T16:19:23Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-6cfrz",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "initContainerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://4252b498faf688fcb20272922d8ea5b637264877102ee2e275965c4d654ae8f9",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-init",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                  "terminated": {
+                    "containerID": "containerd://4252b498faf688fcb20272922d8ea5b637264877102ee2e275965c4d654ae8f9",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-19T16:19:20Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-19T16:19:20Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1000
+                    ],
+                    "uid": 0
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-6cfrz",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://098a9bf9051c5d32727ff2ff5c8192a36e7f9b37c4789a670a7885c41086b94c",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-proxy",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T16:19:21Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1337,
+                    "supplementalGroups": [
+                      1000,
+                      1337
+                    ],
+                    "uid": 1337
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-uds",
+                    "name": "workload-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/credential-uds",
+                    "name": "credential-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-credentials",
+                    "name": "workload-certs"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio",
+                    "name": "istiod-ca-cert"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio/crl",
+                    "name": "istio-ca-crl"
+                  },
+                  {
+                    "mountPath": "/var/lib/istio/data",
+                    "name": "istio-data"
+                  },
+                  {
+                    "mountPath": "/etc/istio/proxy",
+                    "name": "istio-envoy"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/tokens",
+                    "name": "istio-token"
+                  },
+                  {
+                    "mountPath": "/etc/istio/pod",
+                    "name": "istio-podinfo"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-6cfrz",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "phase": "Running"
+          }
+        }
+      ],
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7b4fd8cf86-v6nnb",
+          "uid": "f3f176a9-45f9-450a-9dce-dd3fa3380b5c"
+        }
+      ],
+      "service": "checkoutservice",
+      "source": "independent Kubernetes API response; not kernel or collector-cache measurement",
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108533.284019,
+        "completed_monotonic": 14697.46628865,
+        "started_at": 1795108533.0545993,
+        "started_monotonic": 14697.236869957
+      },
+      "list_resource_version": "",
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "pods": [
+        {
+          "metadata": {
+            "name": "checkoutservice-7d68b6889f-khkvz",
+            "namespace": "karthos-eval-boutique",
+            "resourceVersion": "1795108532157039024",
+            "uid": "b2aecc4c-9f1a-40b6-9f7b-2ea9ddca0b51"
+          },
+          "spec": {
+            "nodeName": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw"
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:31Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:26Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "25m",
+                  "memory": "32Mi"
+                },
+                "containerID": "containerd://f7ce790c0dd8dad6a2cd8b845e212ded930463219a26f9e5b92203e818bfd3ac",
+                "image": "sha256:c318e336065b17ff460aeac6d14bce5d0b13e35f25d5cb1843b635359fc00c9a",
+                "imageID": "docker.io/library/nginx@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+                "lastState": {},
+                "name": "eval-observer",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:31Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/eval",
+                    "name": "eval-observer",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "64Mi"
+                },
+                "containerID": "containerd://e1bb46c6052e194e0792d8b7337d33a38b88838ea9c8b0fb7dae98fe398ea599",
+                "image": "sha256:3d6fcb0f00fa05c8f40b1eff35b365ace0222ac2e22ae63f13cc5a20c73d3798",
+                "imageID": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+                "lastState": {},
+                "name": "server",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "200m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:31Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "initContainerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://ebc38597f22a76cd7f86ff892dd2c00c310c6dcacefe7d936680dd4e14860c94",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-init",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                  "terminated": {
+                    "containerID": "containerd://ebc38597f22a76cd7f86ff892dd2c00c310c6dcacefe7d936680dd4e14860c94",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-19T17:15:28Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-19T17:15:27Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1000
+                    ],
+                    "uid": 0
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://a436f4df43b8423faba4ccc3cfe803c31391f3bd4fdc0d918bd8d4b1a4976b72",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-proxy",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:29Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1337,
+                    "supplementalGroups": [
+                      1000,
+                      1337
+                    ],
+                    "uid": 1337
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-uds",
+                    "name": "workload-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/credential-uds",
+                    "name": "credential-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-credentials",
+                    "name": "workload-certs"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio",
+                    "name": "istiod-ca-cert"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio/crl",
+                    "name": "istio-ca-crl"
+                  },
+                  {
+                    "mountPath": "/var/lib/istio/data",
+                    "name": "istio-data"
+                  },
+                  {
+                    "mountPath": "/etc/istio/proxy",
+                    "name": "istio-envoy"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/tokens",
+                    "name": "istio-token"
+                  },
+                  {
+                    "mountPath": "/etc/istio/pod",
+                    "name": "istio-podinfo"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "phase": "Running"
+          }
+        }
+      ],
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7d68b6889f-khkvz",
+          "uid": "b2aecc4c-9f1a-40b6-9f7b-2ea9ddca0b51"
+        }
+      ],
+      "service": "checkoutservice",
+      "source": "independent Kubernetes API response; not kernel or collector-cache measurement",
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108865.2306404,
+        "completed_monotonic": 15029.412910357,
+        "started_at": 1795108865.0293741,
+        "started_monotonic": 15029.211644972
+      },
+      "list_resource_version": "",
+      "namespace": "karthos-eval-boutique",
+      "phase": "stability",
+      "pods": [
+        {
+          "metadata": {
+            "name": "checkoutservice-7d68b6889f-khkvz",
+            "namespace": "karthos-eval-boutique",
+            "resourceVersion": "1795108532157039024",
+            "uid": "b2aecc4c-9f1a-40b6-9f7b-2ea9ddca0b51"
+          },
+          "spec": {
+            "nodeName": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw"
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:28Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:31Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:32Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-19T17:15:26Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "25m",
+                  "memory": "32Mi"
+                },
+                "containerID": "containerd://f7ce790c0dd8dad6a2cd8b845e212ded930463219a26f9e5b92203e818bfd3ac",
+                "image": "sha256:c318e336065b17ff460aeac6d14bce5d0b13e35f25d5cb1843b635359fc00c9a",
+                "imageID": "docker.io/library/nginx@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+                "lastState": {},
+                "name": "eval-observer",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "250m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "25m",
+                    "memory": "32Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:31Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/eval",
+                    "name": "eval-observer",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "64Mi"
+                },
+                "containerID": "containerd://e1bb46c6052e194e0792d8b7337d33a38b88838ea9c8b0fb7dae98fe398ea599",
+                "image": "sha256:3d6fcb0f00fa05c8f40b1eff35b365ace0222ac2e22ae63f13cc5a20c73d3798",
+                "imageID": "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+                "lastState": {},
+                "name": "server",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "200m",
+                    "memory": "128Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:31Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1000,
+                    "supplementalGroups": [
+                      1000
+                    ],
+                    "uid": 1000
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "initContainerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://ebc38597f22a76cd7f86ff892dd2c00c310c6dcacefe7d936680dd4e14860c94",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-init",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                  "terminated": {
+                    "containerID": "containerd://ebc38597f22a76cd7f86ff892dd2c00c310c6dcacefe7d936680dd4e14860c94",
+                    "exitCode": 0,
+                    "finishedAt": "2026-11-19T17:15:28Z",
+                    "reason": "Completed",
+                    "startedAt": "2026-11-19T17:15:27Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 0,
+                    "supplementalGroups": [
+                      0,
+                      1000
+                    ],
+                    "uid": 0
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              },
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "128Mi"
+                },
+                "containerID": "containerd://a436f4df43b8423faba4ccc3cfe803c31391f3bd4fdc0d918bd8d4b1a4976b72",
+                "image": "sha256:7ff6dff7b1dc7f27dc8d6dc91fd97187dc3733aa63ea93a27fdbe4ab43f305d5",
+                "imageID": "docker.io/istio/proxyv2@sha256:39065152d6bd3e7fbf6bb04be43c7a8bbd16b5c7181c84e3d78fa164a945ae7f",
+                "lastState": {},
+                "name": "istio-proxy",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "2",
+                    "memory": "1Gi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-11-19T17:15:29Z"
+                  }
+                },
+                "user": {
+                  "linux": {
+                    "gid": 1337,
+                    "supplementalGroups": [
+                      1000,
+                      1337
+                    ],
+                    "uid": 1337
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-uds",
+                    "name": "workload-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/credential-uds",
+                    "name": "credential-socket"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/workload-spiffe-credentials",
+                    "name": "workload-certs"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio",
+                    "name": "istiod-ca-cert"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/istio/crl",
+                    "name": "istio-ca-crl"
+                  },
+                  {
+                    "mountPath": "/var/lib/istio/data",
+                    "name": "istio-data"
+                  },
+                  {
+                    "mountPath": "/etc/istio/proxy",
+                    "name": "istio-envoy"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/tokens",
+                    "name": "istio-token"
+                  },
+                  {
+                    "mountPath": "/etc/istio/pod",
+                    "name": "istio-podinfo"
+                  },
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-gd6bf",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "phase": "Running"
+          }
+        }
+      ],
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7d68b6889f-khkvz",
+          "uid": "b2aecc4c-9f1a-40b6-9f7b-2ea9ddca0b51"
+        }
+      ],
+      "service": "checkoutservice",
+      "source": "independent Kubernetes API response; not kernel or collector-cache measurement",
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    }
+  ],
+  "api_polls": [
+    {
+      "acquisition": {
+        "completed_at": 1795108526.1160693,
+        "completed_monotonic": 14690.298342214,
+        "started_at": 1795108525.913216,
+        "started_monotonic": 14690.095488705
+      },
+      "matches_expected": true,
+      "namespace": "karthos-eval-boutique",
+      "phase": "before",
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7b4fd8cf86-v6nnb"
+        }
+      ],
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:25.913164+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108526.0732715,
+          "requested_at": 1795108525.9132311,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:10:33.87501Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108526.1158302,
+          "requested_at": 1795108526.073316,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:10:33.87501Z",
+        "id": 22
+      },
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108533.5854464,
+        "completed_monotonic": 14697.767718665,
+        "started_at": 1795108533.2855961,
+        "started_monotonic": 14697.46786711
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7b4fd8cf86-v6nnb"
+        }
+      ],
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.285572+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108533.5153646,
+          "requested_at": 1795108533.2856152,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:10:33.87501Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108533.5853877,
+          "requested_at": 1795108533.5154061,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:10:33.87501Z",
+        "id": 22
+      },
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108538.7507243,
+        "completed_monotonic": 14702.932995888,
+        "started_at": 1795108538.5881307,
+        "started_monotonic": 14702.770401688
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:38.588088+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108538.7151647,
+          "requested_at": 1795108538.5881448,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108538.750665,
+          "requested_at": 1795108538.7152052,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108543.8960412,
+        "completed_monotonic": 14708.078312719,
+        "started_at": 1795108543.752897,
+        "started_monotonic": 14707.935167719
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:43.752847+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108543.8641121,
+          "requested_at": 1795108543.7529104,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108543.8959854,
+          "requested_at": 1795108543.8641448,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108549.053624,
+        "completed_monotonic": 14713.235895471,
+        "started_at": 1795108548.8989182,
+        "started_monotonic": 14713.081189479
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:48.898871+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108549.0139565,
+          "requested_at": 1795108548.8989353,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108549.05357,
+          "requested_at": 1795108549.0139942,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108554.1976345,
+        "completed_monotonic": 14718.379906418,
+        "started_at": 1795108554.0558183,
+        "started_monotonic": 14718.238089058
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:54.055762+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108554.1604698,
+          "requested_at": 1795108554.0558326,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108554.197576,
+          "requested_at": 1795108554.1605136,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108559.366587,
+        "completed_monotonic": 14723.548858058,
+        "started_at": 1795108559.2003827,
+        "started_monotonic": 14723.382653547
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:15:59.200328+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108559.325317,
+          "requested_at": 1795108559.2004054,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108559.3665326,
+          "requested_at": 1795108559.3253543,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108564.506655,
+        "completed_monotonic": 14728.688926554,
+        "started_at": 1795108564.3690999,
+        "started_monotonic": 14728.551370467
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:04.369048+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108564.4752343,
+          "requested_at": 1795108564.3691146,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108564.5065997,
+          "requested_at": 1795108564.47527,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108569.6581776,
+        "completed_monotonic": 14733.840449003,
+        "started_at": 1795108569.5088243,
+        "started_monotonic": 14733.691095149
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:09.508780+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108569.623878,
+          "requested_at": 1795108569.508838,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108569.6581256,
+          "requested_at": 1795108569.6239119,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108574.819641,
+        "completed_monotonic": 14739.001913136,
+        "started_at": 1795108574.6605594,
+        "started_monotonic": 14738.842830193
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:14.660516+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108574.7803283,
+          "requested_at": 1795108574.6605718,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108574.8195906,
+          "requested_at": 1795108574.7803636,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108579.9678187,
+        "completed_monotonic": 14744.150090294,
+        "started_at": 1795108579.8217938,
+        "started_monotonic": 14744.004064724
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:19.821693+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108579.9300964,
+          "requested_at": 1795108579.8218086,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108579.967757,
+          "requested_at": 1795108579.9301403,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108585.1936681,
+        "completed_monotonic": 14749.375939552,
+        "started_at": 1795108584.9698489,
+        "started_monotonic": 14749.152119795
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:24.969784+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108585.0923548,
+          "requested_at": 1795108584.9698627,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108585.1936162,
+          "requested_at": 1795108585.0923917,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108590.3495085,
+        "completed_monotonic": 14754.531780156,
+        "started_at": 1795108590.195895,
+        "started_monotonic": 14754.378165804
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:30.195849+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108590.3069115,
+          "requested_at": 1795108590.1959097,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108590.3494523,
+          "requested_at": 1795108590.3069568,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108595.5856502,
+        "completed_monotonic": 14759.767921714,
+        "started_at": 1795108595.3518844,
+        "started_monotonic": 14759.534155112
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:35.351835+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108595.5519063,
+          "requested_at": 1795108595.3518987,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108595.5855916,
+          "requested_at": 1795108595.5519838,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108600.7356086,
+        "completed_monotonic": 14764.91788047,
+        "started_at": 1795108600.587679,
+        "started_monotonic": 14764.769949706
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:40.587634+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108600.7025497,
+          "requested_at": 1795108600.5876944,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108600.7355483,
+          "requested_at": 1795108600.702585,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108605.9307048,
+        "completed_monotonic": 14770.112976834,
+        "started_at": 1795108605.7382214,
+        "started_monotonic": 14769.920492301
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:45.738166+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108605.8852563,
+          "requested_at": 1795108605.7382462,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108605.9306402,
+          "requested_at": 1795108605.885292,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108611.07803,
+        "completed_monotonic": 14775.260301848,
+        "started_at": 1795108610.9334188,
+        "started_monotonic": 14775.115689459
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:50.933364+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108611.0423493,
+          "requested_at": 1795108610.9334357,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108611.0779757,
+          "requested_at": 1795108611.0423872,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108616.2310715,
+        "completed_monotonic": 14780.413343124,
+        "started_at": 1795108616.0800712,
+        "started_monotonic": 14780.262342125
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:16:56.079971+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108616.1876388,
+          "requested_at": 1795108616.0801034,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108616.2309544,
+          "requested_at": 1795108616.1877232,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108621.3849103,
+        "completed_monotonic": 14785.567182069,
+        "started_at": 1795108621.2344255,
+        "started_monotonic": 14785.416696462
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:01.234380+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108621.346333,
+          "requested_at": 1795108621.23444,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108621.3848615,
+          "requested_at": 1795108621.3463652,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108626.6396477,
+        "completed_monotonic": 14790.821919173,
+        "started_at": 1795108626.3871372,
+        "started_monotonic": 14790.569408294
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:06.387093+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108626.6016996,
+          "requested_at": 1795108626.3871512,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108626.639584,
+          "requested_at": 1795108626.601793,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108631.9789095,
+        "completed_monotonic": 14796.161180737,
+        "started_at": 1795108631.6419392,
+        "started_monotonic": 14795.824210165
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:11.641895+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108631.913889,
+          "requested_at": 1795108631.641952,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108631.9788558,
+          "requested_at": 1795108631.9139261,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108637.1408896,
+        "completed_monotonic": 14801.323161125,
+        "started_at": 1795108636.9808981,
+        "started_monotonic": 14801.163168975
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:16.980848+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108637.1014729,
+          "requested_at": 1795108636.9809148,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108637.140824,
+          "requested_at": 1795108637.1015096,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108642.3230658,
+        "completed_monotonic": 14806.505337351,
+        "started_at": 1795108642.143426,
+        "started_monotonic": 14806.325696917
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:22.143315+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108642.27838,
+          "requested_at": 1795108642.143444,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108642.3230078,
+          "requested_at": 1795108642.2784164,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108647.472628,
+        "completed_monotonic": 14811.654899818,
+        "started_at": 1795108647.324877,
+        "started_monotonic": 14811.507148016
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:27.324830+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108647.4394364,
+          "requested_at": 1795108647.3248925,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108647.4725757,
+          "requested_at": 1795108647.439472,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108652.61824,
+        "completed_monotonic": 14816.80051157,
+        "started_at": 1795108652.4752758,
+        "started_monotonic": 14816.657546452
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:32.475229+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108652.583232,
+          "requested_at": 1795108652.4752896,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108652.61818,
+          "requested_at": 1795108652.5832849,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108657.8449326,
+        "completed_monotonic": 14822.02720396,
+        "started_at": 1795108657.6226134,
+        "started_monotonic": 14821.804884344
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:37.622563+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108657.8064435,
+          "requested_at": 1795108657.6226394,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108657.8448694,
+          "requested_at": 1795108657.8064833,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108662.9880223,
+        "completed_monotonic": 14827.170293909,
+        "started_at": 1795108662.847482,
+        "started_monotonic": 14827.029753343
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:42.847398+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108662.9557579,
+          "requested_at": 1795108662.847502,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108662.9879594,
+          "requested_at": 1795108662.9557962,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108668.2952933,
+        "completed_monotonic": 14832.477564852,
+        "started_at": 1795108667.9903028,
+        "started_monotonic": 14832.172573589
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:47.990259+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108668.213527,
+          "requested_at": 1795108667.9903164,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108668.2952402,
+          "requested_at": 1795108668.2135646,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108673.4401758,
+        "completed_monotonic": 14837.622447498,
+        "started_at": 1795108673.2977698,
+        "started_monotonic": 14837.480040684
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:53.297686+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108673.406466,
+          "requested_at": 1795108673.2978263,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108673.4401193,
+          "requested_at": 1795108673.4065008,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108678.5906174,
+        "completed_monotonic": 14842.772888673,
+        "started_at": 1795108678.443162,
+        "started_monotonic": 14842.625432669
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:17:58.443114+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108678.5534234,
+          "requested_at": 1795108678.4431753,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108678.590564,
+          "requested_at": 1795108678.5534575,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108683.7384884,
+        "completed_monotonic": 14847.920760103,
+        "started_at": 1795108683.5928624,
+        "started_monotonic": 14847.775133351
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:03.592804+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108683.7042222,
+          "requested_at": 1795108683.5928786,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108683.7384367,
+          "requested_at": 1795108683.70426,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108688.8805904,
+        "completed_monotonic": 14853.062861773,
+        "started_at": 1795108688.7409744,
+        "started_monotonic": 14852.92324522
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:08.740906+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108688.8509865,
+          "requested_at": 1795108688.740989,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108688.8805351,
+          "requested_at": 1795108688.8510213,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108694.027609,
+        "completed_monotonic": 14858.20988085,
+        "started_at": 1795108693.8830335,
+        "started_monotonic": 14858.065304341
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:13.882987+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108693.9906483,
+          "requested_at": 1795108693.8830497,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108694.027556,
+          "requested_at": 1795108693.9906895,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108699.1925635,
+        "completed_monotonic": 14863.374834968,
+        "started_at": 1795108699.029942,
+        "started_monotonic": 14863.212212761
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:19.029896+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108699.1568086,
+          "requested_at": 1795108699.0299563,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108699.1925147,
+          "requested_at": 1795108699.1568458,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108704.3423843,
+        "completed_monotonic": 14868.524655978,
+        "started_at": 1795108704.1948826,
+        "started_monotonic": 14868.377153511
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:24.194838+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108704.307838,
+          "requested_at": 1795108704.1948974,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108704.3423295,
+          "requested_at": 1795108704.3078783,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108709.4929132,
+        "completed_monotonic": 14873.675184541,
+        "started_at": 1795108709.3447967,
+        "started_monotonic": 14873.527067569
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:29.344703+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108709.4592001,
+          "requested_at": 1795108709.3448107,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108709.4928563,
+          "requested_at": 1795108709.4592433,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108714.643373,
+        "completed_monotonic": 14878.825644664,
+        "started_at": 1795108714.495446,
+        "started_monotonic": 14878.677716815
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:34.495393+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108714.6096923,
+          "requested_at": 1795108714.4954603,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108714.6433234,
+          "requested_at": 1795108714.6097262,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108719.7934704,
+        "completed_monotonic": 14883.975742011,
+        "started_at": 1795108719.645571,
+        "started_monotonic": 14883.827841889
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:39.645526+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108719.751046,
+          "requested_at": 1795108719.6455858,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108719.7934175,
+          "requested_at": 1795108719.751084,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108724.944318,
+        "completed_monotonic": 14889.126589467,
+        "started_at": 1795108724.795825,
+        "started_monotonic": 14888.978095753
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:44.795713+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108724.9039485,
+          "requested_at": 1795108724.7958405,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108724.9442651,
+          "requested_at": 1795108724.9039822,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108730.0981185,
+        "completed_monotonic": 14894.280390145,
+        "started_at": 1795108729.9465334,
+        "started_monotonic": 14894.128804098
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:49.946484+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108730.0652335,
+          "requested_at": 1795108729.9465494,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108730.098067,
+          "requested_at": 1795108730.0652695,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108735.4981487,
+        "completed_monotonic": 14899.680420665,
+        "started_at": 1795108735.1005,
+        "started_monotonic": 14899.282770955
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:18:55.100439+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108735.3700926,
+          "requested_at": 1795108735.1005144,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108735.4980857,
+          "requested_at": 1795108735.3701491,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108740.6536398,
+        "completed_monotonic": 14904.835911145,
+        "started_at": 1795108740.5002766,
+        "started_monotonic": 14904.682547435
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:00.500206+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108740.618561,
+          "requested_at": 1795108740.500313,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108740.6535854,
+          "requested_at": 1795108740.6186008,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108745.801514,
+        "completed_monotonic": 14909.983785457,
+        "started_at": 1795108745.6563966,
+        "started_monotonic": 14909.838667772
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:05.656169+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108745.7589664,
+          "requested_at": 1795108745.6564112,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108745.8014617,
+          "requested_at": 1795108745.7589996,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108750.9646778,
+        "completed_monotonic": 14915.146949986,
+        "started_at": 1795108750.803862,
+        "started_monotonic": 14914.986133211
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:10.803720+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108750.9105966,
+          "requested_at": 1795108750.8038769,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108750.9646134,
+          "requested_at": 1795108750.9106317,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108756.1414816,
+        "completed_monotonic": 14920.32375379,
+        "started_at": 1795108755.9667246,
+        "started_monotonic": 14920.148995526
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:15.966671+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108756.1050465,
+          "requested_at": 1795108755.9667695,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108756.1414342,
+          "requested_at": 1795108756.1050797,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108761.291859,
+        "completed_monotonic": 14925.474131244,
+        "started_at": 1795108761.1437778,
+        "started_monotonic": 14925.326048851
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:21.143698+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108761.2559967,
+          "requested_at": 1795108761.1437929,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108761.2917867,
+          "requested_at": 1795108761.2560518,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108766.6424382,
+        "completed_monotonic": 14930.82470963,
+        "started_at": 1795108766.2944572,
+        "started_monotonic": 14930.476727907
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:26.294411+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108766.5650127,
+          "requested_at": 1795108766.2944717,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108766.6423895,
+          "requested_at": 1795108766.565051,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108771.9433272,
+        "completed_monotonic": 14936.125598522,
+        "started_at": 1795108771.6444938,
+        "started_monotonic": 14935.826764674
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:31.644450+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108771.904134,
+          "requested_at": 1795108771.6445065,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108771.943276,
+          "requested_at": 1795108771.9041765,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108777.089385,
+        "completed_monotonic": 14941.27165645,
+        "started_at": 1795108776.9455893,
+        "started_monotonic": 14941.127860131
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:36.945530+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108777.052834,
+          "requested_at": 1795108776.9456031,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108777.08933,
+          "requested_at": 1795108777.0528727,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108782.250102,
+        "completed_monotonic": 14946.432374091,
+        "started_at": 1795108782.0918658,
+        "started_monotonic": 14946.274136543
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:42.091815+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108782.210689,
+          "requested_at": 1795108782.0918846,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108782.2500494,
+          "requested_at": 1795108782.2107236,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108787.501549,
+        "completed_monotonic": 14951.68382045,
+        "started_at": 1795108787.252318,
+        "started_monotonic": 14951.434588766
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:47.252269+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108787.4358327,
+          "requested_at": 1795108787.2523315,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108787.5014863,
+          "requested_at": 1795108787.4358785,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108792.6504974,
+        "completed_monotonic": 14956.832769055,
+        "started_at": 1795108792.503946,
+        "started_monotonic": 14956.686216696
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:52.503901+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108792.6166973,
+          "requested_at": 1795108792.5039597,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108792.6504471,
+          "requested_at": 1795108792.6167457,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108797.9448645,
+        "completed_monotonic": 14962.127135881,
+        "started_at": 1795108797.6528459,
+        "started_monotonic": 14961.835116805
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:19:57.652789+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108797.903991,
+          "requested_at": 1795108797.6528604,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108797.9448147,
+          "requested_at": 1795108797.9040346,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108803.2197895,
+        "completed_monotonic": 14967.402061282,
+        "started_at": 1795108802.9468915,
+        "started_monotonic": 14967.129162497
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:02.946848+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108803.1100373,
+          "requested_at": 1795108802.9469059,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108803.219722,
+          "requested_at": 1795108803.1100829,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108808.366224,
+        "completed_monotonic": 14972.548495586,
+        "started_at": 1795108808.2218876,
+        "started_monotonic": 14972.404158414
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:08.221837+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108808.3291752,
+          "requested_at": 1795108808.2219014,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108808.366167,
+          "requested_at": 1795108808.3292127,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108813.5232356,
+        "completed_monotonic": 14977.705507232,
+        "started_at": 1795108813.3688433,
+        "started_monotonic": 14977.55111403
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:13.368799+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108813.4861665,
+          "requested_at": 1795108813.3688571,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108813.5231712,
+          "requested_at": 1795108813.4862025,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108818.69454,
+        "completed_monotonic": 14982.876811457,
+        "started_at": 1795108818.5255852,
+        "started_monotonic": 14982.707856159
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:18.525538+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108818.6564996,
+          "requested_at": 1795108818.5255985,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108818.6944866,
+          "requested_at": 1795108818.6565301,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108823.840203,
+        "completed_monotonic": 14988.022474567,
+        "started_at": 1795108823.696898,
+        "started_monotonic": 14987.879168827
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:23.696854+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108823.8048263,
+          "requested_at": 1795108823.696912,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108823.840134,
+          "requested_at": 1795108823.8048656,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108828.9923105,
+        "completed_monotonic": 14993.174581965,
+        "started_at": 1795108828.8428047,
+        "started_monotonic": 14993.025075595
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:28.842760+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108828.9518366,
+          "requested_at": 1795108828.8428173,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108828.9922588,
+          "requested_at": 1795108828.9518688,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108834.2360318,
+        "completed_monotonic": 14998.418303259,
+        "started_at": 1795108833.9944491,
+        "started_monotonic": 14998.176719886
+      },
+      "matches_expected": false,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "reason": "service-to-Pod placement association unavailable",
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:33.994385+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108834.1556265,
+          "requested_at": 1795108833.994462,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:15:33.875827Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108834.2359738,
+          "requested_at": 1795108834.1556604,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:15:33.875827Z",
+        "id": 24
+      },
+      "state": "insufficient",
+      "version": "bounded-lifecycle-v1"
+    },
+    {
+      "acquisition": {
+        "completed_at": 1795108839.4189851,
+        "completed_monotonic": 15003.601256872,
+        "started_at": 1795108839.2383885,
+        "started_monotonic": 15003.420659168
+      },
+      "matches_expected": true,
+      "namespace": "karthos-eval-boutique",
+      "phase": "after",
+      "replicas": [
+        {
+          "health": "healthy",
+          "node": "gke-karthos-eval-1bad98771cbffa-app-b-f04c01e0-71lw",
+          "pod": "checkoutservice-7d68b6889f-khkvz"
+        }
+      ],
+      "requests": [
+        {
+          "params": {
+            "at": "2026-11-19T17:20:39.238339+00:00",
+            "page_size": 1000
+          },
+          "received_at": 1795108839.3844628,
+          "requested_at": 1795108839.2384036,
+          "route": "/graph/nodes"
+        },
+        {
+          "params": {
+            "at": "2026-11-19T17:20:34.434307Z",
+            "page_size": 1000
+          },
+          "received_at": 1795108839.4189324,
+          "requested_at": 1795108839.3844986,
+          "route": "/graph/edges"
+        }
+      ],
+      "service": "checkoutservice",
+      "snapshot": {
+        "created_at": "2026-11-19T17:20:34.434307Z",
+        "id": 26
+      },
+      "state": "observed",
+      "version": "bounded-lifecycle-v1"
+    }
+  ],
+  "old_pod": "checkoutservice-7b4fd8cf86-v6nnb",
+  "new_pod": "checkoutservice-7d68b6889f-khkvz",
+  "old_ids": [
+    "afececcba5bfe1ddd71d8eab6c26f6fd8fd65623a09ddf6ce3e815cd760ba989"
+  ],
+  "new_ids": [
+    "f79f26d5a131801c396bec2fbda4c198dca2b1a82807fbbea7bdaab264738921"
+  ],
+  "old_runs_on_before": [
+    {
+      "confidence": 1,
+      "first_seen": "2026-11-19T16:19:33.196328Z",
+      "id": "3a32249ac5617fcfc298f124cb6796f10942c5c744d05a5370e630cdf483f962",
+      "last_seen": "2026-11-19T17:10:17.114417Z",
+      "metadata": {
+        "k8s.cluster.name": "thesis-robustness-full-20261119-v2",
+        "k8s.pod.uid": "f3f176a9-45f9-450a-9dce-dd3fa3380b5c"
+      },
+      "provenance": [
+        "kube-cluster",
+        "kubelet",
+        "mesh.istio"
+      ],
+      "relation": "runs_on",
+      "source": "afececcba5bfe1ddd71d8eab6c26f6fd8fd65623a09ddf6ce3e815cd760ba989",
+      "target": "9f14754becb1ea491484718e797a34246640937a37651c81f5fbe4c9327e42c2"
+    }
+  ],
+  "old_runs_on_after": [],
+  "new_runs_on_after": [
+    {
+      "confidence": 1,
+      "first_seen": "2026-11-19T17:15:47.053058Z",
+      "id": "00ff6f5166b64590012d14e5dc5d938996fac2bdfe1e078b03111e43c57ca9ba",
+      "last_seen": "2026-11-19T17:20:17.11484Z",
+      "metadata": {
+        "k8s.cluster.name": "thesis-robustness-full-20261119-v2",
+        "k8s.pod.uid": "b2aecc4c-9f1a-40b6-9f7b-2ea9ddca0b51"
+      },
+      "provenance": [
+        "kube-cluster",
+        "kubelet"
+      ],
+      "relation": "runs_on",
+      "source": "f79f26d5a131801c396bec2fbda4c198dca2b1a82807fbbea7bdaab264738921",
+      "target": "9f14754becb1ea491484718e797a34246640937a37651c81f5fbe4c9327e42c2"
+    }
+  ],
+  "before_snapshot": {
+    "created_at": "2026-11-19T17:10:33.87501Z",
+    "id": 22
+  },
+  "after_snapshot": {
+    "created_at": "2026-11-19T17:20:34.434307Z",
+    "id": 26
+  },
+  "old_nodes_after": []
+}

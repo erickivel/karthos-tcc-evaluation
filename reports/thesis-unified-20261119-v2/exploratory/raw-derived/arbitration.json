@@ -1,0 +1,1853 @@
+{
+  "label": "arbitration",
+  "classification": "exploratory, no verdict",
+  "E1": {
+    "window": [
+      1795109751.394,
+      1795109811.394
+    ],
+    "generator_error_events": 12,
+    "generator_error_completed_at": [
+      1795109756.008,
+      1795109760.996,
+      1795109765.997,
+      1795109771.016,
+      1795109775.994,
+      1795109780.999,
+      1795109786.003,
+      1795109790.995,
+      1795109795.99,
+      1795109800.994,
+      1795109806.085,
+      1795109810.999
+    ],
+    "generator_first_error": 1795109756.008,
+    "generator_last_error": 1795109810.999,
+    "error_series": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "first_retained_sample": [
+          1795109702.287,
+          2
+        ],
+        "pre_window_sample": [
+          1795109747.287,
+          2
+        ],
+        "last_in_window_sample": [
+          1795109807.287,
+          13
+        ],
+        "first_after_window": [
+          1795109822.287,
+          14
+        ],
+        "all_samples": [
+          [
+            1795109702.287,
+            2
+          ],
+          [
+            1795109717.287,
+            2
+          ],
+          [
+            1795109732.287,
+            2
+          ],
+          [
+            1795109747.287,
+            2
+          ],
+          [
+            1795109762.287,
+            4
+          ],
+          [
+            1795109777.287,
+            7
+          ],
+          [
+            1795109792.287,
+            10
+          ],
+          [
+            1795109807.287,
+            13
+          ],
+          [
+            1795109822.287,
+            14
+          ],
+          [
+            1795109837.287,
+            14
+          ],
+          [
+            1795109852.287,
+            14
+          ],
+          [
+            1795109867.287,
+            14
+          ],
+          [
+            1795109882.287,
+            14
+          ],
+          [
+            1795109897.287,
+            14
+          ],
+          [
+            1795109912.287,
+            14
+          ],
+          [
+            1795109927.287,
+            14
+          ],
+          [
+            1795109942.287,
+            14
+          ],
+          [
+            1795109957.287,
+            14
+          ],
+          [
+            1795109972.287,
+            14
+          ],
+          [
+            1795109987.287,
+            14
+          ],
+          [
+            1795110002.287,
+            14
+          ],
+          [
+            1795110017.287,
+            14
+          ],
+          [
+            1795110032.287,
+            14
+          ],
+          [
+            1795110077.288,
+            14
+          ],
+          [
+            1795110092.288,
+            14
+          ],
+          [
+            1795110107.288,
+            14
+          ]
+        ],
+        "sample_interval_median": 15.0,
+        "resets": 0,
+        "simple_pre_to_last_delta": 11,
+        "errors_completed_after_last_sample": 1,
+        "completed_errors_not_yet_in_counter_at_last_sample": 0,
+        "first_sample_reaching_all_errors": [
+          1795109822.287,
+          14
+        ]
+      }
+    ],
+    "recorded_queries": [
+      {
+        "aggregation": "increase",
+        "api_file": "api-request-count.json",
+        "compiler_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+        "evaluation_points": [
+          "2026-11-19T17:36:51.394Z"
+        ],
+        "expression": "(((increase(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[60s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[60s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[120s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[120s])) >= 60)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality=\"delta\"}[60s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\"}[300s])",
+        "from": "2026-11-19T17:36:51.394Z",
+        "max_sample_age_seconds": 300,
+        "params": {
+          "aggregation": "increase",
+          "from": "2026-11-19T17:36:51.394000Z",
+          "metric_name": "servicegraph.request.count",
+          "source": "mesh.istio",
+          "to": "2026-11-19T17:36:51.394000Z",
+          "window": "60s"
+        },
+        "step_seconds": 15,
+        "to": "2026-11-19T17:36:51.394Z",
+        "unit": "count",
+        "window_seconds": 60
+      },
+      {
+        "aggregation": "increase",
+        "api_file": "api-error-count.json",
+        "compiler_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+        "evaluation_points": [
+          "2026-11-19T17:36:51.394Z"
+        ],
+        "expression": "((((increase(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[60s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[60s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[120s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[120s])) >= 60)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality=\"delta\"}[60s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\"}[300s])) or (((((increase(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[60s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[60s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[120s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[120s])) >= 60)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality=\"delta\"}[60s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\"}[300s])) * 0) or ((((increase(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[60s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[60s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[120s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[120s])) >= 60)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality=\"delta\"}[60s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\"}[300s])) or (((((increase(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[60s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[60s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[120s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[120s])) >= 60)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality=\"delta\"}[60s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\"}[300s])) * 0)",
+        "from": "2026-11-19T17:36:51.394Z",
+        "max_sample_age_seconds": 300,
+        "params": {
+          "aggregation": "increase",
+          "from": "2026-11-19T17:36:51.394000Z",
+          "metric_name": "servicegraph.request.error.count",
+          "source": "mesh.istio",
+          "to": "2026-11-19T17:36:51.394000Z",
+          "window": "60s"
+        },
+        "step_seconds": 15,
+        "to": "2026-11-19T17:36:51.394Z",
+        "unit": "count",
+        "window_seconds": 60
+      }
+    ]
+  },
+  "E2": {
+    "inventory": {
+      "app_pods": 15,
+      "sidecar_pods": [
+        "adservice-6859bf8bdc-7twnq",
+        "cartservice-655fdb77c9-mk824",
+        "checkoutservice-7b4fd8cf86-n6hx5",
+        "currencyservice-5cb5d54bf4-29m4h",
+        "emailservice-7d76c9d764-d469g",
+        "eval-otlp-relay-6b8844948b-5m5wm",
+        "frontend-78dd897f4d-nhrbt",
+        "paymentservice-5f99d5cc5d-b9cmf",
+        "productcatalogservice-b7f497cc5-prtrp",
+        "recommendationservice-85bd6884cd-4hhk8",
+        "redis-cart-778f4cfd4-kncgv",
+        "shippingservice-6956bb8f94-rmsdl"
+      ],
+      "app_container_images": [
+        "nginx:1.28.0-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+        "otel/opentelemetry-collector-contrib:0.155.0@sha256:4935caa35e9a4cb387e35732e8fb22b2b5759af8d12e7043357f03837f6e8df5",
+        "redis:alpine@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005",
+        "us-central1-docker.pkg.dev/karthos/karthos-evaluation/resource-helper@sha256:f523b8247ee29e23fb09aaffe5c5aef51fe69e1f22e9596ff251a595b153e175",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/adservice@sha256:f580c4853e896dd2083f0c270c4b7aa5feda6dd56058a93b87d0c88334a4c07d",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/cartservice@sha256:b5c29ddb3238474ea8d1842f07004fedeeae47f660627ab111a613a681cd0356",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/currencyservice@sha256:7b2f3f804555c926861d67cd22c1b7c9e32d46b81cf1a64dd3089ae424d73be9",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/emailservice@sha256:77fd45d411b3550cbd39e30bda83ed6ea23d87fd6e58e69cf9fa2808e003984d",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/frontend@sha256:c06df08eccd78568a37292cfbe889df42fac48691b7fb05f2deeba0ae8d669ef",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/paymentservice@sha256:735b6d3255e2c74b0135a95cfc2337987e492f24e163c0bb9a853635876993c4",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/productcatalogservice@sha256:fb8568ecfc948717eb07746a6ce360fb8e5f906ae8a874cbad666891f0d21790",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/recommendationservice@sha256:5d8321f2d24132889f654f75308e541b0626e6ae0cbacf81b170e5eb0921b415",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/shippingservice@sha256:8527bafff8c8776e345f2dca0641f6e8595b053ce67f9a5af66f5a85d9eaca9d"
+      ]
+    },
+    "raw_span_count": 7450,
+    "conflicts": 0,
+    "pairs": 72,
+    "server_mean_ms": 40.301265416666666,
+    "client_mean_ms": 45.100976458333335,
+    "paired_spans": [
+      {
+        "trace_id": "1f814b42eb6c9a84d662db3d3c97497e",
+        "server_ms": 40.863645,
+        "client_ms": 47.480732,
+        "start": 1795109753.465486,
+        "end": 1795109753.5063498
+      },
+      {
+        "trace_id": "0686085e36be08fa6b3cd89ce04219bc",
+        "server_ms": 39.891885,
+        "client_ms": 44.522023,
+        "start": 1795109753.967063,
+        "end": 1795109754.0069547
+      },
+      {
+        "trace_id": "8b6e77f7f73db70092b7374043dc6104",
+        "server_ms": 137.165305,
+        "client_ms": 142.021477,
+        "start": 1795109754.4634612,
+        "end": 1795109754.6006265
+      },
+      {
+        "trace_id": "0bf781a8e150c30b4f2a43234aa7f230",
+        "server_ms": 37.129005,
+        "client_ms": 41.501578,
+        "start": 1795109754.9620724,
+        "end": 1795109754.9992013
+      },
+      {
+        "trace_id": "2a03ea178b55d385535573375656da1b",
+        "server_ms": 37.714734,
+        "client_ms": 42.128324,
+        "start": 1795109755.465084,
+        "end": 1795109755.5027988
+      },
+      {
+        "trace_id": "7d6e79a4be035a83e1fb0abfe5f7651a",
+        "server_ms": 27.433483,
+        "client_ms": 32.410013,
+        "start": 1795109755.9745371,
+        "end": 1795109756.0019708
+      },
+      {
+        "trace_id": "b28833eeca54aefe411f656b1b8d4fff",
+        "server_ms": 37.200143,
+        "client_ms": 42.035963,
+        "start": 1795109758.465235,
+        "end": 1795109758.502435
+      },
+      {
+        "trace_id": "7a8687d2486d51cdc67fede875bcbb73",
+        "server_ms": 40.884327,
+        "client_ms": 45.534638,
+        "start": 1795109758.966332,
+        "end": 1795109759.0072165
+      },
+      {
+        "trace_id": "a3d6b10bc485a0aa4715ba83fbd388f3",
+        "server_ms": 38.347771,
+        "client_ms": 42.882065,
+        "start": 1795109759.4638686,
+        "end": 1795109759.5022163
+      },
+      {
+        "trace_id": "d14c09a74b7c411c3e60915016b36150",
+        "server_ms": 35.555131,
+        "client_ms": 40.173017,
+        "start": 1795109759.9608893,
+        "end": 1795109759.9964445
+      },
+      {
+        "trace_id": "29d476dce813bd85666b6c99d358c111",
+        "server_ms": 38.768146,
+        "client_ms": 45.148111,
+        "start": 1795109760.4667652,
+        "end": 1795109760.5055332
+      },
+      {
+        "trace_id": "d9aa1758acae62fa06946be5f02a13b4",
+        "server_ms": 27.377132,
+        "client_ms": 32.089915,
+        "start": 1795109760.964722,
+        "end": 1795109760.992099
+      },
+      {
+        "trace_id": "ea1ac2f42673a4810f20249193f88823",
+        "server_ms": 41.372901,
+        "client_ms": 46.406613,
+        "start": 1795109763.4662473,
+        "end": 1795109763.5076203
+      },
+      {
+        "trace_id": "0ef4b40469d1455df7892304f19b43d7",
+        "server_ms": 39.950274,
+        "client_ms": 44.562408,
+        "start": 1795109763.9615557,
+        "end": 1795109764.001506
+      },
+      {
+        "trace_id": "77774256f2c978500729b73ffb953b5e",
+        "server_ms": 42.910229,
+        "client_ms": 47.544724,
+        "start": 1795109764.479079,
+        "end": 1795109764.521989
+      },
+      {
+        "trace_id": "0ebda020bdce4326344591be30fb0835",
+        "server_ms": 43.832117,
+        "client_ms": 48.257543,
+        "start": 1795109765.142753,
+        "end": 1795109765.1865852
+      },
+      {
+        "trace_id": "dd6976babf6bdd586bb3aa6a4f5ef7e7",
+        "server_ms": 45.716544,
+        "client_ms": 50.511412,
+        "start": 1795109765.4651701,
+        "end": 1795109765.5108867
+      },
+      {
+        "trace_id": "9b266e54cc41e8d58699e8fa05594b84",
+        "server_ms": 26.6832,
+        "client_ms": 31.461974,
+        "start": 1795109765.9655924,
+        "end": 1795109765.9922755
+      },
+      {
+        "trace_id": "0f40c1dcfaf629e39ce4eca8a99f9f65",
+        "server_ms": 40.328721,
+        "client_ms": 45.025912,
+        "start": 1795109768.4636889,
+        "end": 1795109768.5040176
+      },
+      {
+        "trace_id": "f54d2cbdf2efa94682fea3c36f6b5da2",
+        "server_ms": 45.267082,
+        "client_ms": 51.298656,
+        "start": 1795109768.9753375,
+        "end": 1795109769.0206044
+      },
+      {
+        "trace_id": "ada2e92316cfa4bb07325fb17f5fd718",
+        "server_ms": 40.842005,
+        "client_ms": 46.286815,
+        "start": 1795109769.477047,
+        "end": 1795109769.517889
+      },
+      {
+        "trace_id": "7fa1b2564462c59070da0a27f68ebe3b",
+        "server_ms": 39.911462,
+        "client_ms": 44.858396,
+        "start": 1795109769.9691312,
+        "end": 1795109770.0090427
+      },
+      {
+        "trace_id": "064e5edd0dee428fd00e6f768cf97bfd",
+        "server_ms": 35.505333,
+        "client_ms": 40.521734,
+        "start": 1795109770.4633334,
+        "end": 1795109770.498839
+      },
+      {
+        "trace_id": "b9a8567f19fe87d9b7179f71e088890c",
+        "server_ms": 31.828908,
+        "client_ms": 37.334931,
+        "start": 1795109770.978757,
+        "end": 1795109771.0105858
+      },
+      {
+        "trace_id": "c3974ebf6878279a97911ebfd1ac598f",
+        "server_ms": 33.989466,
+        "client_ms": 38.74068,
+        "start": 1795109773.4589837,
+        "end": 1795109773.4929733
+      },
+      {
+        "trace_id": "5078b60aeaa3960bf6ed49dbc574f4f5",
+        "server_ms": 35.340777,
+        "client_ms": 39.898667,
+        "start": 1795109773.9592342,
+        "end": 1795109773.994575
+      },
+      {
+        "trace_id": "c9927978a02a59161258e19246bd106a",
+        "server_ms": 37.457378,
+        "client_ms": 41.788655,
+        "start": 1795109774.458561,
+        "end": 1795109774.4960184
+      },
+      {
+        "trace_id": "f932ff936e762cb6e4a074292d753724",
+        "server_ms": 110.23073,
+        "client_ms": 115.032038,
+        "start": 1795109774.9632869,
+        "end": 1795109775.0735176
+      },
+      {
+        "trace_id": "f8cbdd19aa82a6be832e35430535bce9",
+        "server_ms": 62.907097,
+        "client_ms": 67.701306,
+        "start": 1795109775.5162375,
+        "end": 1795109775.5791447
+      },
+      {
+        "trace_id": "c420c16b8dcd060eaec12692a82fadd9",
+        "server_ms": 26.49013,
+        "client_ms": 30.54922,
+        "start": 1795109775.9634683,
+        "end": 1795109775.9899583
+      },
+      {
+        "trace_id": "8a5ba5417842e8d73f93c03a95227968",
+        "server_ms": 41.693864,
+        "client_ms": 47.04733,
+        "start": 1795109778.4654114,
+        "end": 1795109778.5071054
+      },
+      {
+        "trace_id": "92ad969647e39dfbf02e33e8fd133109",
+        "server_ms": 40.135645,
+        "client_ms": 44.653821,
+        "start": 1795109778.960278,
+        "end": 1795109779.0004137
+      },
+      {
+        "trace_id": "10e618c0087fc021a22b12e5868b463d",
+        "server_ms": 105.926682,
+        "client_ms": 110.834427,
+        "start": 1795109779.473999,
+        "end": 1795109779.5799258
+      },
+      {
+        "trace_id": "a3e04ee254d33c95520ea79e55a76a3b",
+        "server_ms": 38.274402,
+        "client_ms": 42.810384,
+        "start": 1795109779.9661689,
+        "end": 1795109780.0044432
+      },
+      {
+        "trace_id": "3abd7da3506eb039190f8285f4031349",
+        "server_ms": 40.162033,
+        "client_ms": 44.708698,
+        "start": 1795109780.459979,
+        "end": 1795109780.5001411
+      },
+      {
+        "trace_id": "b89e05e3d1c6949a12e56d9a6f3da4b7",
+        "server_ms": 29.609304,
+        "client_ms": 34.586508,
+        "start": 1795109780.9644892,
+        "end": 1795109780.9940984
+      },
+      {
+        "trace_id": "17500d13425a1650ace844d73a64df42",
+        "server_ms": 37.651414,
+        "client_ms": 41.940388,
+        "start": 1795109783.4612663,
+        "end": 1795109783.4989176
+      },
+      {
+        "trace_id": "8673125d7ab1d20d1b8becc9e5dcaa70",
+        "server_ms": 36.078781,
+        "client_ms": 40.659238,
+        "start": 1795109783.9620984,
+        "end": 1795109783.9981773
+      },
+      {
+        "trace_id": "328b8b1b3757e30080ecd8813bc23ae3",
+        "server_ms": 36.506557,
+        "client_ms": 41.276864,
+        "start": 1795109784.4611251,
+        "end": 1795109784.4976318
+      },
+      {
+        "trace_id": "c204328a9a2186e656bdc05ca3d47dfe",
+        "server_ms": 35.334885,
+        "client_ms": 40.118332,
+        "start": 1795109784.9631796,
+        "end": 1795109784.9985144
+      },
+      {
+        "trace_id": "70ec53db0477712fb903c5309895f0e4",
+        "server_ms": 38.425548,
+        "client_ms": 43.255603,
+        "start": 1795109785.5512521,
+        "end": 1795109785.5896776
+      },
+      {
+        "trace_id": "0894592f072b5e7e392c06487bc8c963",
+        "server_ms": 27.572047,
+        "client_ms": 32.054998,
+        "start": 1795109785.9633586,
+        "end": 1795109785.9909308
+      },
+      {
+        "trace_id": "db32d5c9b1487a49311222f7d33314d5",
+        "server_ms": 36.692829,
+        "client_ms": 41.025465,
+        "start": 1795109788.4616034,
+        "end": 1795109788.498296
+      },
+      {
+        "trace_id": "080f8004c456b7d0459e5415d98cd9d2",
+        "server_ms": 39.566747,
+        "client_ms": 44.300274,
+        "start": 1795109788.9591315,
+        "end": 1795109788.9986982
+      },
+      {
+        "trace_id": "790a1c2cb6dcdd51f4a0afe67c4faa9f",
+        "server_ms": 35.714824,
+        "client_ms": 40.776723,
+        "start": 1795109789.4599807,
+        "end": 1795109789.4956956
+      },
+      {
+        "trace_id": "ebcde65d99ab947dd8154a10e37ec428",
+        "server_ms": 38.460682,
+        "client_ms": 43.150616,
+        "start": 1795109789.9630675,
+        "end": 1795109790.0015283
+      },
+      {
+        "trace_id": "08d10b7e7c0467d50ec4a9c6be43bd37",
+        "server_ms": 35.257113,
+        "client_ms": 39.947694,
+        "start": 1795109790.4606009,
+        "end": 1795109790.4958582
+      },
+      {
+        "trace_id": "4698d755d65867f4fea39be1b81d2254",
+        "server_ms": 25.712123,
+        "client_ms": 30.296932,
+        "start": 1795109790.963787,
+        "end": 1795109790.9894989
+      },
+      {
+        "trace_id": "583cbb14b62becd856654ad077202a61",
+        "server_ms": 38.665062,
+        "client_ms": 43.301073,
+        "start": 1795109793.461966,
+        "end": 1795109793.5006313
+      },
+      {
+        "trace_id": "852c994f26c8125cac5c59c5496587c2",
+        "server_ms": 34.50763,
+        "client_ms": 38.935595,
+        "start": 1795109793.9603963,
+        "end": 1795109793.9949038
+      },
+      {
+        "trace_id": "aee416afe0502baecf1e1e379b334c88",
+        "server_ms": 37.944827,
+        "client_ms": 42.685932,
+        "start": 1795109794.4627523,
+        "end": 1795109794.500697
+      },
+      {
+        "trace_id": "2766699908f97f436517cd802d43c037",
+        "server_ms": 40.903912,
+        "client_ms": 45.413861,
+        "start": 1795109794.9666343,
+        "end": 1795109795.0075378
+      },
+      {
+        "trace_id": "a6232eff5749c76cfe48aa4d331a5779",
+        "server_ms": 40.443781,
+        "client_ms": 44.776046,
+        "start": 1795109795.4611442,
+        "end": 1795109795.5015879
+      },
+      {
+        "trace_id": "d73d934e1104219914275fec1a4d83b8",
+        "server_ms": 26.178888,
+        "client_ms": 30.70209,
+        "start": 1795109795.9600847,
+        "end": 1795109795.9862635
+      },
+      {
+        "trace_id": "90c7b8dd941f46f98ed528ec440b383f",
+        "server_ms": 35.520599,
+        "client_ms": 40.201072,
+        "start": 1795109798.4610872,
+        "end": 1795109798.4966078
+      },
+      {
+        "trace_id": "f3b001bb3e1b5f6d98073f29b1fe22e1",
+        "server_ms": 47.111075,
+        "client_ms": 53.355704,
+        "start": 1795109798.971665,
+        "end": 1795109799.0187757
+      },
+      {
+        "trace_id": "7aefab5923bec95cb2c217a6c3e7a577",
+        "server_ms": 33.53664,
+        "client_ms": 38.786413,
+        "start": 1795109799.4662619,
+        "end": 1795109799.4997983
+      },
+      {
+        "trace_id": "907e58147f707cd2e60c0b9a5ab0f445",
+        "server_ms": 33.874797,
+        "client_ms": 38.601343,
+        "start": 1795109799.9589133,
+        "end": 1795109799.9927883
+      },
+      {
+        "trace_id": "2c9e0569e295d6610163a2885e685a56",
+        "server_ms": 39.183636,
+        "client_ms": 43.434595,
+        "start": 1795109800.4635508,
+        "end": 1795109800.5027344
+      },
+      {
+        "trace_id": "61f8636e5e63815f8ef5eee1bbddd061",
+        "server_ms": 23.351751,
+        "client_ms": 27.513219,
+        "start": 1795109800.9650476,
+        "end": 1795109800.9883993
+      },
+      {
+        "trace_id": "17e4bd5d3247393098d7a411c71687f6",
+        "server_ms": 40.225214,
+        "client_ms": 44.454897,
+        "start": 1795109803.4626307,
+        "end": 1795109803.502856
+      },
+      {
+        "trace_id": "86fe5434cb7127443822f8351037d714",
+        "server_ms": 32.885341,
+        "client_ms": 37.55722,
+        "start": 1795109803.9650676,
+        "end": 1795109803.9979527
+      },
+      {
+        "trace_id": "575aa7be7fedabe537e938f9203449f1",
+        "server_ms": 36.42255,
+        "client_ms": 41.281847,
+        "start": 1795109804.4625254,
+        "end": 1795109804.498948
+      },
+      {
+        "trace_id": "043e259fe197a857ba205eef593a9b8b",
+        "server_ms": 38.707235,
+        "client_ms": 43.850621,
+        "start": 1795109804.962992,
+        "end": 1795109805.001699
+      },
+      {
+        "trace_id": "46d9a820e603026b36c239df00eb2eab",
+        "server_ms": 37.292796,
+        "client_ms": 42.071654,
+        "start": 1795109805.4617612,
+        "end": 1795109805.4990542
+      },
+      {
+        "trace_id": "7f4ec5f7046a6e897f01fe602531748d",
+        "server_ms": 25.323159,
+        "client_ms": 29.757512,
+        "start": 1795109806.0550392,
+        "end": 1795109806.0803626
+      },
+      {
+        "trace_id": "a156794f86805691430ac34d1c785fad",
+        "server_ms": 36.23054,
+        "client_ms": 40.678793,
+        "start": 1795109808.4615164,
+        "end": 1795109808.4977467
+      },
+      {
+        "trace_id": "2231f9e06cd8eed8197c0c868e452432",
+        "server_ms": 43.26247,
+        "client_ms": 48.721751,
+        "start": 1795109808.9663603,
+        "end": 1795109809.0096228
+      },
+      {
+        "trace_id": "d255bc9a3b22a9a69322fc74cf97d019",
+        "server_ms": 38.630731,
+        "client_ms": 43.260107,
+        "start": 1795109809.4602299,
+        "end": 1795109809.4988606
+      },
+      {
+        "trace_id": "5afcc0ffc1db82b4bfef9572735ad532",
+        "server_ms": 38.002566,
+        "client_ms": 42.208523,
+        "start": 1795109809.9594452,
+        "end": 1795109809.9974477
+      },
+      {
+        "trace_id": "d9e687d673946c87338961241bbbcc45",
+        "server_ms": 34.928581,
+        "client_ms": 39.567745,
+        "start": 1795109810.460345,
+        "end": 1795109810.4952738
+      },
+      {
+        "trace_id": "b491a8e25730f313f5f55cd8c2257bb3",
+        "server_ms": 30.886788,
+        "client_ms": 36.998857,
+        "start": 1795109810.9638972,
+        "end": 1795109810.9947844
+      }
+    ],
+    "duration_series": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795109747.287,
+          0.9105
+        ],
+        "last": [
+          1795110107.288,
+          1.2625
+        ],
+        "samples": [
+          [
+            1795109702.287,
+            0.9105
+          ],
+          [
+            1795109717.287,
+            0.9105
+          ],
+          [
+            1795109732.287,
+            0.9105
+          ],
+          [
+            1795109747.287,
+            0.9105
+          ],
+          [
+            1795109762.287,
+            0.94
+          ],
+          [
+            1795109777.287,
+            1.0315
+          ],
+          [
+            1795109792.287,
+            1.121
+          ],
+          [
+            1795109807.287,
+            1.2025
+          ],
+          [
+            1795109822.287,
+            1.2625
+          ],
+          [
+            1795109837.287,
+            1.2625
+          ],
+          [
+            1795109852.287,
+            1.2625
+          ],
+          [
+            1795109867.287,
+            1.2625
+          ],
+          [
+            1795109882.287,
+            1.2625
+          ],
+          [
+            1795109897.287,
+            1.2625
+          ],
+          [
+            1795109912.287,
+            1.2625
+          ],
+          [
+            1795109927.287,
+            1.2625
+          ],
+          [
+            1795109942.287,
+            1.2625
+          ],
+          [
+            1795109957.287,
+            1.2625
+          ],
+          [
+            1795109972.287,
+            1.2625
+          ],
+          [
+            1795109987.287,
+            1.2625
+          ],
+          [
+            1795110002.287,
+            1.2625
+          ],
+          [
+            1795110017.287,
+            1.2625
+          ],
+          [
+            1795110032.287,
+            1.2625
+          ],
+          [
+            1795110077.288,
+            1.2625
+          ],
+          [
+            1795110092.288,
+            1.2625
+          ],
+          [
+            1795110107.288,
+            1.2625
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795109747.287,
+          10
+        ],
+        "last": [
+          1795110107.288,
+          70
+        ],
+        "samples": [
+          [
+            1795109702.287,
+            10
+          ],
+          [
+            1795109717.287,
+            10
+          ],
+          [
+            1795109732.287,
+            10
+          ],
+          [
+            1795109747.287,
+            10
+          ],
+          [
+            1795109762.287,
+            16
+          ],
+          [
+            1795109777.287,
+            31
+          ],
+          [
+            1795109792.287,
+            46
+          ],
+          [
+            1795109807.287,
+            61
+          ],
+          [
+            1795109822.287,
+            70
+          ],
+          [
+            1795109837.287,
+            70
+          ],
+          [
+            1795109852.287,
+            70
+          ],
+          [
+            1795109867.287,
+            70
+          ],
+          [
+            1795109882.287,
+            70
+          ],
+          [
+            1795109897.287,
+            70
+          ],
+          [
+            1795109912.287,
+            70
+          ],
+          [
+            1795109927.287,
+            70
+          ],
+          [
+            1795109942.287,
+            70
+          ],
+          [
+            1795109957.287,
+            70
+          ],
+          [
+            1795109972.287,
+            70
+          ],
+          [
+            1795109987.287,
+            70
+          ],
+          [
+            1795110002.287,
+            70
+          ],
+          [
+            1795110017.287,
+            70
+          ],
+          [
+            1795110032.287,
+            70
+          ],
+          [
+            1795110077.288,
+            70
+          ],
+          [
+            1795110092.288,
+            70
+          ],
+          [
+            1795110107.288,
+            70
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795109747.287,
+          4.4625
+        ],
+        "last": [
+          1795110107.288,
+          7.162
+        ],
+        "samples": [
+          [
+            1795109702.287,
+            4.4625
+          ],
+          [
+            1795109717.287,
+            4.4625
+          ],
+          [
+            1795109732.287,
+            4.4625
+          ],
+          [
+            1795109747.287,
+            4.4625
+          ],
+          [
+            1795109762.287,
+            4.802
+          ],
+          [
+            1795109777.287,
+            5.4375
+          ],
+          [
+            1795109792.287,
+            6.202
+          ],
+          [
+            1795109807.287,
+            6.8065
+          ],
+          [
+            1795109822.287,
+            7.162
+          ],
+          [
+            1795109837.287,
+            7.162
+          ],
+          [
+            1795109852.287,
+            7.162
+          ],
+          [
+            1795109867.287,
+            7.162
+          ],
+          [
+            1795109882.287,
+            7.162
+          ],
+          [
+            1795109897.287,
+            7.162
+          ],
+          [
+            1795109912.287,
+            7.162
+          ],
+          [
+            1795109927.287,
+            7.162
+          ],
+          [
+            1795109942.287,
+            7.162
+          ],
+          [
+            1795109957.287,
+            7.162
+          ],
+          [
+            1795109972.287,
+            7.162
+          ],
+          [
+            1795109987.287,
+            7.162
+          ],
+          [
+            1795110002.287,
+            7.162
+          ],
+          [
+            1795110017.287,
+            7.162
+          ],
+          [
+            1795110032.287,
+            7.162
+          ],
+          [
+            1795110077.288,
+            7.162
+          ],
+          [
+            1795110092.288,
+            7.162
+          ],
+          [
+            1795110107.288,
+            7.162
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795109747.287,
+          2
+        ],
+        "last": [
+          1795110107.288,
+          14
+        ],
+        "samples": [
+          [
+            1795109702.287,
+            2
+          ],
+          [
+            1795109717.287,
+            2
+          ],
+          [
+            1795109732.287,
+            2
+          ],
+          [
+            1795109747.287,
+            2
+          ],
+          [
+            1795109762.287,
+            3
+          ],
+          [
+            1795109777.287,
+            6
+          ],
+          [
+            1795109792.287,
+            9
+          ],
+          [
+            1795109807.287,
+            12
+          ],
+          [
+            1795109822.287,
+            14
+          ],
+          [
+            1795109837.287,
+            14
+          ],
+          [
+            1795109852.287,
+            14
+          ],
+          [
+            1795109867.287,
+            14
+          ],
+          [
+            1795109882.287,
+            14
+          ],
+          [
+            1795109897.287,
+            14
+          ],
+          [
+            1795109912.287,
+            14
+          ],
+          [
+            1795109927.287,
+            14
+          ],
+          [
+            1795109942.287,
+            14
+          ],
+          [
+            1795109957.287,
+            14
+          ],
+          [
+            1795109972.287,
+            14
+          ],
+          [
+            1795109987.287,
+            14
+          ],
+          [
+            1795110002.287,
+            14
+          ],
+          [
+            1795110017.287,
+            14
+          ],
+          [
+            1795110032.287,
+            14
+          ],
+          [
+            1795110077.288,
+            14
+          ],
+          [
+            1795110092.288,
+            14
+          ],
+          [
+            1795110107.288,
+            14
+          ]
+        ]
+      }
+    ]
+  },
+  "E5": [
+    {
+      "entity_id": "00082c64b7ac6ac3416bf2dcf7a5f81bdc9be99eb94d6cae33d2c3eddf5679ca",
+      "container": "backend",
+      "pod": "karthos-backend-858657cd46-hl99f",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.1006138875,
+      "maximum": 0.110329661,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "9678a30f9b7c68fe333ba39784f5003c6679064d508410ec1c41e73ab636e024",
+      "container": "diag-reader",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0037438545,
+      "maximum": 0.004333792,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "40110a9118335e8ae60a96031f8814335430245383d650594797d26355a3a729",
+      "container": "agent",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.009055274,
+      "maximum": 0.009965471,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "b75932944cc65dd6c7b1730fc14b8834c6e71fa29865ffd6f2c02d8ca863bdb7",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 29945856,
+      "maximum": 30633984,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "1fd7b597bc9621189509f04463d1190f2d2edea09c97cb1a554b3796b1c29b67",
+      "container": "frontend",
+      "pod": "karthos-frontend-5d6ffff59b-fc7k4",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 4921344,
+      "maximum": 4923392,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "ae7b6152affbd6bc87cafd4a276401cfb67fbdaa2c8a67ee82f9f6dbef7ba7d3",
+      "container": "watchdog",
+      "pod": "eval-capture-a2132b2e1e9a48f4-sjm6g",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 15286272,
+      "maximum": 15286272,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "a0f83ee88d5e9c5e708ee9941c742015baa86f36ce8a6a494f5b06c99b4f41a6",
+      "container": "vmsingle",
+      "pod": "karthos-victoria-metrics-single-server-0",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.033115387499999996,
+      "maximum": 0.045139448,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "fb0282af3ec377fdea47d72c3458cf63fa5305f17f8e776d882853f4047cfcce",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0017004770000000002,
+      "maximum": 0.003215279,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "00082c64b7ac6ac3416bf2dcf7a5f81bdc9be99eb94d6cae33d2c3eddf5679ca",
+      "container": "backend",
+      "pod": "karthos-backend-858657cd46-hl99f",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 15802368,
+      "maximum": 16130048,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "9678a30f9b7c68fe333ba39784f5003c6679064d508410ec1c41e73ab636e024",
+      "container": "diag-reader",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 589824,
+      "maximum": 589824,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "40110a9118335e8ae60a96031f8814335430245383d650594797d26355a3a729",
+      "container": "agent",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 72923136,
+      "maximum": 75526144,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "6c09eb413f3ad7370af0069f63c2b4dd788c370001a2691766ca0936a77e1ff0",
+      "container": "agent",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 108574720,
+      "maximum": 112087040,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "423dd22ae4b35c3c67fb75c172d9ad304ab538c16892ef2c7c74f19889e3eca7",
+      "container": "diag-reader",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0020059745,
+      "maximum": 0.002404163,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "197de16d378d57aecc211ac8921831400be810b40836d1bc16b22c19dbfb84f6",
+      "container": "postgresql",
+      "pod": "karthos-postgresql-0",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.0196120115,
+      "maximum": 0.029018556,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "a0f83ee88d5e9c5e708ee9941c742015baa86f36ce8a6a494f5b06c99b4f41a6",
+      "container": "vmsingle",
+      "pod": "karthos-victoria-metrics-single-server-0",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 76984320,
+      "maximum": 84561920,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "fb0282af3ec377fdea47d72c3458cf63fa5305f17f8e776d882853f4047cfcce",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 22845440,
+      "maximum": 23277568,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "b75932944cc65dd6c7b1730fc14b8834c6e71fa29865ffd6f2c02d8ca863bdb7",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.000167284,
+      "maximum": 0.000169315,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "1fd7b597bc9621189509f04463d1190f2d2edea09c97cb1a554b3796b1c29b67",
+      "container": "frontend",
+      "pod": "karthos-frontend-5d6ffff59b-fc7k4",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 8.52125e-05,
+      "maximum": 8.992e-05,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "6c09eb413f3ad7370af0069f63c2b4dd788c370001a2691766ca0936a77e1ff0",
+      "container": "agent",
+      "pod": "karthos-agent-7pt5n",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.018236991,
+      "maximum": 0.019166311,
+      "samples": 2,
+      "first_at": 1795109769.284,
+      "last_at": 1795109799.292,
+      "covered_span_seconds": 30.008000135421753,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "ae7b6152affbd6bc87cafd4a276401cfb67fbdaa2c8a67ee82f9f6dbef7ba7d3",
+      "container": "watchdog",
+      "pod": "eval-capture-a2132b2e1e9a48f4-sjm6g",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 3.7920000000000003e-06,
+      "maximum": 3.957e-06,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "423dd22ae4b35c3c67fb75c172d9ad304ab538c16892ef2c7c74f19889e3eca7",
+      "container": "diag-reader",
+      "pod": "karthos-agent-djhgh",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 436224,
+      "maximum": 438272,
+      "samples": 2,
+      "first_at": 1795109753.116,
+      "last_at": 1795109783.115,
+      "covered_span_seconds": 29.999000072479248,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "197de16d378d57aecc211ac8921831400be810b40836d1bc16b22c19dbfb84f6",
+      "container": "postgresql",
+      "pod": "karthos-postgresql-0",
+      "node": "gke-karthos-eval-1bad98-observability-9dd7f3b5-s11v",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 128675840,
+      "maximum": 128806912,
+      "samples": 2,
+      "first_at": 1795109755.149,
+      "last_at": 1795109785.163,
+      "covered_span_seconds": 30.014000177383423,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    }
+  ],
+  "E6": {
+    "observed": 384,
+    "unknown_count": 72,
+    "unknown_groups": [
+      {
+        "boundary": "checkout",
+        "route": "/hipstershop.CheckoutService/PlaceOrder",
+        "user_agent": "grpc-go/1.82.0",
+        "origin": "127.0.0.6",
+        "grpc_status": "0",
+        "http_status": "200",
+        "count": 60
+      },
+      {
+        "boundary": "checkout",
+        "route": "/hipstershop.CheckoutService/PlaceOrder",
+        "user_agent": "grpc-go/1.82.0",
+        "origin": "127.0.0.6",
+        "grpc_status": "13",
+        "http_status": "200",
+        "count": 12
+      }
+    ]
+  },
+  "extraction": {
+    "label": "arbitration",
+    "archive_sha256": "b59f2c3a0f82d8773ee8b7d7420f5b4b87ba51a3415cc27825cecb8dc6a61421",
+    "seal_sha256": "20f4ec20db114964e3a3e6196574eb530dbdaa656850e23dbdfb7a6f61c7fc46",
+    "verified_members": 751,
+    "selected": [
+      {
+        "name": "api-cpu.json",
+        "bytes": 197466,
+        "sha256": "0813b2ba1054f5f49edee4f357bc24b1acc942da2af7601af315d56238e43dfd"
+      },
+      {
+        "name": "api-edges.json",
+        "bytes": 310372,
+        "sha256": "2bdba7ea9b411e8a4f03f4e0f8cc7ea9ff423579ae961455ee073b68958d0479"
+      },
+      {
+        "name": "api-error-count.json",
+        "bytes": 43476,
+        "sha256": "852f4a06ceed0736bed5460a9dfa86f72c8f01b5df5f915bfa54b54a20c7b1db"
+      },
+      {
+        "name": "api-memory.json",
+        "bytes": 197847,
+        "sha256": "985cff844937ed071c4d1eb7162f361bd7e4dd4c2cc4aa509cc03c4fcc4e8b7f"
+      },
+      {
+        "name": "api-nodes.json",
+        "bytes": 340917,
+        "sha256": "bce85f4701f5540550f1ca9d0a747931fd19f913740d0af42211cf5e685d01dd"
+      },
+      {
+        "name": "api-request-count.json",
+        "bytes": 37580,
+        "sha256": "9dc0a92aa297c1d343486d5ee2c8730d055a8231f1d38b1744ddbdedf803ffbb"
+      },
+      {
+        "name": "extended/vm-raw.ndjson",
+        "bytes": 1106579,
+        "sha256": "fc06015b2c10caeca317256dfc5b53e94d1040df1d7bfe3b4c7208fa5aeab501"
+      },
+      {
+        "name": "k8s-pods.json",
+        "bytes": 357891,
+        "sha256": "33f85aa6b59a87fff002c448374f288dd1a7c93efd86f36f67df424ea2e3dc46"
+      },
+      {
+        "name": "karthos-pods.json",
+        "bytes": 87131,
+        "sha256": "4ecc0f143912242c3acfa7234127e46e938707ab39e0c0c4d393a8ba42f6a8dc"
+      },
+      {
+        "name": "ledger.ndjson",
+        "bytes": 234722,
+        "sha256": "471d3faf3bf8468cd37860cfd70fcceb0d706a39bf16794b09f8c79ec30d6108"
+      },
+      {
+        "name": "logs/karthos-eval-boutique__checkoutservice-7b4fd8cf86-n6hx5__eval-observer.log",
+        "bytes": 34426,
+        "sha256": "3dd6e0275bd54ed62a85de5bfcbd826276319fc81c4d5e4470a01c1c5cd36eaa"
+      },
+      {
+        "name": "logs/karthos-eval-boutique__frontend-78dd897f4d-nhrbt__eval-observer.log",
+        "bytes": 228162,
+        "sha256": "6fd807a665df57733bd446e5d9ed180cb67f5f068648576a360ecfe829895ea7"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 146403,
+        "sha256": "eea40a129f8ba45eb3cebc8bd311113af5d16e4afe59b3ab6341e053a2befb64"
+      },
+      {
+        "name": "quiet-after.json",
+        "bytes": 14638,
+        "sha256": "3fb74743becc76377748ff6b826edc382bd2d7f460374a2fae4b67a5df10cf3b"
+      },
+      {
+        "name": "quiet-before.json",
+        "bytes": 14194,
+        "sha256": "a360da18739399e8d36c336c685dec92a3ffb4b60f20406e384414647393a31d"
+      },
+      {
+        "name": "selection/karthos-agent-config.json",
+        "bytes": 5724,
+        "sha256": "769bc1e714e808652694ee816f02d10c478d75104ab7bdacdffd7dc588684674"
+      },
+      {
+        "name": "selection/karthos-gateway-config.json",
+        "bytes": 6075,
+        "sha256": "41c797d86d4b311504eae5d731f4acc2cc0803fb87122e76e05f14e8bb5031bd"
+      },
+      {
+        "name": "selection/plan.json",
+        "bytes": 2141,
+        "sha256": "2546a0d00d720cc4b4d003c8dcb8a5ab5d9d6233e18d8f983692f7030440bfc0"
+      },
+      {
+        "name": "selection/profile.json",
+        "bytes": 1702,
+        "sha256": "d31778af5fad083ebad55e4298d67e31d385e677d48ca181e5097477323e232b"
+      },
+      {
+        "name": "setup-effective-settings.json",
+        "bytes": 278,
+        "sha256": "99785fa5d428499e3453f10fb1925e673c68e69c66920d886ca8480b3651d720"
+      },
+      {
+        "name": "setup-generated-collector-contract.json",
+        "bytes": 303,
+        "sha256": "044d7723de37b8ff2c8422f37173962b083bc29cb315eadfcba779030d0dec4b"
+      },
+      {
+        "name": "setup-running-image-verification.json",
+        "bytes": 14317,
+        "sha256": "a2bd5645b50604f116107b0d041507f7d2f7527e6ec9c6898944f34ff48f3368"
+      },
+      {
+        "name": "structured/gateway/raw/traces.json",
+        "bytes": 5013352,
+        "sha256": "580dccbb4a01151120a66dc2f92e809afc7103ba7bad3d48ac1f01ad7f0dacab"
+      },
+      {
+        "name": "timing-verification.json",
+        "bytes": 203323697,
+        "sha256": "8fe44147c6d2aab3498542c2a3fdff08b0c183d073adc47b051bbb3214d84f57"
+      },
+      {
+        "name": "verification.json",
+        "bytes": 827240,
+        "sha256": "189567f46a29cb5be2d203ac43ddcc5cf9a0c1f8b1c1169fcbb369f3d542487f"
+      },
+      {
+        "name": "vm-parity/api-error-count.json",
+        "bytes": 35833,
+        "sha256": "4b1ab88be1a7fbfebc6de271df9218433a6628800acdbeb430e8a3db6cd37e2f"
+      },
+      {
+        "name": "vm-parity/api-request-count.json",
+        "bytes": 33509,
+        "sha256": "e8034f14f3f71c331d6f239ad1e11edea4bff6064b1577d69d9f7b278c6ae1d1"
+      },
+      {
+        "name": "vm-parity/manifest.json",
+        "bytes": 12275,
+        "sha256": "1ae35f56ee5fa3f51e1fd9551189ac3703271005d32d943b5128f00dfcd3f25b"
+      },
+      {
+        "name": "vm-raw.ndjson",
+        "bytes": 240552,
+        "sha256": "65efa4bf45cddddac82b3642d3613145c18e55af7afccb5c3944be533730596c"
+      }
+    ]
+  }
+}

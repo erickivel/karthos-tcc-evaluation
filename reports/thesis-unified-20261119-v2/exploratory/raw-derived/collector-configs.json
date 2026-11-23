@@ -1,0 +1,408 @@
+{
+  "B1": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T13:17:51Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795096368480799006",
+        "uid": "6722859f-d6a3-479e-9d13-7f08f47cc4b5"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "connectors:\n  service_graph:\n    dimensions:\n    - http.method\n    - k8s.namespace.name\n    latency_histogram_buckets:\n    - 100ms\n    - 250ms\n    - 500ms\n    - 1s\n    - 5s\n    metrics_flush_interval: 15s\n    store:\n      max_items: 10000\n      ttl: 30s\nexporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-servicegraph-namespace:\n    trace_statements:\n    - context: span\n      statements:\n      - set(span.attributes[\"k8s.namespace.name\"], resource.attributes[\"k8s.namespace.name\"])\n        where span.attributes[\"k8s.namespace.name\"] == nil and resource.attributes[\"k8s.namespace.name\"]\n        != nil\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"traces.servicegraph\") where (IsMatch(metric.name,\n        \"^traces\\\\.service\\\\.graph\\\\.\") or IsMatch(metric.name, \"^traces_service_graph_\"))\n        and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n      - service_graph\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      - service_graph\n      processors:\n      - memory_limiter\n      - transform/karthos-servicegraph-namespace\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T13:17:51Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795096369597263013",
+        "uid": "3bb35351-8123-4e7f-80e5-7d289d63d1e0"
+      }
+    }
+  },
+  "B2": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T14:12:29Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795099504057295006",
+        "uid": "051fe9ac-4944-4dcc-a921-cd4b0b9340d7"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "connectors:\n  service_graph:\n    dimensions:\n    - http.method\n    - k8s.namespace.name\n    latency_histogram_buckets:\n    - 100ms\n    - 250ms\n    - 500ms\n    - 1s\n    - 5s\n    metrics_flush_interval: 15s\n    store:\n      max_items: 10000\n      ttl: 30s\nexporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-servicegraph-namespace:\n    trace_statements:\n    - context: span\n      statements:\n      - set(span.attributes[\"k8s.namespace.name\"], resource.attributes[\"k8s.namespace.name\"])\n        where span.attributes[\"k8s.namespace.name\"] == nil and resource.attributes[\"k8s.namespace.name\"]\n        != nil\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"traces.servicegraph\") where (IsMatch(metric.name,\n        \"^traces\\\\.service\\\\.graph\\\\.\") or IsMatch(metric.name, \"^traces_service_graph_\"))\n        and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n      - service_graph\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      - service_graph\n      processors:\n      - memory_limiter\n      - transform/karthos-servicegraph-namespace\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T14:12:29Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795099505194591013",
+        "uid": "4b6393a2-aa70-4bb6-bb21-9645d0b1bafb"
+      }
+    }
+  },
+  "B3": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  prometheus:\n    config:\n      scrape_configs:\n      - job_name: mesh-istio\n        kubernetes_sd_configs:\n        - role: pod\n        metric_relabel_configs:\n        - action: keep\n          regex: istio_(requests_total|request_duration_milliseconds(_bucket|_sum|_count)?|request_messages_total|response_messages_total|tcp_connections_(opened|closed)_total|tcp_(sent|received)_bytes_total)\n          source_labels:\n          - __name__\n        - action: keep\n          regex: destination\n          source_labels:\n          - reporter\n        - replacement: mesh.istio\n          target_label: karthos_source\n        - source_labels:\n          - source_canonical_service\n          target_label: client\n        - source_labels:\n          - source_workload_namespace\n          target_label: client_namespace\n        - source_labels:\n          - destination_canonical_service\n          target_label: server\n        - source_labels:\n          - destination_service_namespace\n          target_label: server_namespace\n        - source_labels:\n          - request_protocol\n          target_label: network_protocol_name\n        - source_labels:\n          - response_code\n          target_label: http_response_status_code\n        - source_labels:\n          - grpc_response_status\n          target_label: rpc_grpc_status_code\n        - source_labels:\n          - connection_security_policy\n          target_label: mesh_security_policy\n        - source_labels:\n          - source_principal\n          target_label: mesh_peer_source_principal\n        - source_labels:\n          - destination_principal\n          target_label: mesh_peer_destination_principal\n        - source_labels:\n          - response_flags\n          target_label: mesh_envoy_response_flags\n        metrics_path: /stats/prometheus\n        relabel_configs:\n        - action: keep\n          regex: istio-proxy\n          source_labels:\n          - __meta_kubernetes_pod_container_name\n        - action: keep\n          regex: ^\\Q${env:K8S_NODE_NAME}\\E$\n          source_labels:\n          - __meta_kubernetes_pod_node_name\n        - regex: ([^:]+)(?::\\d+)?\n          replacement: $1:15020\n          source_labels:\n          - __address__\n          target_label: __address__\n        - action: keep\n          regex: karthos-eval-astronomy\n          source_labels:\n          - __meta_kubernetes_namespace\n        scrape_interval: 15s\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n      - prometheus\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T15:08:21Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795103151441343006",
+        "uid": "46b664ed-28c9-4628-b5dc-4305dab03603"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T15:08:21Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795103152714319013",
+        "uid": "97f4643b-344b-49d5-b06a-b34d717d5157"
+      }
+    }
+  },
+  "B4": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  prometheus:\n    config:\n      scrape_configs:\n      - job_name: mesh-istio\n        kubernetes_sd_configs:\n        - role: pod\n        metric_relabel_configs:\n        - action: keep\n          regex: istio_(requests_total|request_duration_milliseconds(_bucket|_sum|_count)?|request_messages_total|response_messages_total|tcp_connections_(opened|closed)_total|tcp_(sent|received)_bytes_total)\n          source_labels:\n          - __name__\n        - action: keep\n          regex: destination\n          source_labels:\n          - reporter\n        - replacement: mesh.istio\n          target_label: karthos_source\n        - source_labels:\n          - source_canonical_service\n          target_label: client\n        - source_labels:\n          - source_workload_namespace\n          target_label: client_namespace\n        - source_labels:\n          - destination_canonical_service\n          target_label: server\n        - source_labels:\n          - destination_service_namespace\n          target_label: server_namespace\n        - source_labels:\n          - request_protocol\n          target_label: network_protocol_name\n        - source_labels:\n          - response_code\n          target_label: http_response_status_code\n        - source_labels:\n          - grpc_response_status\n          target_label: rpc_grpc_status_code\n        - source_labels:\n          - connection_security_policy\n          target_label: mesh_security_policy\n        - source_labels:\n          - source_principal\n          target_label: mesh_peer_source_principal\n        - source_labels:\n          - destination_principal\n          target_label: mesh_peer_destination_principal\n        - source_labels:\n          - response_flags\n          target_label: mesh_envoy_response_flags\n        metrics_path: /stats/prometheus\n        relabel_configs:\n        - action: keep\n          regex: istio-proxy\n          source_labels:\n          - __meta_kubernetes_pod_container_name\n        - action: keep\n          regex: ^\\Q${env:K8S_NODE_NAME}\\E$\n          source_labels:\n          - __meta_kubernetes_pod_node_name\n        - regex: ([^:]+)(?::\\d+)?\n          replacement: $1:15020\n          source_labels:\n          - __address__\n          target_label: __address__\n        - action: keep\n          regex: karthos-eval-boutique\n          source_labels:\n          - __meta_kubernetes_namespace\n        scrape_interval: 15s\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n      - prometheus\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T16:19:30Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795107193999695006",
+        "uid": "e56cd3a5-d3fb-470f-a0c8-ad6706cf5dce"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T16:19:30Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795107195234303013",
+        "uid": "33d7285d-5eb3-490a-896d-4a4398e350b9"
+      }
+    }
+  },
+  "B5": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  prometheus:\n    config:\n      scrape_configs:\n      - job_name: mesh-istio\n        kubernetes_sd_configs:\n        - role: pod\n        metric_relabel_configs:\n        - action: keep\n          regex: istio_(requests_total|request_duration_milliseconds(_bucket|_sum|_count)?|request_messages_total|response_messages_total|tcp_connections_(opened|closed)_total|tcp_(sent|received)_bytes_total)\n          source_labels:\n          - __name__\n        - action: keep\n          regex: destination\n          source_labels:\n          - reporter\n        - replacement: mesh.istio\n          target_label: karthos_source\n        - source_labels:\n          - source_canonical_service\n          target_label: client\n        - source_labels:\n          - source_workload_namespace\n          target_label: client_namespace\n        - source_labels:\n          - destination_canonical_service\n          target_label: server\n        - source_labels:\n          - destination_service_namespace\n          target_label: server_namespace\n        - source_labels:\n          - request_protocol\n          target_label: network_protocol_name\n        - source_labels:\n          - response_code\n          target_label: http_response_status_code\n        - source_labels:\n          - grpc_response_status\n          target_label: rpc_grpc_status_code\n        - source_labels:\n          - connection_security_policy\n          target_label: mesh_security_policy\n        - source_labels:\n          - source_principal\n          target_label: mesh_peer_source_principal\n        - source_labels:\n          - destination_principal\n          target_label: mesh_peer_destination_principal\n        - source_labels:\n          - response_flags\n          target_label: mesh_envoy_response_flags\n        metrics_path: /stats/prometheus\n        relabel_configs:\n        - action: keep\n          regex: istio-proxy\n          source_labels:\n          - __meta_kubernetes_pod_container_name\n        - action: keep\n          regex: ^\\Q${env:K8S_NODE_NAME}\\E$\n          source_labels:\n          - __meta_kubernetes_pod_node_name\n        - regex: ([^:]+)(?::\\d+)?\n          replacement: $1:15020\n          source_labels:\n          - __address__\n          target_label: __address__\n        - action: keep\n          regex: karthos-eval-boutique\n          source_labels:\n          - __meta_kubernetes_namespace\n        scrape_interval: 15s\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n      - prometheus\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T18:46:31Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795116141129951006",
+        "uid": "d0c8043e-1c0f-4aa9-bb83-ab35667adde5"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T18:46:31Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795116142454383013",
+        "uid": "efc0f667-a27b-4a37-a0ca-90d6019df9b8"
+      }
+    }
+  },
+  "B6": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T19:47:14Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795119551022367006",
+        "uid": "d0014d14-e566-40c6-ae60-0b323ee9450d"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "connectors:\n  service_graph:\n    dimensions:\n    - http.method\n    - k8s.namespace.name\n    latency_histogram_buckets:\n    - 100ms\n    - 250ms\n    - 500ms\n    - 1s\n    - 5s\n    metrics_flush_interval: 15s\n    store:\n      max_items: 10000\n      ttl: 30s\nexporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-servicegraph-namespace:\n    trace_statements:\n    - context: span\n      statements:\n      - set(span.attributes[\"k8s.namespace.name\"], resource.attributes[\"k8s.namespace.name\"])\n        where span.attributes[\"k8s.namespace.name\"] == nil and resource.attributes[\"k8s.namespace.name\"]\n        != nil\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"traces.servicegraph\") where (IsMatch(metric.name,\n        \"^traces\\\\.service\\\\.graph\\\\.\") or IsMatch(metric.name, \"^traces_service_graph_\"))\n        and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n      - service_graph\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      - service_graph\n      processors:\n      - memory_limiter\n      - transform/karthos-servicegraph-namespace\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T19:47:14Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795119552214943013",
+        "uid": "48b0aa89-1176-4445-b462-42b2adb4ec5d"
+      }
+    }
+  },
+  "arbitration": {
+    "karthos-agent-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_GATEWAY_GRPC_ENDPOINT}\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  k8s_attributes:\n    auth_type: serviceAccount\n    passthrough: false\n  resource:\n    attributes:\n    - action: insert\n      key: k8s.node.name\n      value: ${env:K8S_NODE_NAME}\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"host-os\") where (IsMatch(metric.name,\n        \"^system\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\n      - set(datapoint.attributes[\"karthos_source\"], \"kubelet\") where (IsMatch(metric.name,\n        \"^container\\\\.\") or IsMatch(metric.name, \"^k8s\\\\.node\\\\.(cpu\\\\.usage|memory\\\\.working_set)$\")\n        or IsMatch(metric.name, \"^k8s\\\\.pod\\\\.(cpu|memory)\\\\.\") or IsMatch(metric.name,\n        \"^k8s\\\\.volume\\\\.\")) and datapoint.attributes[\"karthos_source\"] == nil\nreceivers:\n  host_metrics:\n    collection_interval: 30s\n    root_path: /hostfs\n    scrapers:\n      cpu:\n        metrics:\n          system.cpu.utilization:\n            enabled: true\n      disk: {}\n      filesystem:\n        metrics:\n          system.filesystem.utilization:\n            enabled: true\n      memory: {}\n      network: {}\n  kubelet_stats:\n    auth_type: serviceAccount\n    collection_interval: 30s\n    endpoint: https://${env:K8S_NODE_NAME}:10250\n    extra_metadata_labels:\n    - k8s.volume.type\n    insecure_skip_verify: true\n    metric_groups:\n    - container\n    - node\n    - pod\n    - volume\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n  prometheus:\n    config:\n      scrape_configs:\n      - job_name: mesh-istio\n        kubernetes_sd_configs:\n        - role: pod\n        metric_relabel_configs:\n        - action: keep\n          regex: istio_(requests_total|request_duration_milliseconds(_bucket|_sum|_count)?|request_messages_total|response_messages_total|tcp_connections_(opened|closed)_total|tcp_(sent|received)_bytes_total)\n          source_labels:\n          - __name__\n        - action: keep\n          regex: destination\n          source_labels:\n          - reporter\n        - replacement: mesh.istio\n          target_label: karthos_source\n        - source_labels:\n          - source_canonical_service\n          target_label: client\n        - source_labels:\n          - source_workload_namespace\n          target_label: client_namespace\n        - source_labels:\n          - destination_canonical_service\n          target_label: server\n        - source_labels:\n          - destination_service_namespace\n          target_label: server_namespace\n        - source_labels:\n          - request_protocol\n          target_label: network_protocol_name\n        - source_labels:\n          - response_code\n          target_label: http_response_status_code\n        - source_labels:\n          - grpc_response_status\n          target_label: rpc_grpc_status_code\n        - source_labels:\n          - connection_security_policy\n          target_label: mesh_security_policy\n        - source_labels:\n          - source_principal\n          target_label: mesh_peer_source_principal\n        - source_labels:\n          - destination_principal\n          target_label: mesh_peer_destination_principal\n        - source_labels:\n          - response_flags\n          target_label: mesh_envoy_response_flags\n        metrics_path: /stats/prometheus\n        relabel_configs:\n        - action: keep\n          regex: istio-proxy\n          source_labels:\n          - __meta_kubernetes_pod_container_name\n        - action: keep\n          regex: ^\\Q${env:K8S_NODE_NAME}\\E$\n          source_labels:\n          - __meta_kubernetes_pod_node_name\n        - regex: ([^:]+)(?::\\d+)?\n          replacement: $1:15020\n          source_labels:\n          - __address__\n          target_label: __address__\n        - action: keep\n          regex: karthos-eval-boutique\n          source_labels:\n          - __meta_kubernetes_namespace\n        scrape_interval: 15s\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - transform/karthos-source\n      - batch\n      receivers:\n      - host_metrics\n      - kubelet_stats\n      - prometheus\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - resource\n      - k8s_attributes\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T17:28:37Z",
+        "labels": {
+          "app.kubernetes.io/component": "agent",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-agent-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795109953853951006",
+        "uid": "2b93ef9d-6526-4651-b43f-22a2d4fc77af"
+      }
+    },
+    "karthos-gateway-config": {
+      "apiVersion": "v1",
+      "data": {
+        "config.yaml": "exporters:\n  otlp_grpc:\n    endpoint: ${env:KARTHOS_BACKEND_GRPC_ENDPOINT}\n    retry_on_failure:\n      enabled: true\n    sending_queue:\n      enabled: true\n    tls:\n      insecure: true\nextensions:\n  health_check:\n    endpoint: 0.0.0.0:13133\nprocessors:\n  batch: {}\n  memory_limiter:\n    check_interval: 1s\n    limit_percentage: 75\n    spike_limit_percentage: 15\n  transform/karthos-source:\n    metric_statements:\n    - context: datapoint\n      statements:\n      - set(datapoint.attributes[\"karthos_source\"], \"kube-cluster\") where (metric.name\n        == \"k8s.container.cpu_limit\" or metric.name == \"k8s.container.cpu_request\"\n        or metric.name == \"k8s.container.memory_limit\" or metric.name == \"k8s.container.memory_request\"\n        or metric.name == \"k8s.container.ready\" or metric.name == \"k8s.container.restarts\"\n        or metric.name == \"k8s.node.condition\" or metric.name == \"k8s.pod.phase\" or\n        metric.name == \"k8s.pod.status_reason\") and datapoint.attributes[\"karthos_source\"]\n        == nil\nreceivers:\n  k8s_cluster:\n    collection_interval: 30s\n    metrics:\n      k8s.container.cpu_limit:\n        enabled: true\n      k8s.container.cpu_request:\n        enabled: true\n      k8s.container.ephemeralstorage_limit:\n        enabled: false\n      k8s.container.ephemeralstorage_request:\n        enabled: false\n      k8s.container.memory_limit:\n        enabled: true\n      k8s.container.memory_request:\n        enabled: true\n      k8s.container.ready:\n        enabled: true\n      k8s.container.restarts:\n        enabled: true\n      k8s.container.status.reason:\n        enabled: false\n      k8s.container.status.state:\n        enabled: false\n      k8s.container.storage_limit:\n        enabled: false\n      k8s.container.storage_request:\n        enabled: false\n      k8s.cronjob.active_jobs:\n        enabled: false\n      k8s.daemonset.current_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.desired_scheduled_nodes:\n        enabled: false\n      k8s.daemonset.misscheduled_nodes:\n        enabled: false\n      k8s.daemonset.ready_nodes:\n        enabled: false\n      k8s.deployment.available:\n        enabled: false\n      k8s.deployment.desired:\n        enabled: false\n      k8s.hpa.current_replicas:\n        enabled: false\n      k8s.hpa.desired_replicas:\n        enabled: false\n      k8s.hpa.max_replicas:\n        enabled: false\n      k8s.hpa.min_replicas:\n        enabled: false\n      k8s.job.active_pods:\n        enabled: false\n      k8s.job.desired_successful_pods:\n        enabled: false\n      k8s.job.failed_pods:\n        enabled: false\n      k8s.job.max_parallel_pods:\n        enabled: false\n      k8s.job.successful_pods:\n        enabled: false\n      k8s.namespace.phase:\n        enabled: false\n      k8s.node.condition:\n        enabled: true\n      k8s.persistentvolume.status.phase:\n        enabled: false\n      k8s.persistentvolume.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.status.phase:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.capacity:\n        enabled: false\n      k8s.persistentvolumeclaim.storage.request:\n        enabled: false\n      k8s.pod.phase:\n        enabled: true\n      k8s.pod.status_reason:\n        enabled: true\n      k8s.replicaset.available:\n        enabled: false\n      k8s.replicaset.desired:\n        enabled: false\n      k8s.replication_controller.available:\n        enabled: false\n      k8s.replication_controller.desired:\n        enabled: false\n      k8s.resource_quota.hard_limit:\n        enabled: false\n      k8s.resource_quota.used:\n        enabled: false\n      k8s.service.endpoint.count:\n        enabled: false\n      k8s.service.load_balancer.ingress.count:\n        enabled: false\n      k8s.statefulset.current_pods:\n        enabled: false\n      k8s.statefulset.desired_pods:\n        enabled: false\n      k8s.statefulset.ready_pods:\n        enabled: false\n      k8s.statefulset.updated_pods:\n        enabled: false\n      openshift.appliedclusterquota.limit:\n        enabled: false\n      openshift.appliedclusterquota.used:\n        enabled: false\n      openshift.clusterquota.limit:\n        enabled: false\n      openshift.clusterquota.used:\n        enabled: false\n    node_conditions_to_report:\n    - DiskPressure\n    - MemoryPressure\n    - Ready\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\nservice:\n  extensions:\n  - health_check\n  pipelines:\n    metrics:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - transform/karthos-source\n      - batch\n      receivers:\n      - k8s_cluster\n    metrics/otlp:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n    traces:\n      exporters:\n      - otlp_grpc\n      processors:\n      - memory_limiter\n      - batch\n      receivers:\n      - otlp\n  telemetry:\n    logs:\n      encoding: json\n      level: info\n      output_paths:\n      - stdout\n"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "annotations": {
+          "meta.helm.sh/release-name": "karthos",
+          "meta.helm.sh/release-namespace": "karthos-system"
+        },
+        "creationTimestamp": "2026-11-19T17:28:37Z",
+        "labels": {
+          "app.kubernetes.io/component": "gateway",
+          "app.kubernetes.io/instance": "karthos",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "karthos",
+          "evaluation.karthos.dev/owner": "gke-qualification-v1",
+          "evaluation.karthos.dev/run-id": "thesis-robustness-full-20261119-v2",
+          "helm.sh/chart": "karthos-0.1.0",
+          "karthos.io/cluster": "thesis-robustness-full-20261119-v2"
+        },
+        "name": "karthos-gateway-config",
+        "namespace": "karthos-system",
+        "resourceVersion": "1795109955009359013",
+        "uid": "977864fc-5ffd-437f-8340-9f3227ef6281"
+      }
+    }
+  }
+}

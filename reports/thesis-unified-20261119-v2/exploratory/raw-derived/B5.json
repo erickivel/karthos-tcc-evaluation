@@ -1,0 +1,4341 @@
+{
+  "label": "B5",
+  "classification": "exploratory, no verdict",
+  "E1": {
+    "window": [
+      1795115679.68,
+      1795115979.68
+    ],
+    "generator_error_events": 60,
+    "generator_error_completed_at": [
+      1795115684.254,
+      1795115689.257,
+      1795115694.258,
+      1795115699.255,
+      1795115704.258,
+      1795115709.261,
+      1795115714.261,
+      1795115719.261,
+      1795115724.256,
+      1795115729.258,
+      1795115734.255,
+      1795115739.265,
+      1795115744.262,
+      1795115749.272,
+      1795115754.257,
+      1795115759.257,
+      1795115764.253,
+      1795115769.259,
+      1795115774.255,
+      1795115779.257,
+      1795115784.257,
+      1795115789.255,
+      1795115794.253,
+      1795115799.266,
+      1795115804.255,
+      1795115809.258,
+      1795115814.258,
+      1795115819.261,
+      1795115824.258,
+      1795115829.258,
+      1795115834.256,
+      1795115839.255,
+      1795115844.255,
+      1795115849.254,
+      1795115854.254,
+      1795115859.261,
+      1795115864.255,
+      1795115869.257,
+      1795115874.254,
+      1795115879.258,
+      1795115884.264,
+      1795115889.258,
+      1795115894.255,
+      1795115899.261,
+      1795115904.257,
+      1795115909.255,
+      1795115914.253,
+      1795115919.258,
+      1795115924.257,
+      1795115929.262,
+      1795115934.256,
+      1795115939.343,
+      1795115944.252,
+      1795115949.256,
+      1795115954.255,
+      1795115959.253,
+      1795115964.252,
+      1795115969.258,
+      1795115974.253,
+      1795115979.256
+    ],
+    "generator_first_error": 1795115684.254,
+    "generator_last_error": 1795115979.256,
+    "error_series": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "first_retained_sample": [
+          1795115627.587,
+          16
+        ],
+        "pre_window_sample": [
+          1795115672.587,
+          16
+        ],
+        "last_in_window_sample": [
+          1795115972.587,
+          74
+        ],
+        "first_after_window": [
+          1795115987.587,
+          76
+        ],
+        "all_samples": [
+          [
+            1795115627.587,
+            16
+          ],
+          [
+            1795115642.587,
+            16
+          ],
+          [
+            1795115657.587,
+            16
+          ],
+          [
+            1795115672.587,
+            16
+          ],
+          [
+            1795115687.587,
+            17
+          ],
+          [
+            1795115702.587,
+            20
+          ],
+          [
+            1795115717.587,
+            23
+          ],
+          [
+            1795115732.587,
+            26
+          ],
+          [
+            1795115747.587,
+            29
+          ],
+          [
+            1795115762.587,
+            32
+          ],
+          [
+            1795115777.587,
+            35
+          ],
+          [
+            1795115792.587,
+            38
+          ],
+          [
+            1795115807.587,
+            41
+          ],
+          [
+            1795115822.587,
+            44
+          ],
+          [
+            1795115837.587,
+            47
+          ],
+          [
+            1795115852.587,
+            50
+          ],
+          [
+            1795115867.587,
+            53
+          ],
+          [
+            1795115882.587,
+            56
+          ],
+          [
+            1795115897.587,
+            59
+          ],
+          [
+            1795115912.587,
+            62
+          ],
+          [
+            1795115927.587,
+            65
+          ],
+          [
+            1795115942.587,
+            68
+          ],
+          [
+            1795115957.587,
+            71
+          ],
+          [
+            1795115972.587,
+            74
+          ],
+          [
+            1795115987.587,
+            76
+          ],
+          [
+            1795116002.587,
+            76
+          ],
+          [
+            1795116017.587,
+            76
+          ],
+          [
+            1795116032.587,
+            76
+          ],
+          [
+            1795116047.587,
+            76
+          ],
+          [
+            1795116062.587,
+            76
+          ],
+          [
+            1795116077.587,
+            76
+          ],
+          [
+            1795116092.587,
+            76
+          ],
+          [
+            1795116107.587,
+            76
+          ],
+          [
+            1795116122.587,
+            76
+          ],
+          [
+            1795116137.587,
+            76
+          ],
+          [
+            1795116152.587,
+            76
+          ],
+          [
+            1795116167.587,
+            76
+          ],
+          [
+            1795116182.587,
+            76
+          ],
+          [
+            1795116227.587,
+            76
+          ],
+          [
+            1795116242.587,
+            76
+          ],
+          [
+            1795116257.587,
+            76
+          ],
+          [
+            1795116272.587,
+            76
+          ],
+          [
+            1795116287.587,
+            76
+          ],
+          [
+            1795116302.587,
+            76
+          ]
+        ],
+        "sample_interval_median": 15.0,
+        "resets": 0,
+        "simple_pre_to_last_delta": 58,
+        "errors_completed_after_last_sample": 2,
+        "completed_errors_not_yet_in_counter_at_last_sample": 0,
+        "first_sample_reaching_all_errors": [
+          1795115987.587,
+          76
+        ]
+      }
+    ],
+    "recorded_queries": [
+      {
+        "aggregation": "increase",
+        "api_file": "api-request-count.json",
+        "compiler_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+        "evaluation_points": [
+          "2026-11-19T19:19:39.68Z"
+        ],
+        "expression": "(((increase(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[300s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[300s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[600s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality!=\"delta\"}[600s])) >= 300)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",temporality=\"delta\"}[300s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\"}[300s])",
+        "from": "2026-11-19T19:19:39.68Z",
+        "max_sample_age_seconds": 300,
+        "params": {
+          "aggregation": "increase",
+          "from": "2026-11-19T19:19:39.680000Z",
+          "metric_name": "servicegraph.request.count",
+          "source": "mesh.istio",
+          "to": "2026-11-19T19:19:39.680000Z",
+          "window": "300s"
+        },
+        "step_seconds": 15,
+        "to": "2026-11-19T19:19:39.68Z",
+        "unit": "count",
+        "window_seconds": 300
+      },
+      {
+        "aggregation": "increase",
+        "api_file": "api-error-count.json",
+        "compiler_revision": "4c2861b539fcd24d6a458dc0fd545fbdda5470d5",
+        "evaluation_points": [
+          "2026-11-19T19:19:39.68Z"
+        ],
+        "expression": "((((increase(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[300s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[300s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[600s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality!=\"delta\"}[600s])) >= 300)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\",temporality=\"delta\"}[300s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=~\"[1-9][0-9]*\"}[300s])) or (((((increase(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[300s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[300s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[600s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality!=\"delta\"}[600s])) >= 300)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\",temporality=\"delta\"}[300s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",rpc\\.grpc\\.status_code=\"0\"}[300s])) * 0) or ((((increase(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[300s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[300s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[600s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality!=\"delta\"}[600s])) >= 300)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\",temporality=\"delta\"}[300s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"5[0-9][0-9]\"}[300s])) or (((((increase(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[300s]) and (count_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[300s]) >= 2) and ((tlast_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[600s]) - tfirst_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality!=\"delta\"}[600s])) >= 300)) or sum_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\",temporality=\"delta\"}[300s]))) and last_over_time(servicegraph_request_count{source=\"mesh.istio\",network\\.protocol\\.name!=\"grpc\",rpc\\.grpc\\.status_code=\"\",http\\.response\\.status_code=~\"[1-4][0-9][0-9]\"}[300s])) * 0)",
+        "from": "2026-11-19T19:19:39.68Z",
+        "max_sample_age_seconds": 300,
+        "params": {
+          "aggregation": "increase",
+          "from": "2026-11-19T19:19:39.680000Z",
+          "metric_name": "servicegraph.request.error.count",
+          "source": "mesh.istio",
+          "to": "2026-11-19T19:19:39.680000Z",
+          "window": "300s"
+        },
+        "step_seconds": 15,
+        "to": "2026-11-19T19:19:39.68Z",
+        "unit": "count",
+        "window_seconds": 300
+      }
+    ]
+  },
+  "E2": {
+    "inventory": {
+      "app_pods": 15,
+      "sidecar_pods": [
+        "adservice-6859bf8bdc-k7rcj",
+        "cartservice-655fdb77c9-vhmnx",
+        "checkoutservice-7b4fd8cf86-5bgmj",
+        "currencyservice-5cb5d54bf4-czqnz",
+        "emailservice-7d76c9d764-d4chn",
+        "eval-otlp-relay-6b8844948b-dr2qb",
+        "frontend-78dd897f4d-hq9dm",
+        "paymentservice-5f99d5cc5d-mjx24",
+        "productcatalogservice-b7f497cc5-8dhxx",
+        "recommendationservice-85bd6884cd-mcnbr",
+        "redis-cart-778f4cfd4-fxmsq",
+        "shippingservice-6956bb8f94-pf56f"
+      ],
+      "app_container_images": [
+        "nginx:1.28.0-alpine@sha256:30f1c0d78e0ad60901648be663a710bdadf19e4c10ac6782c235200619158284",
+        "otel/opentelemetry-collector-contrib:0.155.0@sha256:4935caa35e9a4cb387e35732e8fb22b2b5759af8d12e7043357f03837f6e8df5",
+        "redis:alpine@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005",
+        "us-central1-docker.pkg.dev/karthos/karthos-evaluation/resource-helper@sha256:f523b8247ee29e23fb09aaffe5c5aef51fe69e1f22e9596ff251a595b153e175",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/adservice@sha256:f580c4853e896dd2083f0c270c4b7aa5feda6dd56058a93b87d0c88334a4c07d",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/cartservice@sha256:b5c29ddb3238474ea8d1842f07004fedeeae47f660627ab111a613a681cd0356",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/checkoutservice@sha256:ab40699b6d9e45c9a93b5427008f327fbe912465361e2ff7a1a1be7111e36134",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/currencyservice@sha256:7b2f3f804555c926861d67cd22c1b7c9e32d46b81cf1a64dd3089ae424d73be9",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/emailservice@sha256:77fd45d411b3550cbd39e30bda83ed6ea23d87fd6e58e69cf9fa2808e003984d",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/frontend@sha256:c06df08eccd78568a37292cfbe889df42fac48691b7fb05f2deeba0ae8d669ef",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/paymentservice@sha256:735b6d3255e2c74b0135a95cfc2337987e492f24e163c0bb9a853635876993c4",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/productcatalogservice@sha256:fb8568ecfc948717eb07746a6ce360fb8e5f906ae8a874cbad666891f0d21790",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/recommendationservice@sha256:5d8321f2d24132889f654f75308e541b0626e6ae0cbacf81b170e5eb0921b415",
+        "us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/shippingservice@sha256:8527bafff8c8776e345f2dca0641f6e8595b053ce67f9a5af66f5a85d9eaca9d"
+      ]
+    },
+    "raw_span_count": 30679,
+    "conflicts": 0,
+    "pairs": 360,
+    "server_mean_ms": 28.332122558333335,
+    "client_mean_ms": 32.07691212777778,
+    "paired_spans": [
+      {
+        "trace_id": "6799dfd8c4175a76b990a212453b2c03",
+        "server_ms": 28.750145,
+        "client_ms": 34.069758,
+        "start": 1795115681.7344651,
+        "end": 1795115681.763215
+      },
+      {
+        "trace_id": "4e226fcb8b2fae6d9745264d66c1e57f",
+        "server_ms": 30.48952,
+        "client_ms": 34.532393,
+        "start": 1795115682.2360058,
+        "end": 1795115682.2664955
+      },
+      {
+        "trace_id": "15ca5d097a44ebd4170a2c78296e870c",
+        "server_ms": 28.256752,
+        "client_ms": 31.808702,
+        "start": 1795115682.735463,
+        "end": 1795115682.7637198
+      },
+      {
+        "trace_id": "581be5998c32cda6f71ffe0cc5bd8344",
+        "server_ms": 28.030411,
+        "client_ms": 31.759301,
+        "start": 1795115683.2343338,
+        "end": 1795115683.2623641
+      },
+      {
+        "trace_id": "6d06f8860f7c1be1c0c91ad91a2c3e8e",
+        "server_ms": 26.777288,
+        "client_ms": 30.421439,
+        "start": 1795115683.7358305,
+        "end": 1795115683.7626078
+      },
+      {
+        "trace_id": "447b743c34e12eece52ecd5078043dca",
+        "server_ms": 17.307809,
+        "client_ms": 20.584076,
+        "start": 1795115684.2338054,
+        "end": 1795115684.251113
+      },
+      {
+        "trace_id": "edfd3a8755e61c5ea1f302054c0aac71",
+        "server_ms": 29.855411,
+        "client_ms": 33.859803,
+        "start": 1795115686.738264,
+        "end": 1795115686.7681196
+      },
+      {
+        "trace_id": "e0e4e793685f672d30a6ba91406aa68e",
+        "server_ms": 28.734635,
+        "client_ms": 32.636297,
+        "start": 1795115687.2351086,
+        "end": 1795115687.2638433
+      },
+      {
+        "trace_id": "a036b687aec60295dd1d89cb924ff686",
+        "server_ms": 28.188614,
+        "client_ms": 32.041402,
+        "start": 1795115687.7350154,
+        "end": 1795115687.763204
+      },
+      {
+        "trace_id": "49a8e7e0291bd87172dc5abe963e7cdd",
+        "server_ms": 35.853206,
+        "client_ms": 40.1798,
+        "start": 1795115688.239742,
+        "end": 1795115688.275595
+      },
+      {
+        "trace_id": "92732ea7ec496c19a523beddb53be83d",
+        "server_ms": 27.760158,
+        "client_ms": 31.754526,
+        "start": 1795115688.7359324,
+        "end": 1795115688.7636926
+      },
+      {
+        "trace_id": "9cd2225243680de2eae50baf9ebf556d",
+        "server_ms": 19.384338,
+        "client_ms": 22.913889,
+        "start": 1795115689.234099,
+        "end": 1795115689.2534833
+      },
+      {
+        "trace_id": "c3b7f82e14702844e05fdefe2d6a06d8",
+        "server_ms": 29.056815,
+        "client_ms": 33.457734,
+        "start": 1795115691.7345946,
+        "end": 1795115691.7636514
+      },
+      {
+        "trace_id": "fa3af51f460d4700b4199d602c7b10a7",
+        "server_ms": 29.156262,
+        "client_ms": 32.96325,
+        "start": 1795115692.2318704,
+        "end": 1795115692.2610269
+      },
+      {
+        "trace_id": "02affc273b89fd5895290dd0510dfe88",
+        "server_ms": 30.064729,
+        "client_ms": 33.66596,
+        "start": 1795115692.7355351,
+        "end": 1795115692.7655997
+      },
+      {
+        "trace_id": "2da8661887b561d83c429b87ae02612c",
+        "server_ms": 30.20315,
+        "client_ms": 34.008783,
+        "start": 1795115693.238966,
+        "end": 1795115693.269169
+      },
+      {
+        "trace_id": "3269bdf18f0cafcf1b6caa28c68ccf13",
+        "server_ms": 31.587307,
+        "client_ms": 35.305565,
+        "start": 1795115693.8306935,
+        "end": 1795115693.8622806
+      },
+      {
+        "trace_id": "7b7bbb1be0a8072adf653e46e58f8e23",
+        "server_ms": 19.796274,
+        "client_ms": 23.345054,
+        "start": 1795115694.234654,
+        "end": 1795115694.25445
+      },
+      {
+        "trace_id": "a8c2d20c6111199d82b8a94814cef277",
+        "server_ms": 30.411286,
+        "client_ms": 34.198036,
+        "start": 1795115696.7398055,
+        "end": 1795115696.7702167
+      },
+      {
+        "trace_id": "8ed16160129a96e16341beed547669f9",
+        "server_ms": 30.290662,
+        "client_ms": 34.004665,
+        "start": 1795115697.2364874,
+        "end": 1795115697.2667782
+      },
+      {
+        "trace_id": "bb231d383550ccd8b6c9e3ac1fd8549e",
+        "server_ms": 29.156943,
+        "client_ms": 33.165662,
+        "start": 1795115697.7340825,
+        "end": 1795115697.7632394
+      },
+      {
+        "trace_id": "2ec18d8d8c0d24c838c7d2705e1e7777",
+        "server_ms": 50.039189,
+        "client_ms": 53.85355,
+        "start": 1795115698.2439396,
+        "end": 1795115698.2939787
+      },
+      {
+        "trace_id": "2289d5678454e5a95aee1f3348d09256",
+        "server_ms": 196.971905,
+        "client_ms": 200.635223,
+        "start": 1795115698.7736099,
+        "end": 1795115698.970582
+      },
+      {
+        "trace_id": "be0a0cb205ccb07367e4e5e0b0b4e2d9",
+        "server_ms": 17.34367,
+        "client_ms": 20.864916,
+        "start": 1795115699.2347941,
+        "end": 1795115699.2521377
+      },
+      {
+        "trace_id": "947afa9515bdb75545996aa4bed078a3",
+        "server_ms": 27.49409,
+        "client_ms": 30.941192,
+        "start": 1795115701.7323678,
+        "end": 1795115701.7598617
+      },
+      {
+        "trace_id": "f0d94666d5d68cd5d003aae160bc02fb",
+        "server_ms": 31.226272,
+        "client_ms": 34.775545,
+        "start": 1795115702.234325,
+        "end": 1795115702.2655513
+      },
+      {
+        "trace_id": "3cb684a674b54b1627dd358014cc5c42",
+        "server_ms": 27.534363,
+        "client_ms": 31.125498,
+        "start": 1795115702.7336123,
+        "end": 1795115702.7611465
+      },
+      {
+        "trace_id": "d2c26837e570eab353d0ba206c1a3932",
+        "server_ms": 25.883877,
+        "client_ms": 29.32622,
+        "start": 1795115703.2333207,
+        "end": 1795115703.2592046
+      },
+      {
+        "trace_id": "589b3eabb7623f221536e5ba8fc65c7d",
+        "server_ms": 27.328504,
+        "client_ms": 30.942429,
+        "start": 1795115703.7335432,
+        "end": 1795115703.7608716
+      },
+      {
+        "trace_id": "9a7b74730cf56757ada187bb9790e4a5",
+        "server_ms": 19.134334,
+        "client_ms": 22.779702,
+        "start": 1795115704.2354918,
+        "end": 1795115704.254626
+      },
+      {
+        "trace_id": "ebcae8310c3fe6a2031dd67c544d2ed3",
+        "server_ms": 29.921236,
+        "client_ms": 33.802452,
+        "start": 1795115706.7391691,
+        "end": 1795115706.7690904
+      },
+      {
+        "trace_id": "0e29e6d5d9b0b90af2f169478e14e71b",
+        "server_ms": 30.005843,
+        "client_ms": 33.864915,
+        "start": 1795115707.2370422,
+        "end": 1795115707.2670481
+      },
+      {
+        "trace_id": "3379da3156d68c9423b46f56bf8835df",
+        "server_ms": 30.118892,
+        "client_ms": 33.977413,
+        "start": 1795115707.7347615,
+        "end": 1795115707.7648804
+      },
+      {
+        "trace_id": "dbf777df5e12f9f10aa44115e6d43f4d",
+        "server_ms": 31.823935,
+        "client_ms": 35.608655,
+        "start": 1795115708.2399256,
+        "end": 1795115708.2717497
+      },
+      {
+        "trace_id": "23c0aa354e47bdc779bf5ca2b4c28846",
+        "server_ms": 27.48985,
+        "client_ms": 31.059153,
+        "start": 1795115708.733095,
+        "end": 1795115708.7605846
+      },
+      {
+        "trace_id": "a56bf763fccace7dd9f28fd7aa77446c",
+        "server_ms": 20.165012,
+        "client_ms": 24.137695,
+        "start": 1795115709.2372363,
+        "end": 1795115709.2574012
+      },
+      {
+        "trace_id": "55d0bba6b2039ca8abe554bb681279ac",
+        "server_ms": 30.213552,
+        "client_ms": 35.002939,
+        "start": 1795115711.7463918,
+        "end": 1795115711.7766054
+      },
+      {
+        "trace_id": "795ac19e3af539946ceb8e7b86e6b5dc",
+        "server_ms": 28.466826,
+        "client_ms": 32.259989,
+        "start": 1795115712.238574,
+        "end": 1795115712.267041
+      },
+      {
+        "trace_id": "ed586d1963b6e376f9fee3c227394cc1",
+        "server_ms": 27.44141,
+        "client_ms": 30.934197,
+        "start": 1795115712.7351842,
+        "end": 1795115712.7626255
+      },
+      {
+        "trace_id": "3928e8c1968a3e5d90bbd3a3164017ed",
+        "server_ms": 28.325342,
+        "client_ms": 31.913056,
+        "start": 1795115713.2337334,
+        "end": 1795115713.2620587
+      },
+      {
+        "trace_id": "20e3b2a92f0cce563641cc7d2a789b0a",
+        "server_ms": 27.441182,
+        "client_ms": 31.042863,
+        "start": 1795115713.7359674,
+        "end": 1795115713.7634087
+      },
+      {
+        "trace_id": "a636ed21344cd95f8312f2cc0524a576",
+        "server_ms": 18.846434,
+        "client_ms": 22.665273,
+        "start": 1795115714.2359319,
+        "end": 1795115714.2547784
+      },
+      {
+        "trace_id": "44957912fc563c101b62c13b4e0313f8",
+        "server_ms": 29.078351,
+        "client_ms": 33.252838,
+        "start": 1795115716.7391615,
+        "end": 1795115716.7682402
+      },
+      {
+        "trace_id": "9801dcb76e92307d669dbd35e2244921",
+        "server_ms": 35.331096,
+        "client_ms": 39.273947,
+        "start": 1795115717.2486198,
+        "end": 1795115717.2839508
+      },
+      {
+        "trace_id": "9856ff8173cc4cc02aa94518a6006609",
+        "server_ms": 27.121961,
+        "client_ms": 30.939123,
+        "start": 1795115717.7387846,
+        "end": 1795115717.7659066
+      },
+      {
+        "trace_id": "819a57c6d95a50ae4d658553cfedacf5",
+        "server_ms": 29.457692,
+        "client_ms": 33.105877,
+        "start": 1795115718.2368627,
+        "end": 1795115718.2663205
+      },
+      {
+        "trace_id": "0e13911a2488a84506d87ef9532570c6",
+        "server_ms": 26.879449,
+        "client_ms": 30.61527,
+        "start": 1795115718.7339392,
+        "end": 1795115718.7608187
+      },
+      {
+        "trace_id": "602c4a824bc0bf9980e75dd25bb8a867",
+        "server_ms": 18.5235,
+        "client_ms": 21.991567,
+        "start": 1795115719.239247,
+        "end": 1795115719.2577705
+      },
+      {
+        "trace_id": "3b0108b1410e57d95fe81fd96949b1ae",
+        "server_ms": 27.829424,
+        "client_ms": 31.259092,
+        "start": 1795115721.7336066,
+        "end": 1795115721.761436
+      },
+      {
+        "trace_id": "a22cec8faf947e54daa4c87348c51b61",
+        "server_ms": 27.807245,
+        "client_ms": 31.620474,
+        "start": 1795115722.2343314,
+        "end": 1795115722.2621386
+      },
+      {
+        "trace_id": "f8e23466da4803cb1273ca7e2d13bc54",
+        "server_ms": 27.787447,
+        "client_ms": 31.526989,
+        "start": 1795115722.736788,
+        "end": 1795115722.7645755
+      },
+      {
+        "trace_id": "3d885e3fc200a19441769c79d04304ab",
+        "server_ms": 40.609051,
+        "client_ms": 44.288698,
+        "start": 1795115723.2393239,
+        "end": 1795115723.279933
+      },
+      {
+        "trace_id": "00c425920d557e2ead81874269c72ad7",
+        "server_ms": 30.948112,
+        "client_ms": 34.713025,
+        "start": 1795115723.7368727,
+        "end": 1795115723.767821
+      },
+      {
+        "trace_id": "2e9ae3931db64a92321d298f46a1c49c",
+        "server_ms": 18.2873,
+        "client_ms": 21.79536,
+        "start": 1795115724.234445,
+        "end": 1795115724.2527325
+      },
+      {
+        "trace_id": "fca8807d9f1c72308a873dbe61d3d184",
+        "server_ms": 67.183831,
+        "client_ms": 71.191201,
+        "start": 1795115726.7367435,
+        "end": 1795115726.8039272
+      },
+      {
+        "trace_id": "ff94c8035393b42d3b12c9438d15e868",
+        "server_ms": 59.401021,
+        "client_ms": 63.558848,
+        "start": 1795115727.2385418,
+        "end": 1795115727.2979429
+      },
+      {
+        "trace_id": "59cd7e6e1e6ceb4eb798fe9a3c2abe3a",
+        "server_ms": 28.86317,
+        "client_ms": 33.165224,
+        "start": 1795115727.7355628,
+        "end": 1795115727.764426
+      },
+      {
+        "trace_id": "bd5286fac73376e9c68b39efccbb8298",
+        "server_ms": 32.895876,
+        "client_ms": 36.589868,
+        "start": 1795115728.2381651,
+        "end": 1795115728.271061
+      },
+      {
+        "trace_id": "51f3bbd2da190f53257a7be14051c2b8",
+        "server_ms": 28.583295,
+        "client_ms": 32.347228,
+        "start": 1795115728.7369392,
+        "end": 1795115728.7655225
+      },
+      {
+        "trace_id": "232dea4563682e3ad9411f6a14d58918",
+        "server_ms": 19.621351,
+        "client_ms": 23.571394,
+        "start": 1795115729.2350333,
+        "end": 1795115729.2546544
+      },
+      {
+        "trace_id": "1d9427806796f8226023589f61952bff",
+        "server_ms": 27.478207,
+        "client_ms": 31.24468,
+        "start": 1795115731.7341583,
+        "end": 1795115731.7616363
+      },
+      {
+        "trace_id": "3c508a090e0ac109af2e3896984a3578",
+        "server_ms": 27.246271,
+        "client_ms": 30.987868,
+        "start": 1795115732.2342615,
+        "end": 1795115732.2615077
+      },
+      {
+        "trace_id": "d9dfdb9b3a2ac6804763fbc3633e3315",
+        "server_ms": 29.014587,
+        "client_ms": 32.605816,
+        "start": 1795115732.7335918,
+        "end": 1795115732.7626064
+      },
+      {
+        "trace_id": "692f992580ea0a92cf75e9a8c8e3c4d6",
+        "server_ms": 30.982057,
+        "client_ms": 34.701222,
+        "start": 1795115733.2428644,
+        "end": 1795115733.2738466
+      },
+      {
+        "trace_id": "bc5d6e77ae1134581c0512bde3bbb68c",
+        "server_ms": 29.438579,
+        "client_ms": 33.376417,
+        "start": 1795115733.731964,
+        "end": 1795115733.7614026
+      },
+      {
+        "trace_id": "b7a7fac8c57ebe7ca329e4db87c15e12",
+        "server_ms": 19.135228,
+        "client_ms": 22.696603,
+        "start": 1795115734.2333755,
+        "end": 1795115734.2525108
+      },
+      {
+        "trace_id": "502a00245f4aee8fc332178b962c89f5",
+        "server_ms": 29.210999,
+        "client_ms": 33.013606,
+        "start": 1795115736.735721,
+        "end": 1795115736.7649324
+      },
+      {
+        "trace_id": "5671d521dfe93285fd2e85de00fe2e08",
+        "server_ms": 29.220416,
+        "client_ms": 33.086171,
+        "start": 1795115737.2373798,
+        "end": 1795115737.2666001
+      },
+      {
+        "trace_id": "be4d7261c0cc153e8a46df5c831e736d",
+        "server_ms": 29.413575,
+        "client_ms": 33.149818,
+        "start": 1795115737.7365782,
+        "end": 1795115737.7659917
+      },
+      {
+        "trace_id": "e0515406a849db18e1c7a241c7e2ec6a",
+        "server_ms": 30.952287,
+        "client_ms": 34.647204,
+        "start": 1795115738.241589,
+        "end": 1795115738.2725413
+      },
+      {
+        "trace_id": "c9bbf57b6766ceb47c5ac18903e80a46",
+        "server_ms": 29.772593,
+        "client_ms": 33.598863,
+        "start": 1795115738.7340007,
+        "end": 1795115738.7637732
+      },
+      {
+        "trace_id": "3ce634a6273ff94235a933fc6b96c4c3",
+        "server_ms": 21.597187,
+        "client_ms": 25.390395,
+        "start": 1795115739.2396276,
+        "end": 1795115739.2612247
+      },
+      {
+        "trace_id": "202c538cc5699ce49b15d7e9f839fe61",
+        "server_ms": 29.698043,
+        "client_ms": 33.810635,
+        "start": 1795115741.7348132,
+        "end": 1795115741.7645113
+      },
+      {
+        "trace_id": "f37e6c20ef082d5e8766ade0ecfff4cc",
+        "server_ms": 27.668801,
+        "client_ms": 31.499717,
+        "start": 1795115742.2362845,
+        "end": 1795115742.2639534
+      },
+      {
+        "trace_id": "74d42ef0797849ebb0f4ca5f96d51e57",
+        "server_ms": 28.513888,
+        "client_ms": 32.707053,
+        "start": 1795115742.7347944,
+        "end": 1795115742.7633085
+      },
+      {
+        "trace_id": "7d054e3fe3cce6ecd16bc7a061b78466",
+        "server_ms": 27.205729,
+        "client_ms": 30.706149,
+        "start": 1795115743.2334273,
+        "end": 1795115743.2606328
+      },
+      {
+        "trace_id": "17aec5b1a616c4c2600b1220f8f3a675",
+        "server_ms": 30.360807,
+        "client_ms": 34.270335,
+        "start": 1795115743.738925,
+        "end": 1795115743.769286
+      },
+      {
+        "trace_id": "63272d97eb096a501b72607fb586d6de",
+        "server_ms": 23.379167,
+        "client_ms": 26.692872,
+        "start": 1795115744.235616,
+        "end": 1795115744.258995
+      },
+      {
+        "trace_id": "2ca997c160ae01cd6e52b4032255084b",
+        "server_ms": 28.09055,
+        "client_ms": 31.722558,
+        "start": 1795115746.7354352,
+        "end": 1795115746.763526
+      },
+      {
+        "trace_id": "352b047e4810189f79bab349a084172b",
+        "server_ms": 33.802728,
+        "client_ms": 38.722816,
+        "start": 1795115747.2365448,
+        "end": 1795115747.2703476
+      },
+      {
+        "trace_id": "1dac6bdb971b2e5d1fca622efe041a24",
+        "server_ms": 30.075293,
+        "client_ms": 33.792158,
+        "start": 1795115747.7340088,
+        "end": 1795115747.7640843
+      },
+      {
+        "trace_id": "0b5c27ed3365725679ce4015e6a2f0d7",
+        "server_ms": 26.975682,
+        "client_ms": 30.398276,
+        "start": 1795115748.2336183,
+        "end": 1795115748.260594
+      },
+      {
+        "trace_id": "188efaff62eb22ce68544ebed6919eb0",
+        "server_ms": 29.484615,
+        "client_ms": 32.989353,
+        "start": 1795115748.7332175,
+        "end": 1795115748.762702
+      },
+      {
+        "trace_id": "83c7970850e064f8211ab765d7ab45bd",
+        "server_ms": 19.934088,
+        "client_ms": 23.410312,
+        "start": 1795115749.2488363,
+        "end": 1795115749.2687702
+      },
+      {
+        "trace_id": "bdbae4d466cc858dbedf565160a47b4f",
+        "server_ms": 29.667685,
+        "client_ms": 33.327147,
+        "start": 1795115751.7356064,
+        "end": 1795115751.7652743
+      },
+      {
+        "trace_id": "08c34089d9d988ff72cd275994ed9d2a",
+        "server_ms": 27.998415,
+        "client_ms": 31.901241,
+        "start": 1795115752.2337613,
+        "end": 1795115752.2617598
+      },
+      {
+        "trace_id": "99431b2b20f970c243eb465e075f3822",
+        "server_ms": 29.565364,
+        "client_ms": 33.380412,
+        "start": 1795115752.734004,
+        "end": 1795115752.763569
+      },
+      {
+        "trace_id": "4f0403672b0464837a3493e505ccd163",
+        "server_ms": 36.548219,
+        "client_ms": 40.203721,
+        "start": 1795115753.2402413,
+        "end": 1795115753.2767897
+      },
+      {
+        "trace_id": "3bdfd8aff040aeeb3e19f3486fa3ded7",
+        "server_ms": 28.63607,
+        "client_ms": 32.427214,
+        "start": 1795115753.7306042,
+        "end": 1795115753.7592404
+      },
+      {
+        "trace_id": "825e0f4dc1e2c5f17b92818a92ea8b1e",
+        "server_ms": 19.625758,
+        "client_ms": 23.16135,
+        "start": 1795115754.2342803,
+        "end": 1795115754.2539062
+      },
+      {
+        "trace_id": "ab87cab27720d9d3d159e1b260eac831",
+        "server_ms": 27.436999,
+        "client_ms": 30.968972,
+        "start": 1795115756.7367058,
+        "end": 1795115756.7641425
+      },
+      {
+        "trace_id": "45e3983a847c9fda3dd2f3387562ceac",
+        "server_ms": 28.764528,
+        "client_ms": 32.40611,
+        "start": 1795115757.237464,
+        "end": 1795115757.2662287
+      },
+      {
+        "trace_id": "8c232832326f7c9e536b938cea5e581e",
+        "server_ms": 32.473259,
+        "client_ms": 35.829848,
+        "start": 1795115757.7315965,
+        "end": 1795115757.7640698
+      },
+      {
+        "trace_id": "110a1cedbdd89be59b466503e75712d2",
+        "server_ms": 29.32212,
+        "client_ms": 32.916434,
+        "start": 1795115758.2434585,
+        "end": 1795115758.272781
+      },
+      {
+        "trace_id": "53abe2b4d78ce70ae0763faead01892c",
+        "server_ms": 27.216247,
+        "client_ms": 30.817826,
+        "start": 1795115758.7350633,
+        "end": 1795115758.7622797
+      },
+      {
+        "trace_id": "5c8bccb8b0f806c1892de434533d396e",
+        "server_ms": 19.455484,
+        "client_ms": 22.874685,
+        "start": 1795115759.2343845,
+        "end": 1795115759.2538402
+      },
+      {
+        "trace_id": "f6ba378303193cfd99677269f5f8deae",
+        "server_ms": 30.60386,
+        "client_ms": 34.415875,
+        "start": 1795115761.7301095,
+        "end": 1795115761.760713
+      },
+      {
+        "trace_id": "fa9db8a8de4dab68e530b668378bbf12",
+        "server_ms": 27.935334,
+        "client_ms": 31.480271,
+        "start": 1795115762.2309945,
+        "end": 1795115762.25893
+      },
+      {
+        "trace_id": "25ea83023c28762f5d2dbb8d1177d913",
+        "server_ms": 27.581792,
+        "client_ms": 31.171951,
+        "start": 1795115762.735305,
+        "end": 1795115762.762887
+      },
+      {
+        "trace_id": "92848a62f439f42a59f1a6f6d01bc73e",
+        "server_ms": 34.658318,
+        "client_ms": 38.479449,
+        "start": 1795115763.2312002,
+        "end": 1795115763.2658587
+      },
+      {
+        "trace_id": "973e54e368600b030a35d20a53d47abb",
+        "server_ms": 27.996603,
+        "client_ms": 31.691156,
+        "start": 1795115763.7362204,
+        "end": 1795115763.7642171
+      },
+      {
+        "trace_id": "cbd4e015b7a65e81a511b0960c8d5064",
+        "server_ms": 18.573469,
+        "client_ms": 22.136324,
+        "start": 1795115764.2319276,
+        "end": 1795115764.250501
+      },
+      {
+        "trace_id": "8b1e2c1e37e7db97342b1431f3a78498",
+        "server_ms": 27.766193,
+        "client_ms": 31.412334,
+        "start": 1795115766.7335455,
+        "end": 1795115766.7613118
+      },
+      {
+        "trace_id": "a4e7e719026e2d318d032d5f4ae2b7ca",
+        "server_ms": 35.733572,
+        "client_ms": 39.276356,
+        "start": 1795115767.2371535,
+        "end": 1795115767.272887
+      },
+      {
+        "trace_id": "a5f09b9cee3ec257070cdac8253a436a",
+        "server_ms": 28.009598,
+        "client_ms": 31.931679,
+        "start": 1795115767.733275,
+        "end": 1795115767.7612844
+      },
+      {
+        "trace_id": "fa406cd84d5f7ca02da180cad4454fae",
+        "server_ms": 29.093586,
+        "client_ms": 32.961141,
+        "start": 1795115768.2390683,
+        "end": 1795115768.2681618
+      },
+      {
+        "trace_id": "f6edc36efcef2ad33cede89a6e2c21c3",
+        "server_ms": 29.1,
+        "client_ms": 32.754551,
+        "start": 1795115768.7394686,
+        "end": 1795115768.7685685
+      },
+      {
+        "trace_id": "8384e9ace3842c47e577c98405c4e1e2",
+        "server_ms": 19.787682,
+        "client_ms": 23.375261,
+        "start": 1795115769.235635,
+        "end": 1795115769.2554228
+      },
+      {
+        "trace_id": "db33a941bedbe0597d084dd305d4b5b8",
+        "server_ms": 28.671967,
+        "client_ms": 33.011938,
+        "start": 1795115771.7439399,
+        "end": 1795115771.7726119
+      },
+      {
+        "trace_id": "0cb45b90dff76ba860a5dfaca11701a1",
+        "server_ms": 26.821716,
+        "client_ms": 30.66171,
+        "start": 1795115772.232114,
+        "end": 1795115772.2589357
+      },
+      {
+        "trace_id": "729729a9ec67c5c47bed6f4fa98ed484",
+        "server_ms": 26.323816,
+        "client_ms": 30.456385,
+        "start": 1795115772.731549,
+        "end": 1795115772.7578728
+      },
+      {
+        "trace_id": "6b46131334c596efb327e5b9484e5af9",
+        "server_ms": 26.177,
+        "client_ms": 29.584148,
+        "start": 1795115773.2328312,
+        "end": 1795115773.2590082
+      },
+      {
+        "trace_id": "eb8dc37fc7ad6b4bbf8eaf5c0656810a",
+        "server_ms": 28.717645,
+        "client_ms": 32.526363,
+        "start": 1795115773.7349262,
+        "end": 1795115773.763644
+      },
+      {
+        "trace_id": "6996b161e1d56e02732eefdbe3494573",
+        "server_ms": 18.311566,
+        "client_ms": 21.608376,
+        "start": 1795115774.2332032,
+        "end": 1795115774.251515
+      },
+      {
+        "trace_id": "8beab93a8e5eb368ea92fe7c12394648",
+        "server_ms": 27.987527,
+        "client_ms": 31.753061,
+        "start": 1795115776.7352755,
+        "end": 1795115776.763263
+      },
+      {
+        "trace_id": "534513aecee5dd8c63797d205f563429",
+        "server_ms": 28.837344,
+        "client_ms": 32.953857,
+        "start": 1795115777.2360432,
+        "end": 1795115777.2648807
+      },
+      {
+        "trace_id": "06da866f1dba82617d795dc2eff3b5cb",
+        "server_ms": 29.03354,
+        "client_ms": 32.593168,
+        "start": 1795115777.7377863,
+        "end": 1795115777.76682
+      },
+      {
+        "trace_id": "cd8bb33ea8ff5b87b2aceacc2c152e4f",
+        "server_ms": 27.131542,
+        "client_ms": 30.334583,
+        "start": 1795115778.2321155,
+        "end": 1795115778.259247
+      },
+      {
+        "trace_id": "1043b50d81ce459c3a57698d822139cf",
+        "server_ms": 28.184583,
+        "client_ms": 31.853155,
+        "start": 1795115778.73612,
+        "end": 1795115778.7643046
+      },
+      {
+        "trace_id": "6d2f6d9f3eab145998470243e31f389e",
+        "server_ms": 19.361102,
+        "client_ms": 22.970782,
+        "start": 1795115779.2347205,
+        "end": 1795115779.2540817
+      },
+      {
+        "trace_id": "3c6b26b32880fcf4b8a1b7e398b0df58",
+        "server_ms": 30.868924,
+        "client_ms": 34.645957,
+        "start": 1795115781.741296,
+        "end": 1795115781.7721648
+      },
+      {
+        "trace_id": "f6cf265b86206642ca5512f98ef37c15",
+        "server_ms": 27.413851,
+        "client_ms": 30.959133,
+        "start": 1795115782.2323365,
+        "end": 1795115782.2597504
+      },
+      {
+        "trace_id": "73f04ce89af523627311b165f32d7f1f",
+        "server_ms": 28.064351,
+        "client_ms": 31.776205,
+        "start": 1795115782.7331517,
+        "end": 1795115782.7612162
+      },
+      {
+        "trace_id": "4067a018a409f3695eeca098c113662b",
+        "server_ms": 29.322553,
+        "client_ms": 32.869056,
+        "start": 1795115783.235206,
+        "end": 1795115783.2645283
+      },
+      {
+        "trace_id": "357a6f045297627a89e1b0047f678a4c",
+        "server_ms": 27.957943,
+        "client_ms": 31.846888,
+        "start": 1795115783.7350936,
+        "end": 1795115783.7630515
+      },
+      {
+        "trace_id": "ba2ecdf8f4ecec29bb6975b9576e6e9e",
+        "server_ms": 19.874166,
+        "client_ms": 23.439096,
+        "start": 1795115784.2336504,
+        "end": 1795115784.2535245
+      },
+      {
+        "trace_id": "5e64217736440e5e313b165c6174ff05",
+        "server_ms": 28.332923,
+        "client_ms": 31.799818,
+        "start": 1795115786.7318172,
+        "end": 1795115786.76015
+      },
+      {
+        "trace_id": "5a354e699a693c063f188ed5dce602de",
+        "server_ms": 27.893575,
+        "client_ms": 31.537856,
+        "start": 1795115787.235732,
+        "end": 1795115787.2636254
+      },
+      {
+        "trace_id": "a3909fd7e15eee0af6f2bf286245f113",
+        "server_ms": 29.530173,
+        "client_ms": 33.390685,
+        "start": 1795115787.733873,
+        "end": 1795115787.763403
+      },
+      {
+        "trace_id": "bd4a615d31fbe615c7f4b8d021689023",
+        "server_ms": 28.454348,
+        "client_ms": 31.915746,
+        "start": 1795115788.2343287,
+        "end": 1795115788.2627833
+      },
+      {
+        "trace_id": "2c1734965da593b97ff90f62f52d4ea2",
+        "server_ms": 27.646832,
+        "client_ms": 31.515068,
+        "start": 1795115788.734742,
+        "end": 1795115788.762389
+      },
+      {
+        "trace_id": "884632ffab180c66490413d029e45045",
+        "server_ms": 18.209543,
+        "client_ms": 21.692903,
+        "start": 1795115789.2332854,
+        "end": 1795115789.251495
+      },
+      {
+        "trace_id": "c005846aa01ddde47ce65d8971eabc97",
+        "server_ms": 27.462222,
+        "client_ms": 31.0019,
+        "start": 1795115791.7333903,
+        "end": 1795115791.7608526
+      },
+      {
+        "trace_id": "abbe085224546dcb3b8c46c180becde8",
+        "server_ms": 30.851196,
+        "client_ms": 35.17108,
+        "start": 1795115792.235265,
+        "end": 1795115792.2661161
+      },
+      {
+        "trace_id": "2c362408353d8c9ce85e6047daaff0ad",
+        "server_ms": 28.619205,
+        "client_ms": 32.006085,
+        "start": 1795115792.7332447,
+        "end": 1795115792.761864
+      },
+      {
+        "trace_id": "76d39fb2ebbf63bbf8f19b58fa377246",
+        "server_ms": 26.707019,
+        "client_ms": 30.279124,
+        "start": 1795115793.2326558,
+        "end": 1795115793.2593632
+      },
+      {
+        "trace_id": "34c4f7e6e4b2c9ed66513c38e27813df",
+        "server_ms": 29.459668,
+        "client_ms": 33.284535,
+        "start": 1795115793.7322385,
+        "end": 1795115793.7616982
+      },
+      {
+        "trace_id": "316f599a320e2664e132d0c70a9d33d5",
+        "server_ms": 18.026665,
+        "client_ms": 21.444434,
+        "start": 1795115794.232357,
+        "end": 1795115794.2503836
+      },
+      {
+        "trace_id": "9fe38bbbd66530c26de6960318436e5d",
+        "server_ms": 30.173435,
+        "client_ms": 34.138448,
+        "start": 1795115796.733169,
+        "end": 1795115796.7633426
+      },
+      {
+        "trace_id": "48f94e9ef74e7a99390160e471854a1d",
+        "server_ms": 28.938589,
+        "client_ms": 33.19827,
+        "start": 1795115797.2346048,
+        "end": 1795115797.2635436
+      },
+      {
+        "trace_id": "9e458c7f86c471ac2b0582c6c80028af",
+        "server_ms": 32.34958,
+        "client_ms": 36.358005,
+        "start": 1795115797.7418644,
+        "end": 1795115797.7742138
+      },
+      {
+        "trace_id": "8ab9726d91278fa00360d4d83bf3ea9e",
+        "server_ms": 30.862285,
+        "client_ms": 35.213467,
+        "start": 1795115798.2319815,
+        "end": 1795115798.2628438
+      },
+      {
+        "trace_id": "aa68c63cf3d0feb0b7a3d77b090d80e4",
+        "server_ms": 28.422447,
+        "client_ms": 31.882128,
+        "start": 1795115798.733664,
+        "end": 1795115798.7620864
+      },
+      {
+        "trace_id": "3ba624c15c7eeaafc7f43a02e7b25298",
+        "server_ms": 22.92734,
+        "client_ms": 26.945932,
+        "start": 1795115799.240178,
+        "end": 1795115799.2631056
+      },
+      {
+        "trace_id": "7aadfd0a8089fff513cc8d5c5bc7de2c",
+        "server_ms": 29.688676,
+        "client_ms": 33.427471,
+        "start": 1795115801.7345808,
+        "end": 1795115801.7642694
+      },
+      {
+        "trace_id": "bd5a87c11ad59b9a133b3038bdce8993",
+        "server_ms": 26.350728,
+        "client_ms": 30.023557,
+        "start": 1795115802.2371078,
+        "end": 1795115802.2634585
+      },
+      {
+        "trace_id": "c352a2f83fa918650dec08bd75b2d134",
+        "server_ms": 25.876847,
+        "client_ms": 29.352498,
+        "start": 1795115802.7315345,
+        "end": 1795115802.7574115
+      },
+      {
+        "trace_id": "fc9dea081f6c41858e1b3e33cf6cfe2d",
+        "server_ms": 28.857421,
+        "client_ms": 32.577781,
+        "start": 1795115803.2348871,
+        "end": 1795115803.2637448
+      },
+      {
+        "trace_id": "649e27fbd2e95f6002c8623d537830c2",
+        "server_ms": 26.28862,
+        "client_ms": 30.514655,
+        "start": 1795115803.7348552,
+        "end": 1795115803.761144
+      },
+      {
+        "trace_id": "3499558ef57250375f1b5415c92b265b",
+        "server_ms": 17.752086,
+        "client_ms": 21.009684,
+        "start": 1795115804.234442,
+        "end": 1795115804.2521942
+      },
+      {
+        "trace_id": "d3b824a3adbaab3e9b9ddb82d539fa60",
+        "server_ms": 32.426831,
+        "client_ms": 36.121796,
+        "start": 1795115806.7353735,
+        "end": 1795115806.7678006
+      },
+      {
+        "trace_id": "fd77f4654085791a8acbba6ba9d6aebd",
+        "server_ms": 33.120374,
+        "client_ms": 37.023187,
+        "start": 1795115807.2367063,
+        "end": 1795115807.269827
+      },
+      {
+        "trace_id": "7433f9cce203699b5e39a2e83029717e",
+        "server_ms": 30.520543,
+        "client_ms": 34.191782,
+        "start": 1795115807.7357094,
+        "end": 1795115807.76623
+      },
+      {
+        "trace_id": "0a794b7dd1c54f9394b606b31a40be53",
+        "server_ms": 27.206876,
+        "client_ms": 30.683523,
+        "start": 1795115808.23218,
+        "end": 1795115808.2593873
+      },
+      {
+        "trace_id": "39f782d0088a5ea94202a02b2d8bfa5e",
+        "server_ms": 28.128547,
+        "client_ms": 31.933378,
+        "start": 1795115808.7353168,
+        "end": 1795115808.7634456
+      },
+      {
+        "trace_id": "f01f987493f899b3fde04660b0e7bb1c",
+        "server_ms": 18.834011,
+        "client_ms": 22.375996,
+        "start": 1795115809.2362924,
+        "end": 1795115809.2551265
+      },
+      {
+        "trace_id": "b1b49cf24cf1d23511b9acb38976ac12",
+        "server_ms": 31.423517,
+        "client_ms": 35.180825,
+        "start": 1795115811.7337775,
+        "end": 1795115811.7652009
+      },
+      {
+        "trace_id": "5f0bb33ad5b9fe44e5d8d8c2f2ef9030",
+        "server_ms": 30.326565,
+        "client_ms": 34.181635,
+        "start": 1795115812.2339928,
+        "end": 1795115812.2643192
+      },
+      {
+        "trace_id": "01b011ff74fac9bf5adab9f2f527f7a0",
+        "server_ms": 29.387089,
+        "client_ms": 33.157541,
+        "start": 1795115812.7368405,
+        "end": 1795115812.7662277
+      },
+      {
+        "trace_id": "07b2a0ee89c905e53af911b9d21892bf",
+        "server_ms": 31.057145,
+        "client_ms": 35.047631,
+        "start": 1795115813.23614,
+        "end": 1795115813.2671971
+      },
+      {
+        "trace_id": "d876c9ca55cbe27e233d300316c68e47",
+        "server_ms": 30.554529,
+        "client_ms": 34.813318,
+        "start": 1795115813.7347717,
+        "end": 1795115813.765326
+      },
+      {
+        "trace_id": "4475635d01f9331358bbffbb00e4c3e8",
+        "server_ms": 19.271914,
+        "client_ms": 22.931605,
+        "start": 1795115814.235871,
+        "end": 1795115814.255143
+      },
+      {
+        "trace_id": "8d505a58b113e4184f030b3aacf5c53f",
+        "server_ms": 26.764856,
+        "client_ms": 30.462989,
+        "start": 1795115816.7350256,
+        "end": 1795115816.7617905
+      },
+      {
+        "trace_id": "51204853ac589c68ee4fa44fcc99468b",
+        "server_ms": 29.108826,
+        "client_ms": 32.559704,
+        "start": 1795115817.2332573,
+        "end": 1795115817.262366
+      },
+      {
+        "trace_id": "0ba1a199fde2939895c2cceb8c9013e2",
+        "server_ms": 26.064772,
+        "client_ms": 29.50833,
+        "start": 1795115817.7322476,
+        "end": 1795115817.7583125
+      },
+      {
+        "trace_id": "bcda03d804f1d04e0e3a2521e3900f1d",
+        "server_ms": 36.215739,
+        "client_ms": 40.185493,
+        "start": 1795115818.2442062,
+        "end": 1795115818.280422
+      },
+      {
+        "trace_id": "9949756227c40478204ff9d4aad11bbf",
+        "server_ms": 27.344921,
+        "client_ms": 31.138078,
+        "start": 1795115818.7342367,
+        "end": 1795115818.7615817
+      },
+      {
+        "trace_id": "a97a4cbba380afa97380ad63d6d00195",
+        "server_ms": 21.3224,
+        "client_ms": 24.983582,
+        "start": 1795115819.236238,
+        "end": 1795115819.2575603
+      },
+      {
+        "trace_id": "89b9166357d938ce803118ba394f6c77",
+        "server_ms": 28.576596,
+        "client_ms": 32.372534,
+        "start": 1795115821.734051,
+        "end": 1795115821.7626276
+      },
+      {
+        "trace_id": "412e22f135b6793621d16e1eaf684dd7",
+        "server_ms": 30.266381,
+        "client_ms": 33.945537,
+        "start": 1795115822.2369702,
+        "end": 1795115822.2672367
+      },
+      {
+        "trace_id": "0ae390c70edffd9a87bb64dc8bb5b5f2",
+        "server_ms": 27.014588,
+        "client_ms": 30.688016,
+        "start": 1795115822.7329638,
+        "end": 1795115822.7599785
+      },
+      {
+        "trace_id": "a17b478d0969b797710e3e303dba685c",
+        "server_ms": 29.8262,
+        "client_ms": 33.717394,
+        "start": 1795115823.2319484,
+        "end": 1795115823.2617745
+      },
+      {
+        "trace_id": "1e71c77001047cd82808c3ce64955ffc",
+        "server_ms": 28.22835,
+        "client_ms": 32.25485,
+        "start": 1795115823.7350667,
+        "end": 1795115823.763295
+      },
+      {
+        "trace_id": "a8975c8e442f1e7ed0bc78247c43878f",
+        "server_ms": 21.047167,
+        "client_ms": 24.571002,
+        "start": 1795115824.2339907,
+        "end": 1795115824.255038
+      },
+      {
+        "trace_id": "4139af0baa0cc27bc7e2824cd3883095",
+        "server_ms": 29.819285,
+        "client_ms": 33.554695,
+        "start": 1795115826.8280265,
+        "end": 1795115826.857846
+      },
+      {
+        "trace_id": "db4e1f2268ee939c484b10354febc199",
+        "server_ms": 29.269914,
+        "client_ms": 32.844545,
+        "start": 1795115827.2339075,
+        "end": 1795115827.2631774
+      },
+      {
+        "trace_id": "213d0d2d1350803f110c917f4ce4c078",
+        "server_ms": 29.912894,
+        "client_ms": 33.859413,
+        "start": 1795115827.7335627,
+        "end": 1795115827.7634754
+      },
+      {
+        "trace_id": "cbadd135d46e3a1c7ed012513620aa5a",
+        "server_ms": 34.842449,
+        "client_ms": 39.028372,
+        "start": 1795115828.237648,
+        "end": 1795115828.2724905
+      },
+      {
+        "trace_id": "d619b18d585fc17503fe916154e9f091",
+        "server_ms": 28.753302,
+        "client_ms": 32.618426,
+        "start": 1795115828.7321043,
+        "end": 1795115828.7608576
+      },
+      {
+        "trace_id": "7441a7c773e48c85ad286dad43c0bfca",
+        "server_ms": 21.568101,
+        "client_ms": 25.057147,
+        "start": 1795115829.2327266,
+        "end": 1795115829.2542949
+      },
+      {
+        "trace_id": "a583c1226db2ead9163459a11834f103",
+        "server_ms": 33.223243,
+        "client_ms": 37.111087,
+        "start": 1795115831.7396562,
+        "end": 1795115831.7728796
+      },
+      {
+        "trace_id": "4f6c3b589c56d23c2cacb54f71eb070c",
+        "server_ms": 30.204766,
+        "client_ms": 33.852424,
+        "start": 1795115832.2344046,
+        "end": 1795115832.2646093
+      },
+      {
+        "trace_id": "509074df478c62f7850d96693d405181",
+        "server_ms": 27.882529,
+        "client_ms": 31.519008,
+        "start": 1795115832.7364013,
+        "end": 1795115832.7642841
+      },
+      {
+        "trace_id": "995939f1c1fd1b18235d422e9b8d3134",
+        "server_ms": 27.445946,
+        "client_ms": 30.894197,
+        "start": 1795115833.2341359,
+        "end": 1795115833.2615817
+      },
+      {
+        "trace_id": "8e992bcd57035feb8d1590a922803ed2",
+        "server_ms": 29.212649,
+        "client_ms": 32.840238,
+        "start": 1795115833.735472,
+        "end": 1795115833.7646844
+      },
+      {
+        "trace_id": "b65a6332a6c308dabf9c9fb96964cd88",
+        "server_ms": 18.700623,
+        "client_ms": 22.698641,
+        "start": 1795115834.233133,
+        "end": 1795115834.2518337
+      },
+      {
+        "trace_id": "6ec26dc7383a538d8782c2586089fab1",
+        "server_ms": 27.984267,
+        "client_ms": 31.920759,
+        "start": 1795115836.7341468,
+        "end": 1795115836.762131
+      },
+      {
+        "trace_id": "df863b3dea1545c8ffbfae27f6b584a2",
+        "server_ms": 30.076332,
+        "client_ms": 34.032658,
+        "start": 1795115837.2350905,
+        "end": 1795115837.2651665
+      },
+      {
+        "trace_id": "3c5e4c4b2e1984eb89e5d6ad57b2be72",
+        "server_ms": 27.47701,
+        "client_ms": 31.183914,
+        "start": 1795115837.7318773,
+        "end": 1795115837.7593544
+      },
+      {
+        "trace_id": "ed3eca10f681945d69fc94b5511ba88a",
+        "server_ms": 27.104627,
+        "client_ms": 30.566511,
+        "start": 1795115838.233397,
+        "end": 1795115838.2605016
+      },
+      {
+        "trace_id": "b3464334dba914091a41b0e90cbf2a60",
+        "server_ms": 27.226958,
+        "client_ms": 30.782326,
+        "start": 1795115838.733962,
+        "end": 1795115838.7611887
+      },
+      {
+        "trace_id": "cf0d8e26bfb3bb3c89953ead2e595d63",
+        "server_ms": 18.725248,
+        "client_ms": 22.145883,
+        "start": 1795115839.2335026,
+        "end": 1795115839.252228
+      },
+      {
+        "trace_id": "d3b83409c550db4db8b5806edc9796f1",
+        "server_ms": 29.367813,
+        "client_ms": 33.134327,
+        "start": 1795115841.732905,
+        "end": 1795115841.7622728
+      },
+      {
+        "trace_id": "e7d49b6d3570e891a523f4fdb815511f",
+        "server_ms": 28.940897,
+        "client_ms": 32.662398,
+        "start": 1795115842.2331588,
+        "end": 1795115842.2620997
+      },
+      {
+        "trace_id": "4bac145859677fec6bb6e1404c4906a9",
+        "server_ms": 30.382985,
+        "client_ms": 34.100513,
+        "start": 1795115842.7394304,
+        "end": 1795115842.7698133
+      },
+      {
+        "trace_id": "0d2ce7cbc34690712a079284db90abe1",
+        "server_ms": 29.018965,
+        "client_ms": 33.0573,
+        "start": 1795115843.2390935,
+        "end": 1795115843.2681124
+      },
+      {
+        "trace_id": "62b2297ae5492bb3254d6352c6332a21",
+        "server_ms": 31.627305,
+        "client_ms": 35.702365,
+        "start": 1795115843.735176,
+        "end": 1795115843.7668035
+      },
+      {
+        "trace_id": "73ae57533b425578bad237c27766d774",
+        "server_ms": 19.612697,
+        "client_ms": 23.204378,
+        "start": 1795115844.2320478,
+        "end": 1795115844.2516606
+      },
+      {
+        "trace_id": "30bb48c6df4a9d60ecdff5809ac7a24d",
+        "server_ms": 29.110483,
+        "client_ms": 32.628252,
+        "start": 1795115846.7315025,
+        "end": 1795115846.7606132
+      },
+      {
+        "trace_id": "62be03fc7af20d8470e1927cbba30427",
+        "server_ms": 34.817917,
+        "client_ms": 38.479999,
+        "start": 1795115847.2371888,
+        "end": 1795115847.272007
+      },
+      {
+        "trace_id": "274f1a6902cb009bd8b05344732effb1",
+        "server_ms": 25.922611,
+        "client_ms": 29.308857,
+        "start": 1795115847.7317972,
+        "end": 1795115847.7577198
+      },
+      {
+        "trace_id": "418465de9dca77fd0a40bdf62ab5ac2d",
+        "server_ms": 27.089884,
+        "client_ms": 30.817723,
+        "start": 1795115848.2327893,
+        "end": 1795115848.259879
+      },
+      {
+        "trace_id": "9d994d88ccca77799ab15fa77a33d554",
+        "server_ms": 28.503473,
+        "client_ms": 32.373856,
+        "start": 1795115848.733426,
+        "end": 1795115848.7619298
+      },
+      {
+        "trace_id": "68927fd84be381aa9f186e87841bf467",
+        "server_ms": 18.714593,
+        "client_ms": 22.380812,
+        "start": 1795115849.232441,
+        "end": 1795115849.2511551
+      },
+      {
+        "trace_id": "409b90c878518d6f1d457c7c4378d774",
+        "server_ms": 31.824624,
+        "client_ms": 35.74523,
+        "start": 1795115851.7393882,
+        "end": 1795115851.7712128
+      },
+      {
+        "trace_id": "39f733588e5afe48daf8d4e136c7fec8",
+        "server_ms": 27.893835,
+        "client_ms": 31.886274,
+        "start": 1795115852.2313538,
+        "end": 1795115852.2592475
+      },
+      {
+        "trace_id": "ccfec20338e52176f8107aeb9c464a87",
+        "server_ms": 27.838706,
+        "client_ms": 31.664211,
+        "start": 1795115852.735199,
+        "end": 1795115852.7630377
+      },
+      {
+        "trace_id": "8cdff509f190d3f517007e23ac14a619",
+        "server_ms": 26.357288,
+        "client_ms": 29.769246,
+        "start": 1795115853.2323945,
+        "end": 1795115853.2587516
+      },
+      {
+        "trace_id": "7d255a11b40368b53c06fdc49edc9dbb",
+        "server_ms": 26.824152,
+        "client_ms": 30.626887,
+        "start": 1795115853.731585,
+        "end": 1795115853.7584093
+      },
+      {
+        "trace_id": "a8acea9c623fe9268b80bea2231cfa22",
+        "server_ms": 19.751315,
+        "client_ms": 23.13102,
+        "start": 1795115854.2317324,
+        "end": 1795115854.2514837
+      },
+      {
+        "trace_id": "12ec1bd52fd04bd0bd8bbac1c7bad698",
+        "server_ms": 26.667305,
+        "client_ms": 30.354118,
+        "start": 1795115856.7336118,
+        "end": 1795115856.760279
+      },
+      {
+        "trace_id": "7160c829467e611387a5f87e87087b52",
+        "server_ms": 31.321466,
+        "client_ms": 35.322688,
+        "start": 1795115857.236067,
+        "end": 1795115857.2673886
+      },
+      {
+        "trace_id": "e2043d53165d5ef062863c5ae2245212",
+        "server_ms": 31.150363,
+        "client_ms": 34.875063,
+        "start": 1795115857.736114,
+        "end": 1795115857.7672644
+      },
+      {
+        "trace_id": "7e4b02c22c565afe05d4ef8023a372c2",
+        "server_ms": 31.204256,
+        "client_ms": 35.099137,
+        "start": 1795115858.23978,
+        "end": 1795115858.2709842
+      },
+      {
+        "trace_id": "9648eef97e36910c50c9be111f89870b",
+        "server_ms": 25.679478,
+        "client_ms": 29.234495,
+        "start": 1795115858.7340276,
+        "end": 1795115858.759707
+      },
+      {
+        "trace_id": "20485ae7baa42e51f8d8aa0a07e9bd39",
+        "server_ms": 20.864398,
+        "client_ms": 24.51835,
+        "start": 1795115859.2368643,
+        "end": 1795115859.2577286
+      },
+      {
+        "trace_id": "be363154f01ce8923b01e6fce4b02983",
+        "server_ms": 26.908427,
+        "client_ms": 30.600971,
+        "start": 1795115861.73196,
+        "end": 1795115861.7588685
+      },
+      {
+        "trace_id": "21fed9f6283bff7d901663a4c8fbc623",
+        "server_ms": 28.236835,
+        "client_ms": 31.84132,
+        "start": 1795115862.2318347,
+        "end": 1795115862.2600715
+      },
+      {
+        "trace_id": "a2360c530ced2680ec5c988c3033e45c",
+        "server_ms": 28.877771,
+        "client_ms": 32.92564,
+        "start": 1795115862.7364242,
+        "end": 1795115862.765302
+      },
+      {
+        "trace_id": "69d9bd4cb493c94557b78e2c79fc99b2",
+        "server_ms": 27.737969,
+        "client_ms": 31.177549,
+        "start": 1795115863.23156,
+        "end": 1795115863.2592978
+      },
+      {
+        "trace_id": "3d2fec0936ae6ad324f5ddb6e7dada7c",
+        "server_ms": 28.225225,
+        "client_ms": 32.334664,
+        "start": 1795115863.733026,
+        "end": 1795115863.761251
+      },
+      {
+        "trace_id": "80c2fd1d47831c0697a617bc57b82250",
+        "server_ms": 18.083814,
+        "client_ms": 21.359977,
+        "start": 1795115864.2341318,
+        "end": 1795115864.2522156
+      },
+      {
+        "trace_id": "2069bef7db6c5ba7e345a6c18080b53f",
+        "server_ms": 28.33816,
+        "client_ms": 32.167036,
+        "start": 1795115866.734878,
+        "end": 1795115866.763216
+      },
+      {
+        "trace_id": "a6e809101a18749c93c2740805cc35a6",
+        "server_ms": 26.596855,
+        "client_ms": 30.292033,
+        "start": 1795115867.238691,
+        "end": 1795115867.2652879
+      },
+      {
+        "trace_id": "485bd661cd8f97ddd61be1221630d889",
+        "server_ms": 28.518809,
+        "client_ms": 32.70537,
+        "start": 1795115867.7387712,
+        "end": 1795115867.76729
+      },
+      {
+        "trace_id": "4fa42cec7af8ae4e9014165bed9a51c6",
+        "server_ms": 28.855117,
+        "client_ms": 32.721819,
+        "start": 1795115868.2349093,
+        "end": 1795115868.2637641
+      },
+      {
+        "trace_id": "073afaf7fcd5252a886216b2ef5e2446",
+        "server_ms": 30.972773,
+        "client_ms": 34.523699,
+        "start": 1795115868.732986,
+        "end": 1795115868.7639587
+      },
+      {
+        "trace_id": "217ba6026ab5022b64d054b6005b0931",
+        "server_ms": 19.04169,
+        "client_ms": 22.751896,
+        "start": 1795115869.2351604,
+        "end": 1795115869.2542021
+      },
+      {
+        "trace_id": "a71747198b4fb10aca3e0aabb9e08ed0",
+        "server_ms": 29.788253,
+        "client_ms": 33.501179,
+        "start": 1795115871.7350483,
+        "end": 1795115871.7648363
+      },
+      {
+        "trace_id": "2addae1808e0e6ace98e802377c1f80d",
+        "server_ms": 28.854316,
+        "client_ms": 32.555012,
+        "start": 1795115872.2326932,
+        "end": 1795115872.2615476
+      },
+      {
+        "trace_id": "0da225af449a82f55c90bbb4c5eeaad2",
+        "server_ms": 27.81642,
+        "client_ms": 31.347096,
+        "start": 1795115872.735419,
+        "end": 1795115872.7632356
+      },
+      {
+        "trace_id": "8971e332b0a670e945a09c81358604b0",
+        "server_ms": 30.080342,
+        "client_ms": 33.82402,
+        "start": 1795115873.2374902,
+        "end": 1795115873.2675705
+      },
+      {
+        "trace_id": "bb4d5a61153d87139a1917f177de9373",
+        "server_ms": 29.93459,
+        "client_ms": 33.711758,
+        "start": 1795115873.7337177,
+        "end": 1795115873.7636523
+      },
+      {
+        "trace_id": "c6f245955d64867596ef29bb70412d5c",
+        "server_ms": 19.284836,
+        "client_ms": 22.923466,
+        "start": 1795115874.231873,
+        "end": 1795115874.2511578
+      },
+      {
+        "trace_id": "57e0c2cc787866a03bb12598a8d3b816",
+        "server_ms": 29.615149,
+        "client_ms": 33.275639,
+        "start": 1795115876.736967,
+        "end": 1795115876.7665823
+      },
+      {
+        "trace_id": "a4fbdae01e21a09a92468bd6a2ee32ea",
+        "server_ms": 27.734402,
+        "client_ms": 31.900254,
+        "start": 1795115877.2377403,
+        "end": 1795115877.2654748
+      },
+      {
+        "trace_id": "2baf13bad5a4fc360b34a37335eb1993",
+        "server_ms": 28.756145,
+        "client_ms": 32.37518,
+        "start": 1795115877.8296475,
+        "end": 1795115877.8584037
+      },
+      {
+        "trace_id": "97fd5ba50bd083ce720d4407701c24e7",
+        "server_ms": 44.83313,
+        "client_ms": 49.674474,
+        "start": 1795115878.2502096,
+        "end": 1795115878.2950425
+      },
+      {
+        "trace_id": "da1a7f8a22ee14418de9ceb7749f3afa",
+        "server_ms": 31.439534,
+        "client_ms": 35.001872,
+        "start": 1795115878.7396226,
+        "end": 1795115878.7710624
+      },
+      {
+        "trace_id": "012a918515801fa61c6facd81ccb90e7",
+        "server_ms": 18.57279,
+        "client_ms": 22.227315,
+        "start": 1795115879.2358654,
+        "end": 1795115879.2544382
+      },
+      {
+        "trace_id": "f1db93d5e0771d6742a98e9403cb4cc6",
+        "server_ms": 28.303452,
+        "client_ms": 32.282051,
+        "start": 1795115881.7328458,
+        "end": 1795115881.7611494
+      },
+      {
+        "trace_id": "ecbd3174845c4dff20b9de80ba85b01c",
+        "server_ms": 27.382732,
+        "client_ms": 30.733855,
+        "start": 1795115882.2354825,
+        "end": 1795115882.262865
+      },
+      {
+        "trace_id": "e838c50a94b41f03e0f655264d4f6363",
+        "server_ms": 27.7965,
+        "client_ms": 31.404701,
+        "start": 1795115882.7344077,
+        "end": 1795115882.7622042
+      },
+      {
+        "trace_id": "5f86cb1ceb0561e74413b3ef20337fe3",
+        "server_ms": 26.904171,
+        "client_ms": 30.842292,
+        "start": 1795115883.2343044,
+        "end": 1795115883.2612088
+      },
+      {
+        "trace_id": "5eea5ebf46f7bf9ee2fcd7efdf1ab345",
+        "server_ms": 30.561517,
+        "client_ms": 33.865685,
+        "start": 1795115883.7389455,
+        "end": 1795115883.7695072
+      },
+      {
+        "trace_id": "dc06efed48d3c9036d2d4371d72d048e",
+        "server_ms": 18.356141,
+        "client_ms": 21.77738,
+        "start": 1795115884.2420394,
+        "end": 1795115884.2603958
+      },
+      {
+        "trace_id": "ed57ec58c8158a536cc633fe3ca96c32",
+        "server_ms": 30.357787,
+        "client_ms": 34.579801,
+        "start": 1795115886.7337244,
+        "end": 1795115886.7640822
+      },
+      {
+        "trace_id": "ca6de44be91b120b1f50e569a6a01e9e",
+        "server_ms": 28.426853,
+        "client_ms": 31.940929,
+        "start": 1795115887.2335026,
+        "end": 1795115887.2619295
+      },
+      {
+        "trace_id": "f3e260255350d70365737273a68864e4",
+        "server_ms": 29.781995,
+        "client_ms": 33.8264,
+        "start": 1795115887.733333,
+        "end": 1795115887.763115
+      },
+      {
+        "trace_id": "8061c43f85aaa77dbbbc1c08a016b074",
+        "server_ms": 30.495522,
+        "client_ms": 34.135282,
+        "start": 1795115888.238514,
+        "end": 1795115888.2690094
+      },
+      {
+        "trace_id": "4d4b27eee244ddd0eee59a289aed7b38",
+        "server_ms": 27.584538,
+        "client_ms": 31.029083,
+        "start": 1795115888.7321208,
+        "end": 1795115888.7597055
+      },
+      {
+        "trace_id": "14fe2b1cb18a994af574bfe818fce451",
+        "server_ms": 19.862233,
+        "client_ms": 23.149658,
+        "start": 1795115889.2347894,
+        "end": 1795115889.2546515
+      },
+      {
+        "trace_id": "8dfaaffd6f061d865e7ed7410023d908",
+        "server_ms": 30.571542,
+        "client_ms": 34.39657,
+        "start": 1795115891.7424986,
+        "end": 1795115891.77307
+      },
+      {
+        "trace_id": "5bc916935084998b748469e9be8469c8",
+        "server_ms": 28.174336,
+        "client_ms": 31.91436,
+        "start": 1795115892.2323365,
+        "end": 1795115892.260511
+      },
+      {
+        "trace_id": "6b17e44518a05fd548fbe681772083d4",
+        "server_ms": 27.204698,
+        "client_ms": 30.843,
+        "start": 1795115892.7323494,
+        "end": 1795115892.7595541
+      },
+      {
+        "trace_id": "81b4759cde9b0f4655e045bc71842af2",
+        "server_ms": 26.635998,
+        "client_ms": 30.240836,
+        "start": 1795115893.3285716,
+        "end": 1795115893.3552077
+      },
+      {
+        "trace_id": "3acf169d11b4b8dd29370402d3a0b522",
+        "server_ms": 28.438737,
+        "client_ms": 31.980954,
+        "start": 1795115893.7334075,
+        "end": 1795115893.761846
+      },
+      {
+        "trace_id": "792a3945a6b33cab6908599f291f7f03",
+        "server_ms": 17.84614,
+        "client_ms": 21.502521,
+        "start": 1795115894.2335196,
+        "end": 1795115894.2513657
+      },
+      {
+        "trace_id": "c8f6ca832f30886c11fed79cd31f67bf",
+        "server_ms": 27.850484,
+        "client_ms": 31.535951,
+        "start": 1795115896.7321758,
+        "end": 1795115896.7600265
+      },
+      {
+        "trace_id": "ffdbe21b86f889e985e7e49b1166b3a4",
+        "server_ms": 28.565732,
+        "client_ms": 32.479401,
+        "start": 1795115897.2366223,
+        "end": 1795115897.265188
+      },
+      {
+        "trace_id": "7558fa1a44a7e343019412f88d2abd6c",
+        "server_ms": 28.963019,
+        "client_ms": 32.370164,
+        "start": 1795115897.7318845,
+        "end": 1795115897.7608476
+      },
+      {
+        "trace_id": "1db944260da7e0bb88b2a927da58fd4b",
+        "server_ms": 29.526008,
+        "client_ms": 33.109571,
+        "start": 1795115898.232977,
+        "end": 1795115898.262503
+      },
+      {
+        "trace_id": "9565d3cbba46fc8aaf6f89f835b069cb",
+        "server_ms": 26.801636,
+        "client_ms": 30.482342,
+        "start": 1795115898.7348497,
+        "end": 1795115898.7616515
+      },
+      {
+        "trace_id": "31bc73b8feb284d97f505c8b9292a46a",
+        "server_ms": 22.265856,
+        "client_ms": 25.807993,
+        "start": 1795115899.2350283,
+        "end": 1795115899.2572942
+      },
+      {
+        "trace_id": "fc22ad23f0e3683cdca0816708e0a535",
+        "server_ms": 29.398019,
+        "client_ms": 33.288033,
+        "start": 1795115901.7340698,
+        "end": 1795115901.7634678
+      },
+      {
+        "trace_id": "eb62424e6166fe382ef20e7669356b92",
+        "server_ms": 29.199003,
+        "client_ms": 32.851176,
+        "start": 1795115902.233396,
+        "end": 1795115902.2625947
+      },
+      {
+        "trace_id": "775e0b3bedf7b97afdf913ba0791e429",
+        "server_ms": 28.271941,
+        "client_ms": 32.183573,
+        "start": 1795115902.7326188,
+        "end": 1795115902.7608907
+      },
+      {
+        "trace_id": "f34e83b75e1e50fb141d3be4b45f6587",
+        "server_ms": 31.265415,
+        "client_ms": 34.624941,
+        "start": 1795115903.2353647,
+        "end": 1795115903.2666302
+      },
+      {
+        "trace_id": "ed2895a2129b7c5cd94ddfc102204264",
+        "server_ms": 27.259204,
+        "client_ms": 30.882109,
+        "start": 1795115903.7369666,
+        "end": 1795115903.764226
+      },
+      {
+        "trace_id": "43d4a58c79bdd91ac131b354025e7789",
+        "server_ms": 20.058302,
+        "client_ms": 23.752729,
+        "start": 1795115904.2342203,
+        "end": 1795115904.2542784
+      },
+      {
+        "trace_id": "ddb4186963ab3df16e5a1b37093d2687",
+        "server_ms": 27.639543,
+        "client_ms": 31.520656,
+        "start": 1795115906.7352204,
+        "end": 1795115906.76286
+      },
+      {
+        "trace_id": "1c8995a8e770149392e92580423411b8",
+        "server_ms": 28.604503,
+        "client_ms": 32.352851,
+        "start": 1795115907.2333517,
+        "end": 1795115907.2619565
+      },
+      {
+        "trace_id": "0e8529836e7d6644b9db02a75a44fb42",
+        "server_ms": 26.588821,
+        "client_ms": 30.193783,
+        "start": 1795115907.7314432,
+        "end": 1795115907.7580318
+      },
+      {
+        "trace_id": "5c1b29ffc72fceb32dc5c7200b5c5038",
+        "server_ms": 29.166156,
+        "client_ms": 32.788452,
+        "start": 1795115908.2345533,
+        "end": 1795115908.2637193
+      },
+      {
+        "trace_id": "b9348acbdf55d3ddd651ed98c6ead345",
+        "server_ms": 26.425831,
+        "client_ms": 30.216955,
+        "start": 1795115908.7333486,
+        "end": 1795115908.7597744
+      },
+      {
+        "trace_id": "b5bc427905ead777d52a0adecf915c09",
+        "server_ms": 18.509947,
+        "client_ms": 21.929773,
+        "start": 1795115909.233655,
+        "end": 1795115909.2521648
+      },
+      {
+        "trace_id": "4e9b8e9583cc10712a7228dbab426b99",
+        "server_ms": 32.459411,
+        "client_ms": 36.098001,
+        "start": 1795115911.7332594,
+        "end": 1795115911.765719
+      },
+      {
+        "trace_id": "c51031d83800cdc6a99a251225dcdb83",
+        "server_ms": 27.284483,
+        "client_ms": 30.803854,
+        "start": 1795115912.2324324,
+        "end": 1795115912.2597167
+      },
+      {
+        "trace_id": "667e92a456e8182bf595beb3fa80344c",
+        "server_ms": 31.183131,
+        "client_ms": 35.092149,
+        "start": 1795115912.7341015,
+        "end": 1795115912.7652845
+      },
+      {
+        "trace_id": "19ba918af66d739969f6f6eeb6fdec83",
+        "server_ms": 27.296688,
+        "client_ms": 31.032997,
+        "start": 1795115913.236954,
+        "end": 1795115913.2642505
+      },
+      {
+        "trace_id": "a73e2f088c629fcbbe43445711005166",
+        "server_ms": 31.918683,
+        "client_ms": 35.859065,
+        "start": 1795115913.733254,
+        "end": 1795115913.7651725
+      },
+      {
+        "trace_id": "ff6b53397dd1a8abdfc420b764a0e5e8",
+        "server_ms": 18.121437,
+        "client_ms": 21.497391,
+        "start": 1795115914.2322803,
+        "end": 1795115914.2504017
+      },
+      {
+        "trace_id": "851397fb9ccae5ab6a920017c7217617",
+        "server_ms": 27.142215,
+        "client_ms": 30.89241,
+        "start": 1795115916.7357311,
+        "end": 1795115916.7628734
+      },
+      {
+        "trace_id": "fbc1ce4f8744111a7aa71ecbb17f1288",
+        "server_ms": 30.94491,
+        "client_ms": 34.421179,
+        "start": 1795115917.2348244,
+        "end": 1795115917.2657695
+      },
+      {
+        "trace_id": "f1dbdf1fafd4f9ff521a721f381571e7",
+        "server_ms": 29.546594,
+        "client_ms": 33.736883,
+        "start": 1795115917.7349188,
+        "end": 1795115917.7644656
+      },
+      {
+        "trace_id": "62b30fa8be01026adb17ed1262a6932c",
+        "server_ms": 28.957413,
+        "client_ms": 32.448063,
+        "start": 1795115918.2352898,
+        "end": 1795115918.2642472
+      },
+      {
+        "trace_id": "2141871cc669e82067c0768d08a2275c",
+        "server_ms": 69.356152,
+        "client_ms": 73.099598,
+        "start": 1795115918.8299143,
+        "end": 1795115918.8992703
+      },
+      {
+        "trace_id": "b9d190a7121458c1459e44d530b36897",
+        "server_ms": 19.56034,
+        "client_ms": 22.85018,
+        "start": 1795115919.2356179,
+        "end": 1795115919.2551782
+      },
+      {
+        "trace_id": "b62f305bf914f1273edae72ebad77ea6",
+        "server_ms": 29.271183,
+        "client_ms": 34.019124,
+        "start": 1795115921.7288437,
+        "end": 1795115921.758115
+      },
+      {
+        "trace_id": "47196984b5fa8aeae748ae17ff9ae852",
+        "server_ms": 27.451722,
+        "client_ms": 31.238124,
+        "start": 1795115922.2317939,
+        "end": 1795115922.2592456
+      },
+      {
+        "trace_id": "69c1defa6c7e4f70463f9170c5681f41",
+        "server_ms": 26.59225,
+        "client_ms": 30.176961,
+        "start": 1795115922.7315936,
+        "end": 1795115922.758186
+      },
+      {
+        "trace_id": "ced54d9fa8feb6942a7265c24596ee1b",
+        "server_ms": 29.788124,
+        "client_ms": 33.109856,
+        "start": 1795115923.2303169,
+        "end": 1795115923.260105
+      },
+      {
+        "trace_id": "8d9e420b97e1e4b0cad63603d3a04dcf",
+        "server_ms": 29.598289,
+        "client_ms": 33.856318,
+        "start": 1795115923.734766,
+        "end": 1795115923.7643645
+      },
+      {
+        "trace_id": "8e9f33a5c9791cbe82daca2b0e17ecaa",
+        "server_ms": 18.890132,
+        "client_ms": 22.152537,
+        "start": 1795115924.2345803,
+        "end": 1795115924.2534702
+      },
+      {
+        "trace_id": "4aa3343de520d53b755995c2c07fcaa3",
+        "server_ms": 40.563379,
+        "client_ms": 46.241554,
+        "start": 1795115926.745396,
+        "end": 1795115926.7859592
+      },
+      {
+        "trace_id": "4714de674d044e359d665ca3fd130b88",
+        "server_ms": 30.865366,
+        "client_ms": 34.548931,
+        "start": 1795115927.2337248,
+        "end": 1795115927.2645903
+      },
+      {
+        "trace_id": "7b311efdc01011bf9f079df6e1e87fe3",
+        "server_ms": 29.802465,
+        "client_ms": 33.479079,
+        "start": 1795115927.7340665,
+        "end": 1795115927.763869
+      },
+      {
+        "trace_id": "6940633112f43d7469eafb8bdbaa8036",
+        "server_ms": 28.253912,
+        "client_ms": 32.078074,
+        "start": 1795115928.2360518,
+        "end": 1795115928.2643056
+      },
+      {
+        "trace_id": "6ef1462e05a76b2f5ef103cdd628c008",
+        "server_ms": 28.464501,
+        "client_ms": 31.910172,
+        "start": 1795115928.732376,
+        "end": 1795115928.7608404
+      },
+      {
+        "trace_id": "28f318b2a81b13bab22f1406c5b01c26",
+        "server_ms": 18.625253,
+        "client_ms": 21.978995,
+        "start": 1795115929.239839,
+        "end": 1795115929.258464
+      },
+      {
+        "trace_id": "7148d9051c7f2c238e17e5eda6444a20",
+        "server_ms": 33.57899,
+        "client_ms": 37.467496,
+        "start": 1795115931.7372992,
+        "end": 1795115931.7708783
+      },
+      {
+        "trace_id": "de5a347d57caab42e486d0e03fa1d972",
+        "server_ms": 30.569502,
+        "client_ms": 34.59156,
+        "start": 1795115932.2352352,
+        "end": 1795115932.2658048
+      },
+      {
+        "trace_id": "419421bade48d3ab47c0c29faf097967",
+        "server_ms": 29.800493,
+        "client_ms": 33.632195,
+        "start": 1795115932.7354665,
+        "end": 1795115932.765267
+      },
+      {
+        "trace_id": "87938592c77d63208ef75f8e5997c39b",
+        "server_ms": 30.539168,
+        "client_ms": 34.125733,
+        "start": 1795115933.2398968,
+        "end": 1795115933.270436
+      },
+      {
+        "trace_id": "70aa3bf5c63cdd6d6075584f64b590e3",
+        "server_ms": 27.450076,
+        "client_ms": 31.345201,
+        "start": 1795115933.732576,
+        "end": 1795115933.7600257
+      },
+      {
+        "trace_id": "bb8d3f1ff5d539660172653f0092ab69",
+        "server_ms": 19.231902,
+        "client_ms": 22.672886,
+        "start": 1795115934.233183,
+        "end": 1795115934.2524147
+      },
+      {
+        "trace_id": "fe8de93696736b7ad5472de630f4a9ab",
+        "server_ms": 29.570605,
+        "client_ms": 33.417357,
+        "start": 1795115936.7341623,
+        "end": 1795115936.7637331
+      },
+      {
+        "trace_id": "5ff9ae7ffc1084fcab6c3597960e0745",
+        "server_ms": 30.198373,
+        "client_ms": 34.162286,
+        "start": 1795115937.2335763,
+        "end": 1795115937.2637746
+      },
+      {
+        "trace_id": "59cbc4e89c271731e3220611910790c5",
+        "server_ms": 28.974948,
+        "client_ms": 33.080825,
+        "start": 1795115937.7372541,
+        "end": 1795115937.766229
+      },
+      {
+        "trace_id": "c1d6e2dfb55a37a803f7b7009581c04d",
+        "server_ms": 37.84751,
+        "client_ms": 44.062997,
+        "start": 1795115938.2431946,
+        "end": 1795115938.281042
+      },
+      {
+        "trace_id": "8e263666f71003beced038f405e1c8f5",
+        "server_ms": 28.117274,
+        "client_ms": 31.810161,
+        "start": 1795115938.7357347,
+        "end": 1795115938.7638521
+      },
+      {
+        "trace_id": "9cba41036cb21e4346593175aff112d4",
+        "server_ms": 18.424751,
+        "client_ms": 21.8999,
+        "start": 1795115939.3214924,
+        "end": 1795115939.3399174
+      },
+      {
+        "trace_id": "eed878c9e761368e7561c7ca939da9e4",
+        "server_ms": 27.321964,
+        "client_ms": 31.178185,
+        "start": 1795115941.7321987,
+        "end": 1795115941.7595205
+      },
+      {
+        "trace_id": "cac64d787a8d83248266857fa0a2d9eb",
+        "server_ms": 26.98167,
+        "client_ms": 30.658786,
+        "start": 1795115942.2329938,
+        "end": 1795115942.2599754
+      },
+      {
+        "trace_id": "5d3f93c38d6c5b31ce1aa98e49936fdd",
+        "server_ms": 25.683602,
+        "client_ms": 29.038789,
+        "start": 1795115942.7307284,
+        "end": 1795115942.7564123
+      },
+      {
+        "trace_id": "370c18cc34306c3b00b05416e8699eee",
+        "server_ms": 27.726534,
+        "client_ms": 31.309442,
+        "start": 1795115943.2336192,
+        "end": 1795115943.2613459
+      },
+      {
+        "trace_id": "b09651033b5b88e8d1e6f888a40585e0",
+        "server_ms": 26.130909,
+        "client_ms": 29.848919,
+        "start": 1795115943.7341537,
+        "end": 1795115943.7602847
+      },
+      {
+        "trace_id": "0164c956998ff06eecf936734caf7889",
+        "server_ms": 17.652957,
+        "client_ms": 21.207724,
+        "start": 1795115944.230877,
+        "end": 1795115944.24853
+      },
+      {
+        "trace_id": "cd7ca956c73eb7540d339f73b95505a7",
+        "server_ms": 28.971686,
+        "client_ms": 32.64666,
+        "start": 1795115946.7333193,
+        "end": 1795115946.762291
+      },
+      {
+        "trace_id": "6e6dc7afbdec0e6b822a723999ccf7fa",
+        "server_ms": 28.805822,
+        "client_ms": 32.567392,
+        "start": 1795115947.2344315,
+        "end": 1795115947.2632372
+      },
+      {
+        "trace_id": "038dbb24a61a4b4c40a65db59601edaa",
+        "server_ms": 28.682661,
+        "client_ms": 32.406011,
+        "start": 1795115947.7345452,
+        "end": 1795115947.763228
+      },
+      {
+        "trace_id": "8fd0964cf666c4b0edbb3be8b2d16380",
+        "server_ms": 29.764214,
+        "client_ms": 33.504302,
+        "start": 1795115948.2399416,
+        "end": 1795115948.2697058
+      },
+      {
+        "trace_id": "9aa1abe555f3e83066244d60d3df7130",
+        "server_ms": 26.897103,
+        "client_ms": 30.517039,
+        "start": 1795115948.7335825,
+        "end": 1795115948.7604797
+      },
+      {
+        "trace_id": "82527faecbd2fdd9dee2b9941b21f6ef",
+        "server_ms": 20.362558,
+        "client_ms": 23.926906,
+        "start": 1795115949.2324862,
+        "end": 1795115949.2528486
+      },
+      {
+        "trace_id": "33a55815bf809a930a31e46c2b9b20f4",
+        "server_ms": 32.90545,
+        "client_ms": 37.089951,
+        "start": 1795115951.742408,
+        "end": 1795115951.7753134
+      },
+      {
+        "trace_id": "d5f5f493da2c5222ba2731510ae59fad",
+        "server_ms": 27.259835,
+        "client_ms": 30.675503,
+        "start": 1795115952.2311797,
+        "end": 1795115952.2584398
+      },
+      {
+        "trace_id": "bfac9ed491a6a69408ee717618882e81",
+        "server_ms": 26.25664,
+        "client_ms": 29.911567,
+        "start": 1795115952.7326002,
+        "end": 1795115952.758857
+      },
+      {
+        "trace_id": "5b5635470e0abb8a889eb6c10b25ad62",
+        "server_ms": 27.304447,
+        "client_ms": 30.9803,
+        "start": 1795115953.2330925,
+        "end": 1795115953.260397
+      },
+      {
+        "trace_id": "2a8148c5d4280eedc6ceedf8eb50f1c3",
+        "server_ms": 26.974629,
+        "client_ms": 30.614986,
+        "start": 1795115953.7318106,
+        "end": 1795115953.7587852
+      },
+      {
+        "trace_id": "b338346ce58677f99b183a6fec85bbdf",
+        "server_ms": 17.837292,
+        "client_ms": 21.576639,
+        "start": 1795115954.2337844,
+        "end": 1795115954.2516217
+      },
+      {
+        "trace_id": "6056d6abfb22949ae46c9a40ae5b855c",
+        "server_ms": 27.092796,
+        "client_ms": 30.579456,
+        "start": 1795115956.734159,
+        "end": 1795115956.761252
+      },
+      {
+        "trace_id": "d9cdba0f26cbbc42ba731048c12ddc2d",
+        "server_ms": 29.156257,
+        "client_ms": 33.188716,
+        "start": 1795115957.237361,
+        "end": 1795115957.2665172
+      },
+      {
+        "trace_id": "9c67fb88dad7dcd477b63a95056a976b",
+        "server_ms": 28.679933,
+        "client_ms": 32.499496,
+        "start": 1795115957.732963,
+        "end": 1795115957.761643
+      },
+      {
+        "trace_id": "3f479d9eeeb907972763b10bb54dd88d",
+        "server_ms": 27.753477,
+        "client_ms": 31.019185,
+        "start": 1795115958.2308724,
+        "end": 1795115958.2586257
+      },
+      {
+        "trace_id": "1da287bee7f977a500356d67d8da905d",
+        "server_ms": 31.668684,
+        "client_ms": 35.72912,
+        "start": 1795115958.7385862,
+        "end": 1795115958.7702549
+      },
+      {
+        "trace_id": "660beba97ad0c86cfa94db64bf489094",
+        "server_ms": 18.638983,
+        "client_ms": 22.110959,
+        "start": 1795115959.2317078,
+        "end": 1795115959.250347
+      },
+      {
+        "trace_id": "b05e363356ae1cfeb0c74a53b3170d2c",
+        "server_ms": 29.265943,
+        "client_ms": 33.171433,
+        "start": 1795115961.73414,
+        "end": 1795115961.7634058
+      },
+      {
+        "trace_id": "471375e65a3f1b91f8d0b6d429431a77",
+        "server_ms": 26.541866,
+        "client_ms": 30.097923,
+        "start": 1795115962.2339673,
+        "end": 1795115962.2605093
+      },
+      {
+        "trace_id": "11a8c9ed85a3f2d726173994a7b278f8",
+        "server_ms": 28.193792,
+        "client_ms": 32.31137,
+        "start": 1795115962.7354903,
+        "end": 1795115962.763684
+      },
+      {
+        "trace_id": "69efeab745b51b002055f8ad76d9a3a8",
+        "server_ms": 30.260014,
+        "client_ms": 34.127474,
+        "start": 1795115963.237273,
+        "end": 1795115963.267533
+      },
+      {
+        "trace_id": "e540e226ececfbe9e4fbef695d61deef",
+        "server_ms": 28.13469,
+        "client_ms": 32.416574,
+        "start": 1795115963.7342756,
+        "end": 1795115963.7624102
+      },
+      {
+        "trace_id": "7d1832cd15945b29327c52eb27a85cd3",
+        "server_ms": 17.62357,
+        "client_ms": 21.175763,
+        "start": 1795115964.2309935,
+        "end": 1795115964.2486172
+      },
+      {
+        "trace_id": "f2eceea2012cbe92342c7cf824fd240d",
+        "server_ms": 26.243804,
+        "client_ms": 29.921506,
+        "start": 1795115966.7313652,
+        "end": 1795115966.757609
+      },
+      {
+        "trace_id": "54a1a1d2e8fc5857b349dce4503a0820",
+        "server_ms": 29.132157,
+        "client_ms": 32.886948,
+        "start": 1795115967.2401206,
+        "end": 1795115967.2692525
+      },
+      {
+        "trace_id": "90f29ed54a07b4009a02d786c141f98f",
+        "server_ms": 27.835539,
+        "client_ms": 31.500652,
+        "start": 1795115967.7322853,
+        "end": 1795115967.7601209
+      },
+      {
+        "trace_id": "81de1e19137026f9f6cf35c189be631e",
+        "server_ms": 29.367122,
+        "client_ms": 33.077257,
+        "start": 1795115968.2341144,
+        "end": 1795115968.2634814
+      },
+      {
+        "trace_id": "f554a05a6b3a63d8e5ac84c72ffe3c8a",
+        "server_ms": 27.326466,
+        "client_ms": 30.79748,
+        "start": 1795115968.731473,
+        "end": 1795115968.7587993
+      },
+      {
+        "trace_id": "6ec1df551ac5a69f24595915428daaee",
+        "server_ms": 19.393558,
+        "client_ms": 22.808402,
+        "start": 1795115969.2351997,
+        "end": 1795115969.2545934
+      },
+      {
+        "trace_id": "3f58195bb68997070bbb60bb1abd2878",
+        "server_ms": 33.258256,
+        "client_ms": 36.840745,
+        "start": 1795115971.732237,
+        "end": 1795115971.7654953
+      },
+      {
+        "trace_id": "3d5eb424b60a7fe423421512d110a9bd",
+        "server_ms": 29.066462,
+        "client_ms": 32.693584,
+        "start": 1795115972.2310464,
+        "end": 1795115972.260113
+      },
+      {
+        "trace_id": "9ac20a152f3ac4f9589c3e379a18af83",
+        "server_ms": 26.582449,
+        "client_ms": 29.957538,
+        "start": 1795115972.7291753,
+        "end": 1795115972.7557576
+      },
+      {
+        "trace_id": "fba4f27f01bb13782da95f12c3ab9524",
+        "server_ms": 25.14706,
+        "client_ms": 28.806078,
+        "start": 1795115973.231409,
+        "end": 1795115973.2565563
+      },
+      {
+        "trace_id": "1358fefaa4228d7a69aa64ccfb3e9ca6",
+        "server_ms": 28.764906,
+        "client_ms": 32.526745,
+        "start": 1795115973.7338378,
+        "end": 1795115973.7626028
+      },
+      {
+        "trace_id": "0184683894676b9266b2b1f1ac616b78",
+        "server_ms": 17.555377,
+        "client_ms": 20.785666,
+        "start": 1795115974.2323997,
+        "end": 1795115974.2499552
+      },
+      {
+        "trace_id": "d2874609a2d5962418b58cd829125e03",
+        "server_ms": 29.581802,
+        "client_ms": 33.566259,
+        "start": 1795115976.73203,
+        "end": 1795115976.7616117
+      },
+      {
+        "trace_id": "5608e1e34cafb424f20c6403afe046b0",
+        "server_ms": 30.963169,
+        "client_ms": 34.939417,
+        "start": 1795115977.2366512,
+        "end": 1795115977.2676141
+      },
+      {
+        "trace_id": "b2b3cbf66e9ea72572fa012562a68899",
+        "server_ms": 27.545671,
+        "client_ms": 31.358626,
+        "start": 1795115977.7332745,
+        "end": 1795115977.76082
+      },
+      {
+        "trace_id": "63a4e0ea43e43273e4baf2b04c20948f",
+        "server_ms": 33.854587,
+        "client_ms": 37.674901,
+        "start": 1795115978.2375028,
+        "end": 1795115978.2713573
+      },
+      {
+        "trace_id": "f4dbe42f56a4670c9a3fd19d9e6918ce",
+        "server_ms": 25.467934,
+        "client_ms": 28.844452,
+        "start": 1795115978.7283077,
+        "end": 1795115978.7537756
+      },
+      {
+        "trace_id": "e852237cf48417d2b5ee997c96f7b1b2",
+        "server_ms": 18.12215,
+        "client_ms": 21.53074,
+        "start": 1795115979.23442,
+        "end": 1795115979.252542
+      }
+    ],
+    "duration_series": [
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795115672.587,
+          6.8065
+        ],
+        "last": [
+          1795116302.587,
+          16.375
+        ],
+        "samples": [
+          [
+            1795115627.587,
+            6.8065
+          ],
+          [
+            1795115642.587,
+            6.8065
+          ],
+          [
+            1795115657.587,
+            6.8065
+          ],
+          [
+            1795115672.587,
+            6.8065
+          ],
+          [
+            1795115687.587,
+            6.957
+          ],
+          [
+            1795115702.587,
+            7.618
+          ],
+          [
+            1795115717.587,
+            8.0735
+          ],
+          [
+            1795115732.587,
+            8.62
+          ],
+          [
+            1795115747.587,
+            9.0825
+          ],
+          [
+            1795115762.587,
+            9.556
+          ],
+          [
+            1795115777.587,
+            10.0165
+          ],
+          [
+            1795115792.587,
+            10.467
+          ],
+          [
+            1795115807.587,
+            10.9255
+          ],
+          [
+            1795115822.587,
+            11.401
+          ],
+          [
+            1795115837.587,
+            11.8715
+          ],
+          [
+            1795115852.587,
+            12.331
+          ],
+          [
+            1795115867.587,
+            12.7845
+          ],
+          [
+            1795115882.587,
+            13.263
+          ],
+          [
+            1795115897.587,
+            13.7185
+          ],
+          [
+            1795115912.587,
+            14.171
+          ],
+          [
+            1795115927.587,
+            14.6775
+          ],
+          [
+            1795115942.587,
+            15.173
+          ],
+          [
+            1795115957.587,
+            15.6145
+          ],
+          [
+            1795115972.587,
+            16.068
+          ],
+          [
+            1795115987.587,
+            16.375
+          ],
+          [
+            1795116002.587,
+            16.375
+          ],
+          [
+            1795116017.587,
+            16.375
+          ],
+          [
+            1795116032.587,
+            16.375
+          ],
+          [
+            1795116047.587,
+            16.375
+          ],
+          [
+            1795116062.587,
+            16.375
+          ],
+          [
+            1795116077.587,
+            16.375
+          ],
+          [
+            1795116092.587,
+            16.375
+          ],
+          [
+            1795116107.587,
+            16.375
+          ],
+          [
+            1795116122.587,
+            16.375
+          ],
+          [
+            1795116137.587,
+            16.375
+          ],
+          [
+            1795116152.587,
+            16.375
+          ],
+          [
+            1795116167.587,
+            16.375
+          ],
+          [
+            1795116182.587,
+            16.375
+          ],
+          [
+            1795116227.587,
+            16.375
+          ],
+          [
+            1795116242.587,
+            16.375
+          ],
+          [
+            1795116257.587,
+            16.375
+          ],
+          [
+            1795116272.587,
+            16.375
+          ],
+          [
+            1795116287.587,
+            16.375
+          ],
+          [
+            1795116302.587,
+            16.375
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795115672.587,
+          16
+        ],
+        "last": [
+          1795116302.587,
+          76
+        ],
+        "samples": [
+          [
+            1795115627.587,
+            16
+          ],
+          [
+            1795115642.587,
+            16
+          ],
+          [
+            1795115657.587,
+            16
+          ],
+          [
+            1795115672.587,
+            16
+          ],
+          [
+            1795115687.587,
+            17
+          ],
+          [
+            1795115702.587,
+            20
+          ],
+          [
+            1795115717.587,
+            23
+          ],
+          [
+            1795115732.587,
+            26
+          ],
+          [
+            1795115747.587,
+            29
+          ],
+          [
+            1795115762.587,
+            32
+          ],
+          [
+            1795115777.587,
+            35
+          ],
+          [
+            1795115792.587,
+            38
+          ],
+          [
+            1795115807.587,
+            41
+          ],
+          [
+            1795115822.587,
+            44
+          ],
+          [
+            1795115837.587,
+            47
+          ],
+          [
+            1795115852.587,
+            50
+          ],
+          [
+            1795115867.587,
+            53
+          ],
+          [
+            1795115882.587,
+            56
+          ],
+          [
+            1795115897.587,
+            59
+          ],
+          [
+            1795115912.587,
+            62
+          ],
+          [
+            1795115927.587,
+            65
+          ],
+          [
+            1795115942.587,
+            68
+          ],
+          [
+            1795115957.587,
+            71
+          ],
+          [
+            1795115972.587,
+            74
+          ],
+          [
+            1795115987.587,
+            76
+          ],
+          [
+            1795116002.587,
+            76
+          ],
+          [
+            1795116017.587,
+            76
+          ],
+          [
+            1795116032.587,
+            76
+          ],
+          [
+            1795116047.587,
+            76
+          ],
+          [
+            1795116062.587,
+            76
+          ],
+          [
+            1795116077.587,
+            76
+          ],
+          [
+            1795116092.587,
+            76
+          ],
+          [
+            1795116107.587,
+            76
+          ],
+          [
+            1795116122.587,
+            76
+          ],
+          [
+            1795116137.587,
+            76
+          ],
+          [
+            1795116152.587,
+            76
+          ],
+          [
+            1795116167.587,
+            76
+          ],
+          [
+            1795116182.587,
+            76
+          ],
+          [
+            1795116227.587,
+            76
+          ],
+          [
+            1795116242.587,
+            76
+          ],
+          [
+            1795116257.587,
+            76
+          ],
+          [
+            1795116272.587,
+            76
+          ],
+          [
+            1795116287.587,
+            76
+          ],
+          [
+            1795116302.587,
+            76
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_sum",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "seconds",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "13",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795115672.587,
+          0.5005
+        ],
+        "last": [
+          1795116302.587,
+          1.7515
+        ],
+        "samples": [
+          [
+            1795115627.587,
+            0.5005
+          ],
+          [
+            1795115642.587,
+            0.5005
+          ],
+          [
+            1795115657.587,
+            0.5005
+          ],
+          [
+            1795115672.587,
+            0.5005
+          ],
+          [
+            1795115687.587,
+            0.519
+          ],
+          [
+            1795115702.587,
+            0.5795
+          ],
+          [
+            1795115717.587,
+            0.642
+          ],
+          [
+            1795115732.587,
+            0.7035
+          ],
+          [
+            1795115747.587,
+            0.773
+          ],
+          [
+            1795115762.587,
+            0.8365
+          ],
+          [
+            1795115777.587,
+            0.898
+          ],
+          [
+            1795115792.587,
+            0.9605
+          ],
+          [
+            1795115807.587,
+            1.024
+          ],
+          [
+            1795115822.587,
+            1.0885
+          ],
+          [
+            1795115837.587,
+            1.155
+          ],
+          [
+            1795115852.587,
+            1.2175
+          ],
+          [
+            1795115867.587,
+            1.281
+          ],
+          [
+            1795115882.587,
+            1.3425
+          ],
+          [
+            1795115897.587,
+            1.403
+          ],
+          [
+            1795115912.587,
+            1.4685
+          ],
+          [
+            1795115927.587,
+            1.53
+          ],
+          [
+            1795115942.587,
+            1.5915
+          ],
+          [
+            1795115957.587,
+            1.652
+          ],
+          [
+            1795115972.587,
+            1.7125
+          ],
+          [
+            1795115987.587,
+            1.7515
+          ],
+          [
+            1795116002.587,
+            1.7515
+          ],
+          [
+            1795116017.587,
+            1.7515
+          ],
+          [
+            1795116032.587,
+            1.7515
+          ],
+          [
+            1795116047.587,
+            1.7515
+          ],
+          [
+            1795116062.587,
+            1.7515
+          ],
+          [
+            1795116077.587,
+            1.7515
+          ],
+          [
+            1795116092.587,
+            1.7515
+          ],
+          [
+            1795116107.587,
+            1.7515
+          ],
+          [
+            1795116122.587,
+            1.7515
+          ],
+          [
+            1795116137.587,
+            1.7515
+          ],
+          [
+            1795116152.587,
+            1.7515
+          ],
+          [
+            1795116167.587,
+            1.7515
+          ],
+          [
+            1795116182.587,
+            1.7515
+          ],
+          [
+            1795116227.587,
+            1.7515
+          ],
+          [
+            1795116242.587,
+            1.7515
+          ],
+          [
+            1795116257.587,
+            1.7515
+          ],
+          [
+            1795116272.587,
+            1.7515
+          ],
+          [
+            1795116287.587,
+            1.7515
+          ],
+          [
+            1795116302.587,
+            1.7515
+          ]
+        ]
+      },
+      {
+        "labels": {
+          "__name__": "servicegraph_request_duration_count",
+          "client_namespace": "karthos-eval-boutique",
+          "edge_client": "frontend",
+          "edge_client_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "edge_server": "checkoutservice",
+          "edge_server_id": "49cbd6489cd0801ece40517e83e8e0fde8e50f93d76f22a0772cf2b25bc0e3a3",
+          "entity_id": "c90a6d756242d8cd5bf582666d13dd0f398e3a5b682bcaa6db6cadc04a9caa7c",
+          "http.response.status_code": "200",
+          "http_status_code": "200",
+          "karthos_unit": "count",
+          "mesh.envoy.response_flags": "-",
+          "mesh.peer.destination.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/checkoutservice",
+          "mesh.peer.source.principal": "spiffe://cluster.local/ns/karthos-eval-boutique/sa/frontend",
+          "mesh.security.policy": "mutual_tls",
+          "network.protocol.name": "grpc",
+          "rpc.grpc.status_code": "0",
+          "server_namespace": "karthos-eval-boutique",
+          "source": "mesh.istio"
+        },
+        "pre": [
+          1795115672.587,
+          80
+        ],
+        "last": [
+          1795116302.587,
+          380
+        ],
+        "samples": [
+          [
+            1795115627.587,
+            80
+          ],
+          [
+            1795115642.587,
+            80
+          ],
+          [
+            1795115657.587,
+            80
+          ],
+          [
+            1795115672.587,
+            80
+          ],
+          [
+            1795115687.587,
+            85
+          ],
+          [
+            1795115702.587,
+            100
+          ],
+          [
+            1795115717.587,
+            115
+          ],
+          [
+            1795115732.587,
+            130
+          ],
+          [
+            1795115747.587,
+            145
+          ],
+          [
+            1795115762.587,
+            160
+          ],
+          [
+            1795115777.587,
+            175
+          ],
+          [
+            1795115792.587,
+            190
+          ],
+          [
+            1795115807.587,
+            205
+          ],
+          [
+            1795115822.587,
+            220
+          ],
+          [
+            1795115837.587,
+            235
+          ],
+          [
+            1795115852.587,
+            250
+          ],
+          [
+            1795115867.587,
+            265
+          ],
+          [
+            1795115882.587,
+            280
+          ],
+          [
+            1795115897.587,
+            295
+          ],
+          [
+            1795115912.587,
+            310
+          ],
+          [
+            1795115927.587,
+            325
+          ],
+          [
+            1795115942.587,
+            340
+          ],
+          [
+            1795115957.587,
+            355
+          ],
+          [
+            1795115972.587,
+            370
+          ],
+          [
+            1795115987.587,
+            380
+          ],
+          [
+            1795116002.587,
+            380
+          ],
+          [
+            1795116017.587,
+            380
+          ],
+          [
+            1795116032.587,
+            380
+          ],
+          [
+            1795116047.587,
+            380
+          ],
+          [
+            1795116062.587,
+            380
+          ],
+          [
+            1795116077.587,
+            380
+          ],
+          [
+            1795116092.587,
+            380
+          ],
+          [
+            1795116107.587,
+            380
+          ],
+          [
+            1795116122.587,
+            380
+          ],
+          [
+            1795116137.587,
+            380
+          ],
+          [
+            1795116152.587,
+            380
+          ],
+          [
+            1795116167.587,
+            380
+          ],
+          [
+            1795116182.587,
+            380
+          ],
+          [
+            1795116227.587,
+            380
+          ],
+          [
+            1795116242.587,
+            380
+          ],
+          [
+            1795116257.587,
+            380
+          ],
+          [
+            1795116272.587,
+            380
+          ],
+          [
+            1795116287.587,
+            380
+          ],
+          [
+            1795116302.587,
+            380
+          ]
+        ]
+      }
+    ]
+  },
+  "E5": [
+    {
+      "entity_id": "f5945efba9cc116440b2dbd3d99a5906b49b4283fa964ef932fd80f3b7f0de38",
+      "container": "watchdog",
+      "pod": "eval-capture-35269bdec39a49fc-jxs6d",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 4.0145e-06,
+      "maximum": 7.185e-06,
+      "samples": 10,
+      "first_at": 1795115686.725,
+      "last_at": 1795115956.722,
+      "covered_span_seconds": 269.99699997901917,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "197de16d378d57aecc211ac8921831400be810b40836d1bc16b22c19dbfb84f6",
+      "container": "postgresql",
+      "pod": "karthos-postgresql-0",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.0215116874,
+      "maximum": 0.027145046,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "e7150ce9be32faed3a3f631e141a6dc635503f6ead71892c18970639e8402a90",
+      "container": "agent",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.0051095066,
+      "maximum": 0.007704801,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "d836f6d8c6126c9d8fab4f349fa44f9798d1d95b94bde2c3e883a701e337bf64",
+      "container": "gateway",
+      "pod": "karthos-gateway-586d58fc74-2ghh6",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.0164969471,
+      "maximum": 0.018869724,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "4da47f8605eaf0e721269348cace17645bbf39dab0b01b6b75c69def06553322",
+      "container": "frontend",
+      "pod": "karthos-frontend-5d6ffff59b-kl7bt",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 4.19823e-05,
+      "maximum": 5.9845e-05,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "18ebcc59da3d45caabfed6794e376f3fe22c42745843d8c559bb2c70e808e666",
+      "container": "diag-reader",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 509542.4,
+      "maximum": 819200,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "a0f83ee88d5e9c5e708ee9941c742015baa86f36ce8a6a494f5b06c99b4f41a6",
+      "container": "vmsingle",
+      "pod": "karthos-victoria-metrics-single-server-0",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 87230054.4,
+      "maximum": 98615296,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "705be51c08f22894941e6174677c4efc275bee43473a3bdb5819c61b83a1ed98",
+      "container": "diag-reader",
+      "pod": "karthos-gateway-586d58fc74-2ghh6",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 635289.6,
+      "maximum": 647168,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "d802fb1c32e36df7bb3071e64fe35fe052884ce924ccf80273255c55737e2aa4",
+      "container": "diag-reader",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 446054.4,
+      "maximum": 450560,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "f558a195c0fce1dc177d8c84f4f67abd83ace3e85a584a6423025a359d543847",
+      "container": "backend",
+      "pod": "karthos-backend-6bd76cfd5b-zpcjr",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 16356966.4,
+      "maximum": 17965056,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "970531f625996ba4b4b30bd0c0703a64c120f353f1b8f4d6272bc310086eb784",
+      "container": "agent",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 126445158.4,
+      "maximum": 141373440,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "2bfcc5089e39f2c89f75c084e8c4447b2a5dc60448395bb9776921c94c10b488",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 32222822.4,
+      "maximum": 38391808,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "973014ba2eda31cd52d3313c16b02e389e87bba41d8cd392327accf7d95b50ef",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 28282470.4,
+      "maximum": 32497664,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "e7150ce9be32faed3a3f631e141a6dc635503f6ead71892c18970639e8402a90",
+      "container": "agent",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 79230976,
+      "maximum": 86913024,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "d836f6d8c6126c9d8fab4f349fa44f9798d1d95b94bde2c3e883a701e337bf64",
+      "container": "gateway",
+      "pod": "karthos-gateway-586d58fc74-2ghh6",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 114313625.6,
+      "maximum": 138866688,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "f558a195c0fce1dc177d8c84f4f67abd83ace3e85a584a6423025a359d543847",
+      "container": "backend",
+      "pod": "karthos-backend-6bd76cfd5b-zpcjr",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.0653453517,
+      "maximum": 0.083022616,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "970531f625996ba4b4b30bd0c0703a64c120f353f1b8f4d6272bc310086eb784",
+      "container": "agent",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.015147396,
+      "maximum": 0.018565111,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "2bfcc5089e39f2c89f75c084e8c4447b2a5dc60448395bb9776921c94c10b488",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0007121116,
+      "maximum": 0.00312122,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "973014ba2eda31cd52d3313c16b02e389e87bba41d8cd392327accf7d95b50ef",
+      "container": "diag-kubelet-proxy",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.00036044,
+      "maximum": 0.002292935,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "18ebcc59da3d45caabfed6794e376f3fe22c42745843d8c559bb2c70e808e666",
+      "container": "diag-reader",
+      "pod": "karthos-agent-7h5hz",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0025861268,
+      "maximum": 0.003799431,
+      "samples": 10,
+      "first_at": 1795115683.577,
+      "last_at": 1795115953.677,
+      "covered_span_seconds": 270.10000014305115,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "a0f83ee88d5e9c5e708ee9941c742015baa86f36ce8a6a494f5b06c99b4f41a6",
+      "container": "vmsingle",
+      "pod": "karthos-victoria-metrics-single-server-0",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": false,
+      "mean": 0.035022168900000004,
+      "maximum": 0.040226594,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "705be51c08f22894941e6174677c4efc275bee43473a3bdb5819c61b83a1ed98",
+      "container": "diag-reader",
+      "pod": "karthos-gateway-586d58fc74-2ghh6",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0077715265,
+      "maximum": 0.01003869,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "d802fb1c32e36df7bb3071e64fe35fe052884ce924ccf80273255c55737e2aa4",
+      "container": "diag-reader",
+      "pod": "karthos-agent-zsvmm",
+      "node": null,
+      "metric": "container_cpu_usage",
+      "unit": "cores",
+      "diagnostic": true,
+      "mean": 0.0018935881,
+      "maximum": 0.002600308,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "f5945efba9cc116440b2dbd3d99a5906b49b4283fa964ef932fd80f3b7f0de38",
+      "container": "watchdog",
+      "pod": "eval-capture-35269bdec39a49fc-jxs6d",
+      "node": null,
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": true,
+      "mean": 15314944,
+      "maximum": 15314944,
+      "samples": 10,
+      "first_at": 1795115686.725,
+      "last_at": 1795115956.722,
+      "covered_span_seconds": 269.99699997901917,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "197de16d378d57aecc211ac8921831400be810b40836d1bc16b22c19dbfb84f6",
+      "container": "postgresql",
+      "pod": "karthos-postgresql-0",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 119999692.8,
+      "maximum": 121622528,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    },
+    {
+      "entity_id": "4da47f8605eaf0e721269348cace17645bbf39dab0b01b6b75c69def06553322",
+      "container": "frontend",
+      "pod": "karthos-frontend-5d6ffff59b-kl7bt",
+      "node": "gke-karthos-eval-1bad98-observability-81ae96d4-6rs6",
+      "metric": "container_memory_usage",
+      "unit": "bytes",
+      "diagnostic": false,
+      "mean": 5009408,
+      "maximum": 5009408,
+      "samples": 10,
+      "first_at": 1795115699.915,
+      "last_at": 1795115969.924,
+      "covered_span_seconds": 270.0090000629425,
+      "method": "arithmetic mean of unique raw recorded samples within [start,end); not time-weighted or causal overhead"
+    }
+  ],
+  "E6": {
+    "observed": 1920,
+    "unknown_count": 360,
+    "unknown_groups": [
+      {
+        "boundary": "checkout",
+        "route": "/hipstershop.CheckoutService/PlaceOrder",
+        "user_agent": "grpc-go/1.82.0",
+        "origin": "127.0.0.6",
+        "grpc_status": "0",
+        "http_status": "200",
+        "count": 300
+      },
+      {
+        "boundary": "checkout",
+        "route": "/hipstershop.CheckoutService/PlaceOrder",
+        "user_agent": "grpc-go/1.82.0",
+        "origin": "127.0.0.6",
+        "grpc_status": "13",
+        "http_status": "200",
+        "count": 60
+      }
+    ]
+  },
+  "extraction": {
+    "label": "B5",
+    "archive_sha256": "eaae952b2c8284717fd7245fa76f3086575256ddfae70c844b093a3684bf21d8",
+    "seal_sha256": "3397d72c607f1c597726804254263be34aa54236acd0bd718d5788c1bfba5cdc",
+    "verified_members": 868,
+    "selected": [
+      {
+        "name": "api-cpu.json",
+        "bytes": 829085,
+        "sha256": "8bdc601350e0838eb98ed847d2e27bb50ef9fd49b510612879a7d6521609368b"
+      },
+      {
+        "name": "api-edges.json",
+        "bytes": 315130,
+        "sha256": "890d60c53b0f9bea926fa3dfa79654bc83839e74a2d05ab27b4267e0c6bf093d"
+      },
+      {
+        "name": "api-error-count.json",
+        "bytes": 43474,
+        "sha256": "a70e8468913a83cccddf3160b03d24a226054f020f7a3e6226e785587962cbff"
+      },
+      {
+        "name": "api-memory.json",
+        "bytes": 830689,
+        "sha256": "7a9e70f855e9ae20621c0c2c7eb9ecb9116b8403e75a561fc4747dc25f888a0b"
+      },
+      {
+        "name": "api-nodes.json",
+        "bytes": 345397,
+        "sha256": "49613ae23443e2c06339d9e001c635b2561f51ff58c6246799b22469448e291d"
+      },
+      {
+        "name": "api-request-count.json",
+        "bytes": 37589,
+        "sha256": "d04d2365bb157f5262c372f636d8c2680b4efb08cae5d07f947199ec03b7e90b"
+      },
+      {
+        "name": "extended/vm-raw.ndjson",
+        "bytes": 1482091,
+        "sha256": "e7932e869c69fc0ce9809076e8b71b45c2751304f929b3a2dfa58d6fbf2f2beb"
+      },
+      {
+        "name": "k8s-pods.json",
+        "bytes": 357547,
+        "sha256": "1273f8f36d52449c60f638fceff887b589d792a7534616bc1ea395ce681ccbfe"
+      },
+      {
+        "name": "karthos-pods.json",
+        "bytes": 87129,
+        "sha256": "75c23e3afb2accb56b8e48f3a7857c2de24fa7572b647085476c5781c8fecef6"
+      },
+      {
+        "name": "ledger.ndjson",
+        "bytes": 1122691,
+        "sha256": "c251db452e1475b7e8e017b835ca40485ad82547ae843ef9d723dc03afe7ab6f"
+      },
+      {
+        "name": "logs/karthos-eval-boutique__checkoutservice-7b4fd8cf86-5bgmj__eval-observer.log",
+        "bytes": 152458,
+        "sha256": "4309b5f0478e27591c782f47fa45858a5e0f39e5379c78344a16bebbef992eb9"
+      },
+      {
+        "name": "logs/karthos-eval-boutique__frontend-78dd897f4d-hq9dm__eval-observer.log",
+        "bytes": 961568,
+        "sha256": "3503ead233be0f0fc36a9b6acb989ecc373dd2dbb14d357f3337ce98462f1326"
+      },
+      {
+        "name": "manifest.json",
+        "bytes": 196023,
+        "sha256": "c6204f77dd20a29c439b0e809abda5008096aabf36189bc5036058860e041cc2"
+      },
+      {
+        "name": "quiet-after.json",
+        "bytes": 14656,
+        "sha256": "89a925f286b55d43dd31a757975928450443d74e1e7365e2eaf3a646ce1b4385"
+      },
+      {
+        "name": "quiet-before.json",
+        "bytes": 14638,
+        "sha256": "a62b577033fb1caed1ce3ba99b901c76bfac69a8140ff51a490c0e1e9a9af246"
+      },
+      {
+        "name": "selection/karthos-agent-config.json",
+        "bytes": 5724,
+        "sha256": "2a05ee25edfdd528f07ad76db9383b431bdc6d1a2db36fe9ced7ae1bb8098ab6"
+      },
+      {
+        "name": "selection/karthos-gateway-config.json",
+        "bytes": 6075,
+        "sha256": "b3af57668c2aea33271cfcc10814ac0d24d9e89c8b03538f1c8918dd486bde6f"
+      },
+      {
+        "name": "selection/plan.json",
+        "bytes": 2141,
+        "sha256": "2546a0d00d720cc4b4d003c8dcb8a5ab5d9d6233e18d8f983692f7030440bfc0"
+      },
+      {
+        "name": "selection/profile.json",
+        "bytes": 1702,
+        "sha256": "ddc4fce299edb3c04e02b4cef3a5e9a10ba6924c3002b432496ee6042dafb10f"
+      },
+      {
+        "name": "setup-effective-settings.json",
+        "bytes": 278,
+        "sha256": "78497bfdd9cdf177568c753fc8857c71d3ee4132eaa40d5b2cfbb44f2b8cff2f"
+      },
+      {
+        "name": "setup-generated-collector-contract.json",
+        "bytes": 303,
+        "sha256": "fda4bc65514090f3a72eb12aab894cb2e0839b6013dc695076cc027693db3c5f"
+      },
+      {
+        "name": "setup-running-image-verification.json",
+        "bytes": 14317,
+        "sha256": "3312d91156ed26983b95f7925ea2d2dd341861d06ceb4bbe0b84193585cc5fa9"
+      },
+      {
+        "name": "structured/gateway/raw/traces.json",
+        "bytes": 19761077,
+        "sha256": "a0dd63f8a5d4efb4d2213a036b5603016af7117eefd22c4ed8f3c8e4a308e852"
+      },
+      {
+        "name": "timing-verification.json",
+        "bytes": 380196615,
+        "sha256": "1694217737e75f8ccef65a6d8ce3f367ffb5859054931e66e5c2cc4ec1b469d4"
+      },
+      {
+        "name": "verification.json",
+        "bytes": 2418998,
+        "sha256": "f9608ebcccc52f8ec6a32c272d29e6354f95889712d3ffc9fc876c096cb5cda4"
+      },
+      {
+        "name": "vm-parity/api-error-count.json",
+        "bytes": 35821,
+        "sha256": "79c44c1e653374ecbd07fd92a0f8734378e373c81da5bd89817c9e4f443f2507"
+      },
+      {
+        "name": "vm-parity/api-request-count.json",
+        "bytes": 33495,
+        "sha256": "d1d1e97af8caa2909ff2a7ab0fde4d68fb7e4ea1afd6f3e5a3ee72e51a6e2fff"
+      },
+      {
+        "name": "vm-parity/manifest.json",
+        "bytes": 13406,
+        "sha256": "be8c26151d5913da8c677f43b2159a2e148b34064c23a72255e055367579880a"
+      },
+      {
+        "name": "vm-raw.ndjson",
+        "bytes": 318014,
+        "sha256": "1b015fdf1f096ec2a408dbffc9e378a05258651a7acfa00aa2fbd262573ef12a"
+      }
+    ]
+  }
+}
