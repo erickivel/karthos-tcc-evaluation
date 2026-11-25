@@ -11,8 +11,9 @@ build/gke/
 *.tfstate*
 *.tfplan
 
-# Local planning, research and historical notes
-/.plan-docs/
 
 # Private GCP evaluation inputs
 /config/gke.local.yaml
+
+# Local notes
+/.plan-docs/

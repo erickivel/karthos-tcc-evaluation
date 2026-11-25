@@ -8,22 +8,26 @@ Standalone code and configuration for evaluating Karthos. Product code lives in 
 |---|---|---|
 | Product evaluated | [karthos](https://github.com/erickivel/karthos) | `4c2861b539fcd24d6a458dc0fd545fbdda5470d5` (tag `tcc-2026`) |
 | Evaluator executed | this repository | `45f85e0bcdb33365b7ad2311d5c4a1f56a5c7df0` (tag `tcc-2026-run`) |
-| Results and evidence | this repository | tag `tcc-2026-evidence` |
+| Results and evidence | this repository | tag `tcc-2026-evidence` (this revision) |
+
+The thesis cites the tag `tcc-2026-evidence`. The evaluation itself was executed
+from the evaluator revision above (tag `tcc-2026-run`); use that revision to
+reproduce the run.
 
 Campaign `thesis-robustness-full-20261119-v2`, protocol `thesis-completion-v2`.
 Results: [reports/thesis-unified-20261119-v2](reports/thesis-unified-20261119-v2/)
-([RELATORIO.md](reports/thesis-unified-20261119-v2/RELATORIO.md), [INDICE-EVIDENCIAS.md](reports/thesis-unified-20261119-v2/INDICE-EVIDENCIAS.md)).
+([RELATORIO.md](reports/thesis-unified-20261119-v2/RELATORIO.md)).
 Raw archives in GCS had 90-day retention; the summaries and hashes in this
 directory are the durable record.
 
 [Thesis completion v2](docs/thesis-completion-v2.md) is the **official thesis evaluation protocol**, not a rehearsal: two fresh GKE clusters, 14 serial k6 traffic windows, 38 minutes of scheduled traffic, checkout history and explicit source arbitration. It builds from an evaluation commit and does not require previous result bundles. The protocol guide contains the complete claim table and all 43 metrics, separating 18 selected comparisons from 25 contract/visibility checks.
 
 - [Official protocol, architecture and claim/metric coverage](docs/thesis-completion-v2.md)
+- [Hypotheses, claims and independent references](docs/thesis-robustness.md)
 - [Frozen experiment definition](protocols/thesis-completion-v2/protocol.yaml)
 - [Metric/reference definitions](protocols/thesis-completion-v2/metrics.yaml)
 - [Catalog coverage](protocols/thesis-completion-v2/coverage.yaml)
-- [Environment configuration](config/gke.completion-v2.example.yaml)
-- [Compact exports, restoration and timing estimates](docs/export-efficiency.md)
+- [Environment configuration](config/gke.completion-v2.example.yaml); the evaluated campaign used the `thesis-robustness-full-v1` profile in [gke.robustness-full.example.yaml](config/gke.robustness-full.example.yaml)
 - [Harness modules and verification](evaluation/README.md)
 - [Terraform, permissions and cleanup contract](infrastructure/terraform/CONTRACT.md)
 
@@ -161,19 +165,10 @@ Original evidence remains in `results/` and GCS. Corrected interpretations go in
 | `protocols/` | Versioned experiment rules, coverage and comparison definitions |
 | `config/` | Account-specific configuration examples |
 | `infrastructure/` | Terraform, controller packaging and independent cleanup watchdog |
-| `docs/` | Protocol and operator documentation |
-| `build/gke/` | Generated, checksum-bound input/build/review packages |
-| `.work/gke/` | Private operational state, credentials and scratch space |
-| `results/` | Original execution evidence |
-| `analyses/` | Versioned interpretations linked to evidence checksums |
+| `docs/` | Official protocol and claim definitions |
+| `reports/` | Report, results and evidence of the evaluated campaign |
 
-Research drafts and historical planning notes in `.plan-docs/` are ignored and are not runtime dependencies. Historical result bundles remain unchanged.
-
-## Reanalyse preserved official evidence
-
-See [official evidence recovery](docs/official-evidence-recovery.md) for checksum-bound offline commands, optional streaming-analysis dependencies, executed-versus-recovered API evidence, and the capacity/timeout safeguards. Corrected interpretations go into a new `analyses/` directory; original `results/` and cloud archives remain unchanged.
-
-Controller report serialization, bounded failure recovery and memory-validation notes are documented in [controller evidence memory](docs/controller-evidence-memory.md).
+A run also creates local, Git-ignored directories: `build/gke/` (checksum-bound build packages), `.work/gke/` (private operational state and credentials), `results/` (original execution evidence) and `analyses/` (interpretations linked to evidence checksums).
 
 ## License
 

@@ -555,7 +555,7 @@ def verify_study(run_dir: Path) -> dict:
 
 
 def render_report(run_dir: Path, aggregate: dict):
-    lines=['# Kivel pilot v2 evidence report','',
+    lines=['# Local k3s pilot v2 evidence report','',
            'Execution completion and metric agreement are reported separately. Native Locust runs are descriptive.', '',
            f"Aggregate measurement state: **{aggregate.get('state','incomplete')}**",'',
            f"Matched windows attempted: {aggregate.get('attempted_matched_windows',0)}/48.",
@@ -663,7 +663,7 @@ def run_study(args):
         r.shutil.copytree(r.ROOT / 'evaluation', run_dir / 'locked-harness',
                           ignore=r.shutil.ignore_patterns('__pycache__'))
         r.write(run_dir/'run-report.json',report)
-        # The user requested Karthos source isolation; image builds only read it.
+        # Karthos source stays isolated; image builds only read it.
         r.cmd([str(r.REPO / 'test/e2e/prepare-platform-images.sh')], cwd=r.REPO,
               capture=run_dir / 'image-build.log', timeout=1800)
         report['images_prepared_at']=r.utc()

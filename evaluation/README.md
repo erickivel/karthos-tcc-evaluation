@@ -2,7 +2,7 @@
 
 This package contains the standalone evaluation implementation. It uses Karthos's existing discovery CLI, deployment chart and public API without modifying the product repository.
 
-See the [current GKE execution plan](../docs/thesis-qualification-v3.md) and [frozen protocol](../protocols/thesis-qualification-v3/protocol.yaml) for the experiment schedule and operational commands.
+See the [official protocol](../docs/thesis-completion-v2.md) and the [frozen experiment definition](../protocols/thesis-completion-v2/protocol.yaml) for the experiment schedule and operational commands.
 
 ## Modules
 
@@ -17,7 +17,7 @@ See the [current GKE execution plan](../docs/thesis-qualification-v3.md) and [fr
 | Comparison semantics | `series_identity.py`, `evidence_v4.py`, `scoring.py`, `timing_analysis.py` |
 | Regression tests | `tests/` |
 
-The GKE runner reuses components validated by the earlier local pilots. Their retained execution contracts remain documented in [SIGNAL-CONTRACTS.md](SIGNAL-CONTRACTS.md), [PROTOCOL-4.md](PROTOCOL-4.md) and [TIMING-STUDY.md](TIMING-STUDY.md).
+The GKE runner reuses components validated by earlier local runs. Their measurement contracts are documented in [SIGNAL-CONTRACTS.md](SIGNAL-CONTRACTS.md).
 
 ## Verification
 
@@ -26,8 +26,6 @@ python3 -B -m unittest discover -s evaluation/tests -q
 ```
 
 Execution, evidence validity, numeric agreement and application outcomes are separate verdicts. Missing data remains insufficient evidence. Original execution artifacts live in `results/`; corrected interpretations belong in `analyses/`.
-
-Dated findings, incidents, design drafts and repair narratives have moved to the local, Git-ignored `.plan-docs/evaluation/` archive. They are not required to run the harness.
 
 ## Narrow observation and duration contracts
 

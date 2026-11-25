@@ -1,4 +1,4 @@
-"""Fixed Kivel evaluation matrix and safety boundaries."""
+"""Fixed local k3s evaluation matrix and safety boundaries."""
 from __future__ import annotations
 
 from dataclasses import dataclass

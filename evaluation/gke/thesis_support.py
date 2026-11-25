@@ -1,4 +1,4 @@
-"""Generate the Portuguese thesis support data; run as a module with explicit paths."""
+"""Generate the report support data; run as a module with explicit paths."""
 import json,hashlib,tarfile,sys
 from pathlib import Path
 from collections import Counter,defaultdict

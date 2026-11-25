@@ -1,4 +1,4 @@
-"""Reproducible Kivel k3s study runner. No writes to the Karthos checkout."""
+"""Reproducible local k3s study runner. No writes to the Karthos checkout."""
 from __future__ import annotations
 
 import argparse
@@ -111,7 +111,7 @@ def preflight(replace_existing: bool = False) -> dict:
     nodes = kube_json('get','nodes')['items']
     ready = [n for n in nodes if any(c['type']=='Ready' and c['status']=='True' for c in n['status']['conditions'])]
     if len(ready) != 1:
-        raise RuntimeError(f'expected exactly one Ready Kivel node, got {len(ready)}')
+        raise RuntimeError(f'expected exactly one Ready local k3s node, got {len(ready)}')
     node = ready[0]
     summary = json.loads(kube('get','--raw',f"/api/v1/nodes/{node['metadata']['name']}/proxy/stats/summary").stdout)
     disk = summary.get('node',{}).get('fs',{}).get('availableBytes')
@@ -708,7 +708,7 @@ def cleanup(replace_existing: bool) -> None:
 
 
 def main(argv=None) -> None:
-    parser=argparse.ArgumentParser(description='Kivel Karthos evaluation')
+    parser=argparse.ArgumentParser(description='Local k3s Karthos evaluation')
     commands=parser.add_subparsers(dest='command',required=True)
     pre=commands.add_parser('preflight')
     pre.add_argument('--replace-existing',action='store_true')

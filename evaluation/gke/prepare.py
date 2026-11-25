@@ -85,7 +85,7 @@ def preparation_inputs(root,config,schedule):
 
 
 def prepare(root,config_path,preparation_id,*,product_snapshot=None,schedule=COMPLETION_V2,benchmark=None,product_lock=None,local_evidence=None,continuation_dir=None,continuation_receipt=None,origin_report=None,origin_seal=None,origin_uri=None,matrix_profile=None):
-    """Build experiment inputs offline. Human confirmation stays in the conversation."""
+    """Build experiment inputs offline. Human confirmation happens before cloud work."""
     if schedule not in RECOVERABLE_SCHEDULES:
         raise ValueError('new preparations require the active k6-only thesis protocol; legacy schedules are analysis-only')
     root=Path(root).resolve();identifier(preparation_id);config=validate_config(read(config_path),schedule=schedule)

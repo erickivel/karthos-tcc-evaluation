@@ -26,9 +26,7 @@ As imagens (por *digest*) e as entradas da avaliação foram fixadas antes das m
 
 ### Preparação e identidade dos *clusters*
 
-Os dois preparativos anteriores pararam antes de produzir medições válidas, um por falta de acesso à área de quarentena e outro por uma autorização RBAC insuficiente. Esses episódios estão registrados no [incidente de autorização](INCIDENTE-AUTORIZACAO.md) e no [relatório do preparativo anterior](../thesis-unified-20261119/), e não são contados como reprovação do Karthos.
-
-Nesta campanha, a identidade, o acesso à quarentena e a autorização de implantação foram verificados antes do início. Os identificadores atribuídos pelo provedor confirmam que os dois *clusters* são distintos:
+Os dois preparativos anteriores pararam antes de produzir medições válidas, um por falta de acesso à área de quarentena e outro por uma autorização RBAC insuficiente, e não são contados como reprovação do Karthos. Nesta campanha, a identidade, o acesso à quarentena e a autorização de implantação foram verificados antes do início. Os identificadores atribuídos pelo provedor confirmam que os dois *clusters* são distintos:
 
 | *Cluster* | Identificador do provedor |
 |---|---|
@@ -245,9 +243,9 @@ Nessa fase, a avaliação pede ao Kubernetes um reinício controlado do *Deploym
 
 ## Parte II: análise posterior à execução
 
-Depois da leitura dos resultados, seis pontos foram investigados (E1 a E6) a partir das evidências guardadas da campanha. Essa análise não envolveu nenhuma nova medição na nuvem nem mudança no Karthos, e os seus números não entram em nenhum veredito da Parte I. Os arquivos citados nesta parte ficam na pasta [exploratory/](exploratory/), e os *scripts* dela foram escritos depois da execução e não fazem parte das regras de aprovação. Os horários estão em UTC (Brasília é UTC−3).
+Depois da leitura dos resultados, seis pontos foram investigados (E1 a E6) a partir das evidências guardadas da campanha. Essa análise não envolveu nenhuma nova medição na nuvem nem mudança no Karthos, e os seus números não entram em nenhum veredito da Parte I. Os dados citados nesta parte ficam na pasta [exploratory/](exploratory/). Os horários estão em UTC (Brasília é UTC−3).
 
-Para essa análise, sete arquivos brutos e 19 objetos do histórico foram copiados do armazenamento da campanha, com a geração de cada objeto fixada e o SHA-256 verificado, e as sete extrações conferiram todos os arquivos selados.
+Para essa análise, sete arquivos brutos e 19 objetos do histórico foram copiados do armazenamento da campanha, com a geração de cada objeto fixada e o SHA-256 verificado, e as sete extrações conferiram todos os arquivos selados (`exploratory/raw-derived/final-verification.json`).
 
 ### E1: contagem em janela fixa
 
@@ -334,7 +332,7 @@ No código avaliado, a estrutura do *cluster* é lida, por padrão, a cada cinco
 
 ### E5: consumo dos componentes do Karthos
 
-O consumo foi calculado a partir das séries de CPU e de memória guardadas, com dez amostras por série em cada janela, separadas por cerca de 30 s, cobrindo aproximadamente 270 s entre a primeira e a última. Os valores são médias dessas amostras e máximos observados, e não o consumo integrado exato nem o máximo contínuo em 300 s. Uma série ausente não foi tratada como consumo zero. Essas médias ampliam as leituras pontuais de CPU e de memória feitas durante a execução de B1 a B4, que estão em [evidence/footprint-observation.json](evidence/footprint-observation.json). O arquivo [exploratory/recursos.csv](exploratory/recursos.csv) traz, para cada série, a média, o máximo, a unidade, a entidade, o pod, o *node*, o número de amostras e a primeira e a última amostra, inclusive dos componentes de diagnóstico da avaliação, marcados à parte.
+O consumo foi calculado a partir das séries de CPU e de memória guardadas, com dez amostras por série em cada janela, separadas por cerca de 30 s, cobrindo aproximadamente 270 s entre a primeira e a última. Os valores são médias dessas amostras e máximos observados, e não o consumo integrado exato nem o máximo contínuo em 300 s. Uma série ausente não foi tratada como consumo zero. O arquivo [exploratory/recursos.csv](exploratory/recursos.csv) traz, para cada série, a média, o máximo, a unidade, a entidade, o pod, o *node*, o número de amostras e a primeira e a última amostra, inclusive dos componentes de diagnóstico da avaliação, marcados à parte.
 
 B2, B3 e B6 têm as séries dos três agentes e do *gateway*. B1 tem a de um agente e não tem a do *gateway*, B4 não tem a dos agentes nem a do *gateway* e B5 tem a de dois agentes. A tabela abaixo não inclui os componentes de diagnóstico (`diag-*`) nem o *watchdog* da avaliação, e os agentes aparecem separados por pod. A memória está em MiB e a CPU em núcleos.
 
@@ -401,29 +399,18 @@ B2 e B3 têm ainda cinco requisições adicionais ao *frontend*, na rota `/`, co
 
 **População e seleção.** Das 43 métricas, 18 foram selecionadas para a comparação numérica, e nem todas tiveram a precisão demonstrada, já que as oito do sistema operacional e as três do ciclo de vida continuam inconclusivas. O tráfego desconhecido e as comparações inconclusivas foram mantidos, sem atribuir toda a população a jornadas ou a sondas. As séries de consumo dos componentes têm cobertura parcial e não estimam o custo total da solução.
 
-## Preservação, encerramento e custo
+## Preservação e encerramento
 
-A cópia secundária das evidências foi verificada pelo controlador da execução, com o SHA-256 de cada arquivo. A leitura independente dos metadados confirmou **498 objetos, com 1.991.739.650 bytes em cada cópia**, com gerações fixas e tamanho, MD5 e CRC32C correspondentes, e o recibo de replicação é idêntico nos dois *buckets*. Essa conferência não foi uma nova leitura integral dos arquivos brutos. Ver a [verificação dos metadados](evidence/evidence-metadata-verification.json) e o [recibo de backup](evidence/backup-receipt.json).
-
-O backup cobre os objetos presentes no inventário de replicação. Os recibos de limpeza, posteriores a esse inventário, estão guardados com URI, geração e *hash* em [closure-readback.json](evidence/closure-readback.json). A área de quarentena e o estado do Terraform não fazem parte das evidências de pesquisa.
-
-O [recibo final de limpeza](evidence/cleanup-receipt.json) confirma a remoção dos nove recursos que restavam no inventário (controlador, quatro discos, *router*, *firewall* interno, sub-rede e rede), sem erros, com o agendador pausado e a reserva de execução liberada. Os *clusters* já tinham sido encerrados antes dessa etapa, e o resultado está em `run-report.json:cleanup.cluster_cleanup`. Como o relatório de execução foi fechado antes da limpeza, os seus campos `temporary_removal_confirmed: false` e a retenção do controlador registram o estado daquele momento, e a evidência de encerramento é o recibo posterior.
-
-A definição inativa do *watchdog* no Cloud Run continua registrada, com mínimo de zero instâncias, e o recibo não verifica a ausência de instâncias ativas (`active_instances_verified: false`). O agendador pausado, os *buckets* de evidências e a infraestrutura de preservação também continuam existindo. Ou seja, o que o recibo sustenta é a remoção dos recursos de computação e de rede inventariados, e não a remoção de todos os objetos do projeto.
-
-O custo de referência era de R$ 800, sem ser uma condição de parada, e o teto adicional, de R$ 1.200, incluía os dois preparativos e uma reserva para o encerramento. O arquivo [budget-review.json](budget-review.json) traz o câmbio, a margem, as provisões e a previsão, mas não há uma fatura consolidada neste pacote, então a previsão não é apresentada como o gasto final.
+As evidências da campanha foram exportadas para dois *buckets* do armazenamento da nuvem, com 498 objetos e 1.991.739.650 bytes em cada cópia, e a cópia secundária foi verificada pelo SHA-256, pela geração, pelo tamanho e pelo MD5 e CRC32C de cada objeto. Depois da exportação, os *clusters* e os recursos temporários de computação e de rede foram removidos, como registrado em `evidence/run-report.json` (`cleanup.cluster_cleanup`) e confirmado pelos recibos de limpeza guardados no armazenamento da campanha.
 
 ## Reprodução e arquivos
 
-Os resultados podem ser conferidos a partir dos *commits*, dos *digests*, do manifesto e dos *hashes*, sem precisar executar a avaliação novamente na nuvem. As exportações da campanha registram uma retenção de 90 dias no armazenamento da nuvem, e este pacote, com os relatórios, os dados derivados e os recibos, é publicado no repositório de avaliação. O índice dos arquivos está em [INDICE-EVIDENCIAS.md](INDICE-EVIDENCIAS.md).
+Os resultados podem ser conferidos a partir dos *commits*, dos *digests*, do manifesto e dos *hashes*, sem precisar executar a avaliação novamente na nuvem. As exportações completas ficaram no armazenamento da nuvem, com retenção de 90 dias, e esta pasta guarda os resultados, os resumos das linhas de base e os dados derivados citados neste relatório.
 
-Os principais arquivos são:
-
-- [resultados.json](resultados.json), [resultados-numericos.csv](resultados-numericos.csv), [familias.csv](familias.csv) e [metricas-selecionadas.csv](metricas-selecionadas.csv): resultados estruturados, valores e erros, famílias e as 18 métricas por linha de base;
-- [evidence/claim-matrix.json](evidence/claim-matrix.json) e [evidence/run-report.json](evidence/run-report.json): matriz de afirmações e relatório de execução originais, conferidos com o selo [evidence/GKE-SHA256SUMS](evidence/GKE-SHA256SUMS);
-- [evidence-index.json](evidence-index.json): as 14 janelas, as tentativas, as URIs, os arquivos internos, os *hashes* e os 498 objetos;
-- `exploratory/acquisition.json`: os 26 objetos copiados para a análise da Parte II, com URI, geração, tamanho, *hash* e destino;
-- `exploratory/raw-derived/`: dados derivados de cada linha de base (`B1.json` a `B6.json` e `arbitration.json`), a consulta refeita (`replay.json`), as durações (`durations.json`), o histórico (`history.json`, com o pedido de reinício, as três referências, 61 respostas da API e os retratos), as médias do sistema operacional (`host-60s.json`, com a tabela em `exploratory/host-60s.csv`), as configurações do Collector (`collector-configs.json`) e a verificação final (`final-verification.json`);
-- `exploratory/scripts/`: aquisição, extração, análise e consulta refeita, na ordem `fetch-evidence.py`, `stage-archive.py`, `analyze-raw.py`, `replay-vm.py` e `host-history.py`, seguidos de `build-tables.py`, que gera as tabelas em CSV, e `validate.py`, que confere os dados derivados.
+- [resultados.json](resultados.json), [resultados-numericos.csv](resultados-numericos.csv), [familias.csv](familias.csv), [metricas-selecionadas.csv](metricas-selecionadas.csv) e [trafego-observado.csv](trafego-observado.csv): resultados estruturados, valores e erros, famílias de comparações, as 18 métricas por linha de base e a população observada;
+- [evidence/claim-matrix.json](evidence/claim-matrix.json), [evidence/run-report.json](evidence/run-report.json) e [evidence/baselines/](evidence/baselines/): a matriz de afirmações, o relatório de execução e os resumos das seis linhas de base, conferidos com o selo original [evidence/GKE-SHA256SUMS](evidence/GKE-SHA256SUMS);
+- [rule-freeze.json](rule-freeze.json): revisão executada, manifesto e *digests* das imagens, fixados antes das medições;
+- `exploratory/raw-derived/`: dados derivados de cada linha de base (`B1.json` a `B6.json` e `arbitration.json`), a consulta refeita (`replay.json`), as durações (`durations.json`), o histórico (`history.json`, com o pedido de reinício, as três referências, 61 respostas da API e os retratos), as médias do sistema operacional (`host-60s.json`), as identidades dos *nodes* (`host-identities.json`), as configurações do Collector (`collector-configs.json`) e a verificação das extrações (`final-verification.json`);
+- [exploratory/recursos.csv](exploratory/recursos.csv) e [exploratory/host-60s.csv](exploratory/host-60s.csv): o consumo dos componentes e as médias do sistema operacional em tabela.
 
 Os arquivos desta pasta são selados por [SHA256SUMS](SHA256SUMS).

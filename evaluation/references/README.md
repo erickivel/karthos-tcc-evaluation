@@ -1,7 +1,7 @@
 # Independent GKE references and public API consumer
 
-Offline-tested preparation only. No GKE acquisition or full live qualification has
-been performed by these modules. Call per node for the three-node design; never
+These modules prepare and read the independent references used in the GKE
+evaluation. Call per node for the three-node design; never
 merge nodes or lifecycles into one reference. Missing source fields stay missing.
 Generated CPU targets and payload byte counts are never reference measurements.
 

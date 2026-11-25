@@ -78,7 +78,7 @@ def evidence_files_issues(records, root):
 
 
 def recurrence_readiness_issues(cause, root):
-    """User-approved prospective gate; never asserts a historical root cause."""
+    """Approved prospective gate; never asserts a historical root cause."""
     root=Path(root);issues=[]
     if cause.get('readiness_policy')!='user-approved-recurrence-v1' or cause.get('historical_cause')!='unknown':
         issues.append('recurrence readiness must retain the original cause as unknown')

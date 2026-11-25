@@ -1,6 +1,6 @@
 # Matched workload contract
 
-The active thesis v3 protocol dispatches k6 only for all 13 readiness probes and 12 measured windows. The Locust adapter descriptions below document historical pilot/qualification evidence; they are not active launch options. The Python helper image used for reference capture remains required independently of the traffic generator.
+The official `thesis-completion-v2` protocol dispatches k6 for all of its traffic windows. The Locust adapter descriptions below document earlier pilot and qualification evidence; they are not active launch options. The Python helper image used for reference capture remains required independently of the traffic generator.
 
 Both adapters consume `workload.json`: ordered HTTP requests, payload templates,
 expected status and outcome predicates. Redirects are disabled, so a Boutique

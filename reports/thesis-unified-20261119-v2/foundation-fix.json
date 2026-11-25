@@ -1,9 +1,0 @@
-{
-  "checked_at": "2026-11-19T12:24:12.436594+00:00",
-  "role": "projects/karthos/roles/karthosEvaluationWatchdog",
-  "only_added_permission": "compute.networks.updatePolicy",
-  "existing_bindings_unchanged": true,
-  "no_active_run_lease_verified": true,
-  "plan_sha256": "f80a5bf82b29edf35ae6c20f9a887da5e73a9ab7d2b886f4d190d40722f3e7a1",
-  "deployed_role_permissions_verified": true
-}
