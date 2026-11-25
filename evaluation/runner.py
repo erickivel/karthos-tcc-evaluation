@@ -24,7 +24,7 @@ from .protocol import Cell, KARTHOS_NAMESPACE, KARTHOS_RELEASE, NAMESPACES, cell
 from .relay import boutique_relay
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = Path(os.environ.get('KARTHOS_REPO', '/Users/kivel/Desktop/Projects/tcc/karthos'))
+REPO = Path(os.environ.get('KARTHOS_REPO', str(Path(__file__).resolve().parents[2] / 'karthos')))
 CONFIG = json.loads((ROOT / 'evaluation/config.json').read_text())
 OUT = ROOT / 'results'
 CACHE = ROOT / 'cache'

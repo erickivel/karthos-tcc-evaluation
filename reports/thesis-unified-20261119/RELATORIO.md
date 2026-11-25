@@ -20,13 +20,13 @@ A suíte local do avaliador congelado passou com 1.481 testes e quatro testes ig
 | Observação temporal e comparação entre implantações | Não executadas |
 | Decisão | Encerramento após esgotar a única repetição operacional permitida |
 
-A primeira falha informa o principal `104260585867013899667` e a permissão ausente `container.clusterRoleBindings.update`. A consulta ao papel `roles/container.developer` confirmou apenas leitura e listagem para objetos RBAC. O papel `roles/container.clusterAdmin` administra o ciclo de vida dos clusters e não substitui as permissões Kubernetes de instalação. A segunda falha deve ser descrita pelo erro preservado de desinstalação; sua causa detalhada não deve ser presumida somente pela primeira falha.
+A primeira falha informa o principal numérico da conta de serviço do controlador e a permissão ausente `container.clusterRoleBindings.update`. A consulta ao papel `roles/container.developer` confirmou apenas leitura e listagem para objetos RBAC. O papel `roles/container.clusterAdmin` administra o ciclo de vida dos clusters e não substitui as permissões Kubernetes de instalação. A segunda falha está registrada pelo erro de desinstalação preservado, e a sua causa detalhada não foi presumida a partir da primeira.
 
 Há também uma diferença de identidade verificável na configuração da VM: o controlador recebe somente o escopo OAuth `cloud-platform`, sem `userinfo-email`. A documentação do GKE explica que, nesse caso, a API Kubernetes recebe o identificador numérico da conta em vez de seu e-mail. Isso é compatível com o principal numérico observado no erro, mas não prova que adicionar o escopo, isoladamente, resolveria todas as permissões de instalação. A correção deve verificar tanto a identidade autenticada quanto as autorizações efetivas; um binding por e-mail não deve ser presumido válido para um principal numérico.
 
 Referências para a correção operacional: [IAM e RBAC no GKE](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/access-control), [autorização RBAC](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/role-based-access-control) e [permissões da API](https://docs.cloud.google.com/kubernetes-engine/docs/reference/api-permissions).
 
-## Implicações para a tese
+## Implicações para a avaliação
 
 As 19 afirmações aplicáveis à nova avaliação em nuvem permanecem com evidência insuficiente. A matriz também registra cinco verificações locais previamente existentes como aprovadas e uma afirmação opcional como não aplicável; esses cinco resultados não são medições desta execução no GKE. Não se devem preencher essas lacunas com resultados favoráveis do estudo anterior nem apresentar esta tentativa como uma avaliação completa. Os resultados originais e a reanálise continuam preservados separadamente.
 

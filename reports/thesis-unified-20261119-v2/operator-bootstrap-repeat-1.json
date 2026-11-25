@@ -11,8 +11,8 @@
     "cluster": "karthos-eval-1bad98771cbffafebfd3",
     "cluster_uid": "0dcaa265e1a04241b9c73d44655f6edd4513fcfbe49349918d6ea79a0e225287",
     "controller_service_account": "karthos-eval-controller@karthos.iam.gserviceaccount.com",
-    "operator_account": "ericvkivel1@gmail.com",
-    "observed_operator": "ericvkivel1@gmail.com",
+    "operator_account": "operator@example.com",
+    "observed_operator": "operator@example.com",
     "creation_proof": {
       "inventory_uri": "gs://karthos-karthos-eval-evidence/control/thesis-robustness-full-20261119-v2/inventory/164c7a47b949e4e5842e2896e83f3027169dcebc8f11d3f6d065e987aa993f6f.json",
       "inventory_generation": "1795093608333517",

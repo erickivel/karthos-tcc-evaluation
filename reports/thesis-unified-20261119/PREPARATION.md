@@ -1,6 +1,6 @@
-# Unified final thesis evaluation — preparation
+# Unified final evaluation: preparation
 
-The user authorized this campaign on 19 November 2026 to replace the proposed four-window complement. It repeats all fourteen logical windows of `full-bounded-study-20261117` under one frozen revised evaluator. The old evidence and its reports remain unchanged. The new campaign is intended as the thesis's primary evaluation; it is not complete until new sealed results are acquired and checked. Failures and inconclusive claims remain reportable outcomes.
+This campaign was authorized on 19 November 2026 to replace the proposed four-window complement. It repeats all fourteen logical windows of `full-bounded-study-20261117` under one frozen revised evaluator. The old evidence and its reports remain unchanged. The new campaign is intended as the primary evaluation; it is not complete until new sealed results are acquired and checked. Failures and inconclusive claims remain reportable outcomes.
 
 ## Scientific scope
 
@@ -9,7 +9,7 @@ The user authorized this campaign on 19 November 2026 to replace the proposed fo
 - Preserve the existing 720-second temporal observation attached to the first deployment's Boutique/Istio baseline. It is not a fifteenth matrix window.
 - Preserve Karthos `4c2861b539fcd24d6a458dc0fd545fbdda5470d5`, two journeys/second, scientific input hashes, image digests and tolerances. Freeze evaluator changes before launch.
 - Apply independent inventory, source/provenance and independent-total checks; preserve unknown traffic, absolute errors, metric-family denominators, invalid attempts, and negative/inconclusive outcomes.
-- No scale, causal-overhead, event/API latency, quantitative Kiali, additional consumer, Deployment rollout, reduced reproduction variant or LaTeX changes.
+- No scale, causal-overhead, event/API latency, quantitative Kiali, additional consumer, Deployment rollout or reduced reproduction variant.
 
 The updated campaign permits at most one operational retry per window and no retry for numerical disagreement. Exhausted operational attempts stop the campaign; remaining windows are unattempted. History is subject to the same stopping principle. A single campaign contains two distinct cluster deployments, with no overlap during rebuild.
 

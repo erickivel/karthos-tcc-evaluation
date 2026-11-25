@@ -1,7 +1,7 @@
 """Verify every sealed member; extract a bounded allowlist for offline exploration."""
 import sys,json,tarfile,hashlib,shutil
 from pathlib import Path
-BASE=Path('/home/kivel/projects/karthos-evaluation-authorization-20261119/exploratory')
+BASE=Path(__import__('os').environ.get('KARTHOS_ANALYSIS_BASE','/srv/karthos-analysis')+'/exploratory')
 for label in sys.argv[1:]:
  src=BASE/'inputs'/(label+'.tar.gz');out=BASE/'selected'/label;out.mkdir(parents=True,exist_ok=False);checked=[];selected=[]
  with tarfile.open(src) as tar:

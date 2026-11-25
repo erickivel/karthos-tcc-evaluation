@@ -1,7 +1,7 @@
 """Exploratory calculations on sealed, allowlisted captures. No verdicts."""
 import json,datetime,statistics,collections,hashlib,sys
 from pathlib import Path
-BASE=Path('/home/kivel/projects/karthos-evaluation-authorization-20261119/exploratory');OUT=BASE/'outputs';OUT.mkdir(exist_ok=True)
+BASE=Path(__import__('os').environ.get('KARTHOS_ANALYSIS_BASE','/srv/karthos-analysis')+'/exploratory');OUT=BASE/'outputs';OUT.mkdir(exist_ok=True)
 def read(p):return json.loads(p.read_text())
 def stamp(t):return float(t) if isinstance(t,(int,float)) else datetime.datetime.fromisoformat(t.replace('Z','+00:00')).timestamp()
 def lines(p):

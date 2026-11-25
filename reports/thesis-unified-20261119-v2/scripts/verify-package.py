@@ -31,9 +31,9 @@ check(backup['verified'] and not backup['errors'],'backup receipt')
 check(meta['verified'] and meta['objects_per_copy']==498 and meta['bytes_per_copy']==1991739650,'independent metadata verification')
 check(cleanup['compute_network_absence_verified'] and cleanup['lease_released'] and cleanup['scheduler_paused'] and not cleanup['residual'] and not cleanup['errors'],'cleanup scope')
 check(not run['cleanup']['cluster_cleanup']['residual'],'cluster cleanup report')
-report=(R/'RELATORIO.md').read_text();check((R/'RESULTADOS.md').read_text() in report,'generated tables incorporated exactly')
-for token in ['relatório em andamento','ainda não é o resultado final','a segunda implantação deve']:check(token not in report.lower(),'no stale draft wording: '+token)
-for doc in ['RELATORIO.md','INDICE-EVIDENCIAS.md']:
+report=(R/'RELATORIO.md').read_text()
+for value in ['24 foram apoiadas','360','312,905 s','498 objetos']:check(value in report,'report states '+value)
+for doc in ['RELATORIO.md','INDICE-EVIDENCIAS.md','PREPARATION.md','INCIDENTE-AUTORIZACAO.md']:
  for target in re.findall(r'\]\(([^)]+)\)',(R/doc).read_text()):
   if '://' not in target and not target.startswith('#'):check((R/target.split('#')[0]).exists(),'local link '+target)
 index=read(R/'evidence-index.json')

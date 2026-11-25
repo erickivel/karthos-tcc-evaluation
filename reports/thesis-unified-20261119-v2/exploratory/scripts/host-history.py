@@ -1,6 +1,6 @@
 """Post-hoc host bins and lifecycle timeline; deliberately emits no verdict."""
 import json,datetime,collections,statistics,pathlib
-P=pathlib.Path('/home/kivel/projects/karthos-evaluation-authorization-20261119/exploratory')
+P=pathlib.Path(__import__('os').environ.get('KARTHOS_ANALYSIS_BASE','/srv/karthos-analysis')+'/exploratory')
 def read(p):return json.loads(p.read_text())
 def lines(p):
  for l in p.open():

@@ -1,26 +1,26 @@
-# Correção operacional antes da avaliação
+# Correção da autorização antes da avaliação
 
-A tentativa anterior de 14 janelas parou antes das medições. O primeiro erro preservado negou `container.clusterRoleBindings.update` ao principal numérico `104260585867013899667`; a segunda tentativa falhou na desinstalação do Helm. Não se presume que os dois erros tenham causa detalhada idêntica. O relatório e as duas cópias das evidências anteriores permanecem preservados em `../thesis-unified-20261119/`.
+A tentativa anterior de 14 janelas parou antes de produzir medições. O primeiro erro registrado foi a negação da permissão `container.clusterRoleBindings.update` à conta de serviço do controlador, e a segunda tentativa falhou na desinstalação do Helm. Não se assume que os dois erros tenham exatamente a mesma causa. O relatório e as duas cópias das evidências dessa tentativa continuam guardados em `../thesis-unified-20261119/`.
 
-A correção combina identidade e autorização efetiva. A VM recebe o escopo `userinfo.email`; cada cluster descartável recebe um binding explícito para o e-mail esperado do controlador. O operador confere UID, propriedade, lease ativo, inventário por geração e recibo imutável de criação. O token fica em memória local e não é gravado ou transferido como credencial ao controlador. Não foi concedido um papel administrativo geral no projeto.
+A correção envolveu tanto a identidade quanto a autorização efetiva. A máquina virtual do controlador passou a receber o escopo `userinfo.email`, e cada *cluster* descartável passou a receber uma permissão explícita para o e-mail esperado do controlador. O operador confere o UID, a propriedade, a reserva ativa, o inventário e o recibo de criação de cada *cluster*. A sua credencial fica apenas na memória local, sem ser gravada nem transferida ao controlador, e nenhum papel administrativo geral foi concedido no projeto.
 
-Antes de preparar aplicações, o controlador verifica a identidade autenticada, consulta permissões e executa operações de criação, patch, atualização e remoção em objetos RBAC descartáveis. Negações explícitas de autorização interrompem a execução sem repetir a mesma operação como nova tentativa científica. Os diagnósticos permanecem preservados, inclusive quando a falha ocorre no consumidor ou na coleta histórica.
+Antes de preparar as aplicações, o controlador verifica a identidade autenticada, consulta as suas permissões e cria, altera, atualiza e remove objetos RBAC descartáveis. Uma negação explícita de autorização interrompe a execução, sem repetir a mesma operação como uma nova tentativa da avaliação. Os diagnósticos continuam guardados, inclusive quando a falha acontece no consumidor ou na coleta do histórico.
 
-## Evidência ao iniciar a primeira implantação
+## Verificações no início do primeiro *cluster*
 
-| Verificação | Evidência observada |
+| Verificação | Resultado observado |
 | --- | --- |
-| Escopo de identidade na VM | `cloud-platform` e `userinfo.email`; conta esperada |
-| Bootstrap do primeiro cluster | Binding lido após criação; UID do cluster e da VM verificados |
-| Acesso temporário do operador | Túnel encerrado e firewall temporário removido |
-| Principal visto pela API Kubernetes | E-mail esperado do controlador |
+| Escopo de identidade da máquina virtual | `cloud-platform` e `userinfo.email`, com a conta esperada |
+| Preparação do primeiro *cluster* | Permissão lida depois da criação, com os UIDs do *cluster* e da máquina virtual verificados |
+| Acesso temporário do operador | Túnel encerrado e regra de *firewall* temporária removida |
+| Identidade vista pela API do Kubernetes | E-mail esperado do controlador |
 | Verificações de permissão | 17 aprovadas |
-| Prova operacional RBAC | Quatro objetos criados, modificados e removidos; limpeza confirmada |
-| Quarentena | Upload e leitura reais verificados |
-| Produto e configuração científica | Commit, imagens científicas, tolerâncias e carga preservados |
+| Teste das operações RBAC | Quatro objetos criados, alterados e removidos, com a limpeza confirmada |
+| Quarentena | Envio e leitura de um arquivo verificados |
+| Karthos e configuração da avaliação | *Commit*, imagens, tolerâncias e carga preservados |
 
-Os recibos são `controller-identity-observation.json`, `operator-bootstrap-repeat-1.json` e `authorization-repeat-1.json`. A observação externa retém também o recibo da quarentena. A revisão do avaliador, os hashes e o instante anterior ao lançamento estão em `rule-freeze.json`; a suíte local passou com 1.537 testes, quatro ignorados.
+Os recibos estão em `controller-identity-observation.json`, `operator-bootstrap-repeat-1.json` e `authorization-repeat-1.json`, e o registro externo guarda também o recibo da quarentena. A revisão do avaliador, os *hashes* e o instante anterior ao início estão em `rule-freeze.json`, e a suíte de testes local passou com 1.537 testes, com quatro ignorados.
 
-A função customizada do watchdog recebeu `compute.networks.updatePolicy`, com aplicação e leitura posterior registradas em `foundation-fix.json`. O watchdog passou no dry-run autenticado e foi armado antes da infraestrutura temporária. Isso não substitui a verificação final de remoção dos recursos. A segunda implantação precisa passar pela mesma autorização com seu próprio UID.
+A função customizada do *watchdog* recebeu a permissão `compute.networks.updatePolicy`, com a aplicação e a leitura posterior registradas em `foundation-fix.json`. O *watchdog* passou em uma execução de teste autenticada e foi ativado antes da criação da infraestrutura temporária, o que não substitui a verificação final da remoção dos recursos. O segundo *cluster* passou pela mesma autorização, com o seu próprio UID.
 
-Esses resultados demonstram a correção do caminho de autorização observado na primeira implantação. Não são resultados de fidelidade do modelo, não aprovam hipóteses científicas e não demonstram que as 14 janelas terminaram. A campanha final deve ser relatada a partir das evidências seladas, preservando qualquer resultado negativo ou inconclusivo.
+Essas verificações mostram que o caminho de autorização foi corrigido no primeiro *cluster*. Elas não são resultados sobre a fidelidade do modelo e não apoiam nenhuma hipótese, e os resultados da campanha estão no [relatório da avaliação](RELATORIO.md).

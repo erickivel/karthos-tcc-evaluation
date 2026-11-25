@@ -90,7 +90,7 @@ versions per generation and reject changed qualification conditions.
 
 ## Manifest handoff and watchdog inventory
 
-VM startup downloads the generation-pinned experiment manifest and checks its SHA-256 for transfer integrity. The existing runtime-enabled flag keeps provisioning dormant until the separate run operation. Runtime consumes `--manifest` and checks reproducible source/configuration inputs and technical readiness. There is no approval receipt, review-ID command or software human-approval gate. Codex waits for the user's explicit go-ahead in the conversation before invoking cloud operations.
+VM startup downloads the generation-pinned experiment manifest and checks its SHA-256 for transfer integrity. The existing runtime-enabled flag keeps provisioning dormant until the separate run operation. Runtime consumes `--manifest` and checks reproducible source/configuration inputs and technical readiness. There is no approval receipt, review-ID command or software human-approval gate. Cloud operations are invoked only after the operator's explicit approval.
 
 The Cloud Run watchdog uses attached keyless identity; only Scheduler SA has
 roles/run.invoker. No unauthenticated cleanup endpoint exists. The standalone Terraform default pauses Scheduler; the approved orchestrator

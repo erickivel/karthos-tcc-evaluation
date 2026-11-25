@@ -1,10 +1,10 @@
 # Robustecimento da avaliação — revisão de 19/11/2026
 
-Este protocolo complementa `thesis-completion-v2`. A finalidade é validar o modelo e a arquitetura do Karthos; escala e custo causal não são hipóteses. Preserva duas jornadas/s, o produto `4c2861b539fcd24d6a458dc0fd545fbdda5470d5`, contratos públicos e testes/consumidor locais existentes. Não altera LaTeX.
+Este protocolo complementa `thesis-completion-v2`. A finalidade é validar o modelo e a arquitetura do Karthos; escala e custo causal não são hipóteses. Preserva duas jornadas/s, o produto `4c2861b539fcd24d6a458dc0fd545fbdda5470d5`, contratos públicos e testes/consumidor locais existentes.
 
 ## Origem e regras
 
-O checkout local antecedia o avaliador efetivamente implantado em `full-bounded-study-20261117`. A implementação desse estudo foi recuperada do `kivel-server`, conferida contra os hashes do manifesto congelado e incorporada antes destas correções. Os módulos de finalização delimitada, população assentada e cópia secundária já pertenciam à execução original. Sua incorporação não representa uma nova medição. Resultados originais, tentativas e arquivos brutos não são sobrescritos.
+O checkout local antecedia o avaliador efetivamente implantado em `full-bounded-study-20261117`. A implementação desse estudo foi recuperada do servidor de análise, conferida contra os hashes do manifesto congelado e incorporada antes destas correções. Os módulos de finalização delimitada, população assentada e cópia secundária já pertenciam à execução original. Sua incorporação não representa uma nova medição. Resultados originais, tentativas e arquivos brutos não são sobrescritos.
 
 As regras abaixo são **retrospectivas** para o estudo de 17/11. Uma execução complementar deve registrar o commit e os hashes destas regras antes de iniciar medições. Regras, entradas, motivo da revisão e saídas seladas pertencem a diretórios novos. Não se descreve retrospectivamente esta reanálise como pré-registrada.
 
@@ -45,14 +45,14 @@ Antes de criar recursos temporários, revisar e aplicar os dois bindings condici
 
 Mudanças operacionais desta revisão: corrigir a corrida de `sleep_bounded`; pré-aquecer transporte autenticado de identidade do pod e reutilizá-lo mantendo UID/restart guards; registrar user-agent nos logs dos observadores, sem nova dimensão nas métricas. Registrar essas diferenças no manifesto e verificar separadamente produto, versões, imagens por digest, carga, tolerâncias e configuração científica antes de comparar implantações.
 
-## Uso na redação
+## Leitura dos resultados
 
-Resultados: distinguir análise original, reanálise e complemento. Manter falhas/inconclusões e tentativas visíveis. CPU/memória existentes podem formar tabela descritiva, sem inferência causal sobre sobrecarga. Kiali permanece comparação qualitativa pela tabela da revisão de ferramentas. As cinco perguntas justificam consumo pela API; não se cria novo consumidor.
+Os resultados distinguem a análise original, a reanálise e o complemento, e mantêm visíveis as falhas, as inconclusões e as tentativas. CPU/memória existentes podem formar tabela descritiva, sem inferência causal sobre sobrecarga. Kiali permanece comparação qualitativa pela tabela da revisão de ferramentas. As cinco perguntas justificam consumo pela API; não se cria novo consumidor.
 
 Ameaças/limitações: um provedor, versão Kubernetes efetivamente observada, Istio sidecar, amostra delimitada, dependências compartilhadas das referências, sondas não observadas, atraso evento–API não avaliado e ausência de hipótese de escala/custo. Observação de 720 s não demonstra comportamento durante retenção de 7–30 dias. Repositórios, commits fixos, digests e manifestos verificáveis permitem rastrear reprodução; DOI não é obrigatório.
 
 ## Campanha integral revisada
 
-A decisão posterior do usuário substitui o complemento de quatro janelas por `thesis-robustness-full-v1`: as quatorze janelas originais, duas implantações distintas e a observação temporal existente, com as regras corrigidas congeladas antes da execução. O [registro de preparação](../reports/thesis-unified-20261119/PREPARATION.md) descreve escopo, limites, orçamento cumulativo adicional e condições de lançamento. A campanha final deve ser apresentada separadamente dos estudos de desenvolvimento/piloto; não substituir falhas novas por resultados antigos favoráveis.
+Uma decisão posterior substitui o complemento de quatro janelas por `thesis-robustness-full-v1`: as quatorze janelas originais, duas implantações distintas e a observação temporal existente, com as regras corrigidas congeladas antes da execução. O [registro de preparação](../reports/thesis-unified-20261119/PREPARATION.md) descreve escopo, limites, orçamento cumulativo adicional e condições de lançamento. A campanha final deve ser apresentada separadamente dos estudos de desenvolvimento/piloto; não substituir falhas novas por resultados antigos favoráveis.
 
 O novo perfil desconta explicitamente o gasto ou a provisão conservadora da preparação anterior do teto adicional de R$ 1.200, antes da reserva de encerramento. Verifica bindings condicionais exatos de quarentena no provedor antes do lease e dos recursos de execução, após resolver a fundação existente. Essa verificação não concede permissões nem substitui o probe real do controlador. O limite de retry e a interrupção após falha também abrangem a observação temporal.

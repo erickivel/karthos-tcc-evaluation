@@ -1,6 +1,6 @@
 # Unified evaluation authorization recovery
 
-The user approved fixing authorization and preflight, verifying cleanup, reconciling the remaining BRL1200 additional envelope, then launching the unchanged fourteen-window campaign. The delayed approval of another cluster for the superseded four-window proposal does not replace this latest scope. No product or scientific-threshold changes.
+The approved plan fixes authorization and preflight, verifying cleanup, reconciling the remaining BRL1200 additional envelope, then launching the unchanged fourteen-window campaign. The delayed approval of another cluster for the superseded four-window proposal does not replace this latest scope. No product or scientific-threshold changes.
 
 ## Design
 

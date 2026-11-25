@@ -1,6 +1,6 @@
-# Relatório de apoio à tese: robustecimento da avaliação
+# Relatório do robustecimento da avaliação
 
-Revisão de 19/11/2026. Produto preservado em `4c2861b539fcd24d6a458dc0fd545fbdda5470d5`. Runtime do complemento congelado em `6e9304e`; revisão offline congelada antes das medições em `7d9190e`; reanálise `accuracy-evidence-v3.5.1`. Nenhum LaTeX foi editado.
+Revisão de 19/11/2026. Produto preservado em `4c2861b539fcd24d6a458dc0fd545fbdda5470d5`. Runtime do complemento congelado em `6e9304e`; revisão offline congelada antes das medições em `7d9190e`; reanálise `accuracy-evidence-v3.5.1`.
 
 ## Resultado e escopo
 
@@ -76,11 +76,11 @@ O [protocolo de robustecimento](../../docs/thesis-robustness.md) contém a matri
 
 As cinco perguntas existentes permanecem o teste de consumo pelo contrato público. Nas baselines válidas, há respostas corretas para réplicas/posicionamento atuais, chamadores no intervalo, derivação de erros e histórico de recursos de containers. Retenção de réplicas/saúde é uma afirmação do experimento temporal dedicado, não demonstrada pelas baselines isoladamente. As respostas e condições por pergunta estão em `results.json`; reconstrução offline de consulta nunca deve ser citada como consulta executada.
 
-## Orientações para capítulos 7 e 8
+## Leitura dos resultados
 
-No capítulo de avaliação, separar validade da execução, fidelidade de transformação, concordância com referência independente, fidelidade na janela fixa e completude assentada. Usar denominadores por baseline/família e manter tentativas malsucedidas. Apresentar a complementação em tabela separada, com hashes científicos compatíveis, identidades distintas e a mesma revisão do avaliador aplicada aos dois conjuntos.
+Os resultados separam a validade da execução, a fidelidade da transformação, a concordância com a referência independente, a fidelidade na janela fixa e a completude assentada. Os denominadores são apresentados por linha de base e por família, e as tentativas malsucedidas são mantidas. A complementação aparece em uma tabela separada, com *hashes* científicos compatíveis, identidades distintas e a mesma revisão do avaliador aplicada aos dois conjuntos.
 
-Nas ameaças e limitações: um provedor, Kubernetes observado `1.34.12-gke.1011000`, Istio sidecar, amostra delimitada e referências com dependências compartilhadas. A carga de duas jornadas/s em aplicações realistas valida as afirmações delimitadas; não sustenta escala. Não há hipótese causal de custo/sobrecarga. Latência evento–API não foi avaliada. Observação temporal de 720 s não demonstra comportamento durante retenção de 7–30 dias. A comparação com Kiali permanece qualitativa. Não adicionar novo consumidor nem rollout de Deployment.
+Limitações: um provedor, Kubernetes observado `1.34.12-gke.1011000`, Istio sidecar, amostra delimitada e referências com dependências compartilhadas. A carga de duas jornadas/s em aplicações realistas valida as afirmações delimitadas; não sustenta escala. Não há hipótese causal de custo/sobrecarga. Latência evento–API não foi avaliada. Observação temporal de 720 s não demonstra comportamento durante retenção de 7–30 dias. A comparação com Kiali permanece qualitativa. Não foram avaliados um novo consumidor nem a atualização de um Deployment.
 
 ## Reprodução e integridade
 

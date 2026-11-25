@@ -79,7 +79,7 @@ Preparation validates checksums, product/protocol/scoring/implementation binding
 
 ## Preparation and launch boundary
 
-No cloud execution is authorized by creating these files. Before launch, package and publish an immutable controller, refresh account/quota/version/cost checks, and review the exact manifest in chat.
+No cloud execution is authorized by creating these files. Before launch, package and publish an immutable controller, refresh account/quota/version/cost checks, and have the operator review the exact manifest.
 
 Preparation now requires `readiness.phase_estimates_seconds`: positive finite `provision`, `rebuild`, `setup`, `capture_setup_restore`, `export`, `history`, and `retry_reserve` values based on reviewed archived timings. `export` must include attempt publication and checkpoint work. The forecast includes readiness observations and publication, quiet-counter bounds, all planned windows, history and cleanup. Missing estimates or a forecast over 12 hours block launch; do not silently reduce windows or omit cleanup. Retry reserve is bounded, not a guarantee that all worst-case retries fit. Deadline exhaustion leaves unfinished work explicit.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 EVAL_ROOT="$(cd "$(dirname "$0")" && pwd)"
-KARTHOS_REPO="${KARTHOS_REPO:-/Users/kivel/Desktop/Projects/tcc/karthos}"
+KARTHOS_REPO="${KARTHOS_REPO:-$(cd "$EVAL_ROOT/.." && pwd)/karthos}"
 export KARTHOS_REPO
 case "${1:-}" in
   verify) cd "$EVAL_ROOT"; exec python3 -m evaluation.runner "$@" ;;

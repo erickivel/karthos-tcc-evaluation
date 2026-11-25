@@ -2,7 +2,7 @@
 
 # GKE qualification v1: execution plan
 
-**Human checkpoint:** I prepare the files and explain the setup here in chat. You check it and tell me when to proceed. There are no review commands, approval receipts, signatures or review IDs. Creating files and passing tests do not mean “start the cloud run.”
+**Human checkpoint:** the files and the setup are prepared and presented to the operator, who reviews them and decides when to proceed. There are no review commands, approval receipts, signatures or review IDs. Creating files and passing tests do not mean “start the cloud run.”
 
 This is a qualification of Karthos's normalized data foundation on two newly created managed clusters. It does not establish production scale, optimal window duration, runtime source failover, or causal instrumentation overhead. Collection Agents are OpenTelemetry collectors; the shopping-agent scenario is excluded.
 
@@ -47,7 +47,7 @@ refreshes retain their immediate failure behavior.
 ## Required readiness before measured traffic
 
 Every new rehearsal, qualification or thesis launch includes the 17-probe readiness check.
-Review and authorize the combined launch in chat before provisioning. The two-hour
+Review and authorize the combined launch before provisioning. The two-hour
 readiness limit begins at provisioning and uses the same 12-hour infrastructure
 allowance. The watchdog keeps that shorter limit until it reads a create-only
 GCS handoff tied to the current run, lease, and verified inventory. It checks the
@@ -128,7 +128,7 @@ The rehearsal matrix separates execution, evidence validity, application outcome
 flowchart TB
     subgraph Operator["Your machine — preparation and human review"]
         Prepare["Prepare files and experiment settings"]
-        Human["Your go-ahead in chat"]
+        Human["Operator approval"]
         Inspect["Launch and inspect"]
         Prepare --> Human --> Inspect
     end
@@ -206,7 +206,7 @@ flowchart TD
     subgraph Setup["1 — IMPLEMENTATION AND OFFLINE SETUP"]
         S1["Create files and structure"] --> S2["Analyse prior evidence; freeze inputs"] --> S3["Offline tests and setup summary"]
     end
-    Review{"2 — YOUR GO-AHEAD IN CHAT"}
+    Review{"2 — OPERATOR APPROVAL"}
     S3 --> Review
     Review -->|"Changes requested"| S1
     subgraph Infra["3 — INFRASTRUCTURE"]
@@ -288,7 +288,7 @@ Protocol files own experiment rules; Terraform owns infrastructure; Python coord
 flowchart TD
     CLI["gke-eval.sh → cli.py"] --> P["SETUP: prepare.py + protocols"]
     P --> H["HUMAN CHECKPOINT: conversation only"]
-    H -->|"Your go-ahead"| I["INFRASTRUCTURE: provision.py + Terraform"]
+    H -->|"Operator approval"| I["INFRASTRUCTURE: provision.py + Terraform"]
     I --> S["CLUSTER SETUP: setup.py"]
     S --> R["RUNNING: run.py + diagnostics + shared helpers"]
     R --> E["EVALUATING: evaluate.py + references + API consumer"]
@@ -313,10 +313,10 @@ Historical timing evidence remains unchanged. The preparation records baseline r
 
 ## How we proceed
 
-1. I prepare the configuration, manifests and scripts, and run offline checks.
-2. I show you the architecture, intended scenarios, pending inputs and test outcome in this conversation.
-3. **I stop and wait for your explicit go-ahead here.** You do not need to run any command to review or approve the setup.
-4. Once you tell me to proceed and the technical inputs are ready, I provision, run, export, evaluate and clean up.
+1. The configuration, manifests and scripts are prepared, and the offline checks are run.
+2. The architecture, intended scenarios, pending inputs and test outcome are presented to the operator.
+3. **The process stops until the operator gives explicit approval.** No command is needed to review or approve the setup.
+4. Once the operator approves and the technical inputs are ready, the run is provisioned, executed, exported, evaluated and cleaned up.
 
 The harness keeps ordinary commands for doing the work: `prepare`, `provision`, `run`, `status`, `export`, `analyse` and `teardown`. `runtime` is the controller's internal entrypoint. There are no `approve`, `verify-authorization` or review-package commands.
 
@@ -324,14 +324,14 @@ For reference, execution uses a prepared manifest rather than a review ID:
 
 ```sh
 ./gke-eval.sh prepare --config config/gke.example.yaml --id gke-v1 \
-  --product-snapshot /Users/kivel/.codex/worktrees/pilot-repairs/karthos
+  --product-snapshot ../karthos
 ./gke-eval.sh provision --manifest build/gke/prepared/gke-v1/manifest.json --run-id RUN
 ./gke-eval.sh run --manifest build/gke/prepared/gke-v1/manifest.json --run-id RUN
 ./gke-eval.sh status --run-id RUN
 ./gke-eval.sh teardown --run-id RUN
 ```
 
-These are operational commands, not review tasks for you. I will not invoke cloud operations until you tell me to proceed. The code still checks technical readiness: project/billing inputs, quotas, current cost, exact GKE version, pinned images/toolchain, capacity and export destination. Those checks protect the experiment's validity and budget; they are not an approval system.
+These are operational commands, not review tasks. Cloud operations are not invoked before the operator approves. The code still checks technical readiness: project/billing inputs, quotas, current cost, exact GKE version, pinned images/toolchain, capacity and export destination. Those checks protect the experiment's validity and budget; they are not an approval system.
 
 Source and image hashes remain in the run manifest for reproducibility. Collected evidence keeps its checksums. Deadline enforcement, ownership/UID checks, the project lock, serial generators and cleanup remain in place. Provisioning still creates a dormant controller; the separate `run` command starts it.
 
@@ -365,7 +365,7 @@ Offline interpretation after export: `./gke-eval.sh analyse --run-id RUN --analy
 
 A completed traffic matrix is not a confirmed cleanup result. Runtime reports `awaiting-cleanup-confirmation` after an accepted finalizer request. Inspect the independently stored records under `gs://<project>-karthos-eval-evidence/control/<run>/teardown/`: final removal requires `compute_network_absence_verified=true` and the persisted `scheduler_paused=true` observation. `gke-eval.sh status` identifies its execution state as a saved local control snapshot; it does not infer the VM's process state. Restart diagnostics trigger after the first observed generator WINDOW marker and retain actual request/completion times.
 
-Image publication and cloud setup also wait for your go-ahead in chat. Missing inputs stay pending; they are never replaced with fake readiness flags.
+Image publication and cloud setup also wait for operator approval. Missing inputs stay pending; they are never replaced with fake readiness flags.
 
 Pinned source semantics: container restart counts are native gauges and may reset after kubelet dead-container pruning; their comparison uses matching Pod UID/object version or exact source time, never an assumed monotonic counter. Disk counters use the verified gopsutil 4.26.5 sector-to-byte factor of 512. Filesystem free is Bavail, reserved is Bfree−Bavail, and utilization uses used/(used+available). Numeric methods are implemented for those mechanisms, but missing real source-read brackets or device/mount identity still produce insufficient evidence. A collector emission timestamp is never relabeled as an underlying host measurement timestamp.
 

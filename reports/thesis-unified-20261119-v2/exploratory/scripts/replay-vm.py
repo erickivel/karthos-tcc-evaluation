@@ -1,6 +1,6 @@
 """Offline replay in isolated, disposable VM; no published port or cloud resource."""
 import subprocess,json,time,pathlib,hashlib
-P=pathlib.Path('/home/kivel/projects/karthos-evaluation-authorization-20261119/exploratory')
+P=pathlib.Path(__import__('os').environ.get('KARTHOS_ANALYSIS_BASE','/srv/karthos-analysis')+'/exploratory')
 VM='victoriametrics/victoria-metrics@sha256:b9b667f6709f20044328ddefae8869c56ced840ebafdf89bc3bba1f28f2d7e60'
 HELPER='sha256:4a2340e53506ec86c94ab7f5bd4901aa2ddcdf743fd0c58e833c2fd9bc109fb6'
 code='''import json,urllib.request,urllib.parse,pathlib,time

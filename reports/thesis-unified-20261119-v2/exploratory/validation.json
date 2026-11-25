@@ -75,10 +75,10 @@
     "original seal INDICE-EVIDENCIAS.md",
     "original seal PREPARATION.md",
     "original seal RELATORIO.md",
-    "original seal RESULTADOS.md",
     "original seal authorization-repeat-1.json",
     "original seal budget-review.json",
     "original seal controller-identity-observation.json",
+    "original seal evidence-index.json",
     "original seal evidence/GKE-SHA256SUMS",
     "original seal evidence/backup-receipt.json",
     "original seal evidence/baselines/astronomy-istio-r1-summary.json",
@@ -95,7 +95,6 @@
     "original seal evidence/footprint-observation.json",
     "original seal evidence/run-report.json",
     "original seal evidence/summary-validation.json",
-    "original seal evidence-index.json",
     "original seal execution-status.json",
     "original seal familias.csv",
     "original seal foundation-fix.json",
@@ -114,6 +113,6 @@
     "original seal trafego-observado.csv",
     "original seal validation.json"
   ],
-  "original_files_verified": 42,
+  "original_files_verified": 41,
   "scope": "consistency only; not new scientific verdicts"
 }

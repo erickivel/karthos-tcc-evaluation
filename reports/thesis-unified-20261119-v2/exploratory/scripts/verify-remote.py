@@ -1,6 +1,6 @@
 """Verify retained history seal, stable host identities, and owned replay cleanup."""
 import pathlib,hashlib,json,subprocess
-p=pathlib.Path('/home/kivel/projects/karthos-evaluation-authorization-20261119/exploratory');h=p/'inputs/history';rows=[]
+p=pathlib.Path(__import__('os').environ.get('KARTHOS_ANALYSIS_BASE','/srv/karthos-analysis')+'/exploratory');h=p/'inputs/history';rows=[]
 for line in (h/'GKE-SHA256SUMS').read_text().splitlines():
  digest,name=line.split(maxsplit=1);f=h/name
  assert f.is_file() and hashlib.sha256(f.read_bytes()).hexdigest()==digest,name

@@ -1,4 +1,4 @@
-"""Prepare and operate the GKE experiment. Human confirmation happens in chat."""
+"""Prepare and operate the GKE experiment. Human confirmation happens before cloud work."""
 from __future__ import annotations
 import argparse,json,os,sys,signal
 from pathlib import Path

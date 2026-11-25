@@ -1,7 +1,7 @@
 """Post-run exploration of verified local summaries; no rescoring."""
 import json,hashlib,datetime
 from pathlib import Path
-O=Path(__file__).resolve().parents[1];R=O.parent;P=Path('/Users/kivel/Desktop/Projects/tcc/karthos')
+O=Path(__file__).resolve().parents[1];R=O.parent;P=Path(__import__('os').environ.get('KARTHOS_REPO','../karthos'))
 def read(p):return json.loads(p.read_text())
 labels=['boutique-traces-r1','astronomy-traces-r1','astronomy-istio-r1','boutique-istio-r1','boutique-istio-r2','boutique-traces-r2'];rows=[];inputs=[]
 for i,label in enumerate(labels,1):
