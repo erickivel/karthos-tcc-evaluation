@@ -71,7 +71,7 @@ As sondas só são contadas quando aparecem identificadas nos registros observad
 
 ### Resultados por linha de base
 
-As seis linhas de base têm 300 s de carga, cada uma precedida por uma janela de 60 s. As outras duas janelas avaliam a arbitragem, e o histórico é verificado em uma fase separada. Oito janelas pertencem ao *cluster* C1, incluindo as duas de arbitragem, e quatro ao C2.
+As seis linhas de base têm 300 s de carga, cada uma precedida por uma janela de 60 s. As outras duas janelas avaliam a arbitragem, e o histórico é verificado em uma fase separada. Dez janelas pertencem ao *cluster* C1 (as oito das quatro primeiras linhas de base e as duas de arbitragem) e quatro ao C2.
 
 | Linha de base | Aplicação, fonte e *cluster* | Identificador |
 |---|---|---|
